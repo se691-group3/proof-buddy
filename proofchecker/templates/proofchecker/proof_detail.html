@@ -1,0 +1,58 @@
+{% extends 'proofchecker/base.html' %}
+{% load static %}
+{% block content %}
+
+    <a href="{% url 'all_proofs' %}" class="btn btn-primary mt-3"> Back to all proofs </a>
+
+    <hr>
+
+
+
+    <h2 class="display-4"><b>{{ object.name }}</b></h5>
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item"><b>Premise(s):</b> {{ object.premises }}</li>
+        <li class="list-group-item"><b>Conclusion:</b> {{ object.conclusion }}</li>
+        <li class="list-group-item"><b>Line Count:</b> {{ object.proofline_set.count }} </li>
+        {% if object.proofline_set.count != 0 %}
+
+            <li class="list-group-item">
+
+                <table class="table table-hover table-responsive-xl">
+
+                    <thead id="column-titles" style="background-color: #6c757d; color:#FFFFFF">
+                    <tr class="font-weight-bold">
+                        <td scope="col">Line #</td>
+                        <td scope="col">Expression</td>
+                        <td scope="col">Rule</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for line in object.proofline_set.all %}
+                        <tr>
+                            <td>{{ line.line_no }}</td>
+                            <td>{{ line.formula }}</td>
+                            <td>{{ line.rule }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </li>
+        {% endif %}
+
+
+    </ul>
+
+
+
+    {% if object.proofline_set.count != 0 %}
+        <hr>
+    {% endif %}
+    <a href="{% url 'update_proof' object.id %}" class="card-link btn btn-primary"> Edit </a>
+    {#<a href="{% url 'delete_proof' object.id %}" class="card-link btn btn-secondary"> Delete </a>#}
+
+{% endblock %}
+
+{% block js_block %}
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+{% endblock %}

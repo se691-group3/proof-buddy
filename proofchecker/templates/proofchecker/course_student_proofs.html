@@ -1,0 +1,19 @@
+{% extends 'proofchecker/base.html' %}
+{% load static %}
+{% block content %}
+    <hr>
+    <h4>View Proofs by Students</h4>
+    <hr>
+    {% if proofs %}
+        <hr>
+        <ol class="list-group">
+            <li class="list-group-item list-group-item-primary"> Student : {{ student.user.username }}</li>
+            {% for proof in proofs %}
+                <li class="list-group-item"><a href="{% url 'update_proof' proof.id %}" target="_blank">{{ proof.name }} : {{ proof.premises }} ∴ {{ proof.conclusion }}</a></li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <b>Student :</b> {{ student.user.username }}
+        <p style="color: darkred">Sorry! this student doesn't have any proofs created yet.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,217 @@
+.hidden{
+  display: none;
+}
+
+/* Width of the icons */
+:root{
+  --nav-icon-width: 50px;
+  --nav-border-width: 15px;
+}
+
+
+html,
+body{
+  height:100%;
+  margin:0;
+  font-family:sans-serif;
+}
+
+tt {
+  font-family: "Lucida Console", "Menlo", "Monaco", "Courier",
+               monospace;
+}
+
+.page-container{
+  height:inherit;
+  display:flex;
+}
+
+.main{
+  height: inherit;
+  width:fit-content;
+  margin-left:20px;
+  /* margin-right:85px; */
+  margin-right: 50px;
+  padding-left: var(--nav-border-width);
+  padding-right:var(--nav-border-width);
+  overflow-y:auto;
+}
+
+.nav-left{
+  width:200px;
+  height:inherit;
+  position:relative;
+  background-color: #072a4d;
+  transition: width 0.2s;
+  flex-shrink:0;
+}
+
+.nav-right{
+  position:absolute;
+  right:0px;
+  width:325px;
+  height:inherit;
+  background-color: white;
+  transition: width 0.2s;
+  flex-shrink:0;
+}
+
+.nav-left--collapsed{
+  width:var(--nav-icon-width);
+}
+
+.nav-left--collapsed .nav-left__label{
+  display:none;
+}
+
+.nav-right--collapsed{
+  width:var(--nav-icon-width);
+  background-color: #072a4d;
+}
+
+.nav-right--collapsed .nav-right__label{
+  display:none;
+}
+
+
+.nav__link{
+  display:flex;
+  align-items:center;
+  color:#f2f2f2;
+  text-decoration: none;
+}
+
+.nav__link:hover{
+  background-color:#dddddd;
+}
+
+.nav__icon-container{
+  width:var(--nav-icon-width);
+  height:var(--nav-icon-width);
+  display:flex;
+  align-items: center;
+  justify-content:center;
+  flex-shrink: 0;
+}
+
+.nav-left__border{
+  position:absolute;
+  left:100%;
+  top:0;
+  width:var(--nav-border-width);
+  height:inherit;
+  background-color: #dddddd;
+  transition:background-color 0.2s;
+  cursor:ew-resize;
+}
+
+.nav-left__border:hover{
+  background-color: #cccccc;
+}
+
+.nav-right__border{
+  position:absolute;
+  left:-var(--nav-icon-width);
+  top:0;
+  width:var(--nav-border-width);
+  height:inherit;
+  background-color: #dddddd;
+  transition:background-color 0.2s;
+}
+
+.nav-right__border:hover{
+  background-color: #cccccc;
+}
+
+#left-nav-close-arrow {
+  transform: rotate(180deg);
+  width:15px;
+  height:70px;
+  fill: #585858;
+  position: absolute;
+  top: 50%;
+}
+
+#left-nav-open-arrow {
+  width:15px;
+  height:70px;
+  fill: #585858;
+  display:none;
+  position: absolute;
+  top: 50%;
+}
+
+#right-nav-close-arrow {
+  width:15px;
+  height:70px;
+  fill: #585858;
+  position: absolute;
+  top: 50%;
+}
+
+#right-nav-open-arrow {
+  transform: rotate(180deg);
+  width:15px;
+  height:70px;
+  fill: #585858;
+  display:none;
+  position: absolute;
+  top: 50%;
+}
+
+
+/* Premise and Conclusion Fields */
+#premise-conclusion{
+  width:10%;
+}
+
+#id_rules{
+  width:100%;
+  margin-bottom: 5px;
+}
+
+#id_name{
+  width:100%;
+  margin-bottom: 5px;
+}
+
+#id_premises{
+  width:100%;
+  margin-bottom: 5px;
+}
+
+#id_conclusion{
+  width:100%;
+  margin-bottom: 5px;
+}
+
+#id_question{
+  width:100%;
+  margin-bottom: 5px;
+}
+
+#id_grade{
+  width:100%;
+  margin-bottom: 5px;
+}
+
+
+[id$=line_no]{
+  width:75px;
+}
+
+.dropdown-menu {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+
+#id_point{
+  width:100%;
+  margin-bottom: 5px;
+}
+
+#id_target_steps{
+  width:100%;
+  margin-bottom: 5px;
+}

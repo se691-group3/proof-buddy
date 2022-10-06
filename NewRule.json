@@ -1,0 +1,45 @@
+{
+  "Proofs": [
+    {
+      "name": "New Rule",
+      "created_by": "Steve",
+      "complete": true,
+      "rules": "tfl_basic",
+      "ruleList": [],
+      "premises": [
+        {
+          "lineNum": "1",
+          "expr": "A",
+          "rule": "Premise"
+        }
+      ],
+      "conclusion": {
+        "lineNum": "3",
+        "expr": "\u00ac\u00acA",
+        "rule": "\u00acI 2"
+      },
+      "lines": [
+        {
+          "lineNum": "1",
+          "expr": "A",
+          "rule": "Premise"
+        },
+        {
+          "lineNum": "2.1",
+          "expr": "\u00acA",
+          "rule": "Assumption"
+        },
+        {
+          "lineNum": "2.2",
+          "expr": "\u22a5",
+          "rule": "\u00acE 2.1, 1"
+        },
+        {
+          "lineNum": "3",
+          "expr": "\u00ac\u00acA",
+          "rule": "\u00acI 2"
+        }
+      ]
+    }
+  ]
+}

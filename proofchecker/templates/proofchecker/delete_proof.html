@@ -1,0 +1,16 @@
+{% extends "proofchecker/base.html" %}
+{% load static %}
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+    <h2 class="mt-3"><b>Delete "{{ object.name }}"</b></h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="alert alert-warning"><b>Are you sure</b> you want to delete proof: "{{ object.name }}"?</div>
+        <input type="submit" class="btn btn-danger" value="Confirm"/>
+        <a href="{% url 'all_proofs' %}" class="btn btn-secondary"> Back to all proofs </a>
+    </form>
+{% endblock %}

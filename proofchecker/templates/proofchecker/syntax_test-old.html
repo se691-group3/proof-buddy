@@ -1,0 +1,56 @@
+{% extends 'proofchecker/base.html' %}
+{% load static %}
+{% block content %}
+  
+  <h2><strong>ProofChecker v0.1: </strong>Validate your proof!</h2>
+  <hr>
+
+      <!-- your content here... -->
+      <script data-cover src ="{% static 'js/syntax.js' %}"></script>
+      <script src= "{% static 'js/syntax_tests.js' %}"></script>
+
+      <div id="buttonDiv">
+        <p>Each button is linked to a major syntax test case. If the methods are working, all should alert success upon success. </p>
+              <button type="button" onclick="test_remove_justification_with_just()">TEST 1</button>
+              <button type="button" onclick="test_remove_justification_without_just()">TEST 2</button>
+              <button type="button" onclick="test_has_valid_symbols_with_valid_symbols()">TEST 3</button>
+              <button type="button" onclick="test_has_valid_symbols_with_invalid_symbols()">TEST 4</button>
+              <button type="button" onclick="test_has_balanced_parens_with_balanced_parens()">TEST 5</button>
+              <button type="button" onclick="test_has_balanced_parens_with_unbalanced_parens()">TEST 6</button>
+              <button type="button" onclick="test_set_depth_array()">TEST 7</button>
+              <button type="button" onclick="test_find_main_operator_without_outer_parens1()">TEST 8</button>
+              <button type="button" onclick="test_find_main_operator_without_outer_parens2()">TEST 9</button>
+              <button type="button" onclick="test_is_valid_TFL_with_atomic_sentence()">TEST 10</button>
+              <button type="button" onclick="test_is_valid_TFL_with_one_operator()">TEST 11</button>
+              <button type="button" onclick="test_is_valid_TFL_with_multiple_operators()">TEST 12</button>
+              <button type="button" onclick="test_is_valid_TFL_with_invalid_input()">TEST 13</button>
+              <button type="button" onclick="test_valid_symbols_with_comma_expression()">TEST 14</button>
+              <button type="button" onclick="printTest()">TEST 15</button>
+      </div>
+      <br>
+      <br>
+      <br>
+      <div id="qdiv">
+        <link rel = "stylesheet" href = "https://code.jquery.com/qunit/qunit-2.17.2.css">
+		    <h1 id="qunit-header">TFL Syntax QUnit Test Results</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar">
+        </div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests">
+        </ol>
+        <div id="qunit-fixture">
+            <div id="container"></div>
+        </div>		
+		    <script type="text/javascript">
+          function blanket_toggleSource(e) {
+           var t = document.getElementById(e);
+           t.style.display === "block" ? t.style.display = "none" : t.style.display = "block";  
+          }      
+        </script>
+      </div>
+
+      <script src="{% static 'js/blanket.min.js' %}"></script>
+      
+
+{% endblock %}

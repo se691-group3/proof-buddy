@@ -1,0 +1,228 @@
+{% load static %}
+
+<div class="full-menu">
+
+    <div id="menu-option-buttons">
+        <button id="rules" type="button" class="btn btn-primary" onclick="showInformation(this.id)">Rules</button>
+        <button id="help" type="button" class="btn btn-secondary" onclick="showInformation(this.id)">Help</button>
+    </div>
+
+    <hr class="right-nav-divider">
+
+    <div id="menu">
+
+        <div id="rules-information">
+
+            <div class="rules-buttons">
+                <button id="TFL" type="button" class="btn btn-outline-primary btn-sm" onclick="showRules(this.id)"> TFL Rules</button>
+                <button id="FOL" type="button" class="btn btn-outline-secondary btn-sm" onclick="showRules(this.id)"> FOL Rules</button>
+            </div>
+
+            <div id="TFL-rules">
+                <div id="main-header">Basic TFL Rules:</div>
+
+                <div id="item-name">Conjunction:</div>
+                <img src="{% static 'proofchecker/images/and_intro.png' %}" alt="Conjunction Introduction" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/and_elim1.png' %}" alt="Conjunction Elimination 1" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/and_elim2.png' %}" alt="Conjunction Elimination 2" class="py-3 px-1">
+
+
+                <div id="item-name">Disjunction:</div>
+                <img src="{% static 'proofchecker/images/or_intro1.png' %}" alt="Disjunction Introduction 1" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/or_intro2.png' %}" alt="Disjunction Introduction 2" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/or_elim.png' %}" alt="Disjunction Elimination" class="py-3 px-1">
+
+                <div id="item-name">Negation:</div>
+                <img src="{% static 'proofchecker/images/not_intro.png' %}" alt="Negation Introduction" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/not_elim.png' %}" alt="Negation Elimination" class="py-3 px-1">
+
+                <div id="item-name">Implication:</div>
+                <img src="{% static 'proofchecker/images/implies_intro.png' %}" alt="Implication Introduction" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/implies_elim.png' %}" alt="Implication Elimination" class="py-3 px-1">
+
+                <div id="item-name">Biconditional:</div>
+                <img src="{% static 'proofchecker/images/iff_intro.png' %}" alt="Biconditional Introduction" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/iff_elim1.png' %}" alt="Biconditional Elimination 1" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/iff_elim2.png' %}" alt="Biconditional Elimination 2" class="py-3 px-1">
+
+                <div id="item-name">Indirect Proof:</div>
+                <img src="{% static 'proofchecker/images/indirect_proof.png' %}" alt="Indirect Proof" class="py-3 px-1">
+
+                <div id="item-name">Explosion:</div>
+                <img src="{% static 'proofchecker/images/explosion.png' %}" alt="Explosion" class="py-3 px-1">
+
+
+                <div id="main-header">Derived TFL Rules:</div>
+
+                <div id="item-name">Reiteration:</div>
+                <img src="{% static 'proofchecker/images/reiteration.png' %}" alt="Reiteration" class="py-3 px-1">
+
+                <div id="item-name">Double Negation Elimination:</div>
+                <img src="{% static 'proofchecker/images/dne.png' %}" alt="Double Negation Elimination" class="py-3 px-1">
+
+                <div id="item-name">Disjunctive Syllogism:</div>
+                <img src="{% static 'proofchecker/images/ds1.png' %}" alt="Disjunctive Syllogism 1" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/ds2.png' %}" alt="Disjunctive Syllogism 2" class="py-3 px-1">
+
+                <div id="item-name">Modus Tollens:</div>
+                <img src="{% static 'proofchecker/images/mt.png' %}" alt="Modus Tollens" class="py-3 px-1">
+
+                <div id="item-name">Law of Excluded Middle:</div>
+                <img src="{% static 'proofchecker/images/lem.png' %}" alt="Law of Excluded Middle" class="py-3 px-1">
+
+                <div id="item-name">De Morgan Rules:</div>
+                <img src="{% static 'proofchecker/images/dem1.png' %}" alt="De Morgan Rule 1" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/dem2.png' %}" alt="De Morgan Rule 2" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/dem3.png' %}" alt="De Morgan Rule 3" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/dem4.png' %}" alt="De Morgan Rule 4" class="py-3 px-1">
+            </div>
+
+            <div id="FOL-rules">
+                <div id="main-header">Basic FOL Rules:</div>
+
+                <div id="item-name">Existential:</div>
+                <img src="{% static 'proofchecker/images/existential_intro.png' %}" alt="Existential Introduction" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/existential_elim.png' %}" alt="Existential Elimination" class="py-3 px-1">
+                <div>
+                    <small>
+                        <b>Note:</b>
+                        <i>c</i> must not have appeared earlier in the proof</small>
+                </div>
+                <div>
+                    <small>
+                        <b>Note:</b> B must not contain
+                        <i>c</i>
+                    </small>
+                </div>
+                <br />
+
+                <div id="item-name">Universal:</div>
+                <img src="{% static 'proofchecker/images/universal_intro.png' %}" alt="Universal Introduction" class="py-3 px-1">
+                <div>
+                    <small>
+                        <b>Note:</b>
+                        <i>c</i> must be a generic free variable</small>
+                </div>
+                <br />
+                <img src="{% static 'proofchecker/images/universal_elim.png' %}" alt="Universal Elimination" class="py-3 px-1">
+
+                <div id="item-name">Equality:</div>
+                <img src="{% static 'proofchecker/images/equality_intro.png' %}" alt="Equality Introduction" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/equality_elim1.png' %}" alt="Equality Elimination 1" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/equality_elim2.png' %}" alt="Equality Elimination 2" class="py-3 px-1">
+
+
+                <div id="main-header">Derived FOL Rules:</div>
+
+                <div id="item-name">Conversion of Quantifiers:</div>
+                <img src="{% static 'proofchecker/images/cq1.png' %}" alt="Conversion of Quantifiers 1" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/cq2.png' %}" alt="Conversion of Quantifiers 2" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/cq3.png' %}" alt="Conversion of Quantifiers 3" class="py-3 px-1">
+                <img src="{% static 'proofchecker/images/cq4.png' %}" alt="Conversion of Quantifiers 4" class="py-3 px-1">
+
+            </div>
+        </div>
+
+
+        <div id="help-information">
+            <div id="main-header">How to use:</div>
+
+            <div id="sub-header">TFL Syntax Rules:</div>
+            <div id="instruction"> Atomic sentences can be represented with uppercase letters A-Z</div>
+
+            <div id="sub-header">FOL Syntax Rules:</div>
+            <div id="instruction">
+                <p>The following rules explain how to represent an FOL expression:</p>
+                <p>
+                    <b>Names (Objects):</b> a-r (lowercase)
+                    <p>
+                        <b>Variables:</b> s-z (lowercase)</p>
+                    <p>
+                        <b>Predicates:</b> A-R (uppercase)</p>
+                    <p>
+                        <b>Domains (Sets):</b> S-Z (uppercase)</p>
+            </div>
+
+            <div id="sub-header">Premises:</div>
+
+            <div id="instruction"> Separate premises using semicolons (e.g. "A; B").</div>
+
+            <div id="sub-header">Entering symbols:</div>
+
+            <div id="instruction"> To enter math symbols, use the bold escape commands below while typing.</div>
+            <table id="help-table">
+                <tbody>
+                    <tr>
+                        <td id="left">Conjunction</td>
+                        <td id="center">\and</td>
+                        <td id="right">∧</td>
+                    </tr>
+                    <tr>
+                        <td id="left">Disjunction</td>
+                        <td id="center">\or</td>
+                        <td id="right">∨</td>
+                    </tr>
+                    <tr>
+                        <td id="left">Negation</td>
+                        <td id="center">\not</td>
+                        <td id="right">¬</td>
+                    </tr>
+                    <tr>
+                        <td id="left">Implication</td>
+                        <td id="center">\imp</td>
+                        <td id="right">→</td>
+                    </tr>
+                    <tr>
+                        <td id="left">Biconditional</td>
+                        <td id="center">\iff</td>
+                        <td id="right">↔</td>
+                    </tr>
+                    <tr>
+                        <td id="left">Contradiction</td>
+                        <td id="center">\con</td>
+                        <td id="right">⊥</td>
+                    </tr>
+                    <tr>
+                        <td id="left">Universal Quantifier</td>
+                        <td id="center">\all</td>
+                        <td id="right">∀</td>
+                    </tr>
+                    <tr>
+                        <td id="left">Existential Quantifier</td>
+                        <td id="center">\exi</td>
+                        <td id="right">∃</td>
+                    </tr>
+                    <tr>
+                        <td id="left">Domain (Set) Membership</td>
+                        <td id="center">\in</td>
+                        <td id="right">∈</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="sub-header">Row numbering:</div>
+
+            <div id="instruction"> Row numbers are represented as a combination of numbers and decimal points.</div>
+            <table id="help-table">
+                <tbody>
+                    <tr>
+                        <td id="left-proof">1</td>
+                        <td id="left">Not a subproof</td>
+                    </tr>
+                    <tr>
+                        <td id="left-proof">2.1</td>
+                        <td id="left">subproof of 2</td>
+                    </tr>
+                    <tr>
+                        <td id="left-proof">2.2.1</td>
+                        <td id="left">subproof of 2.2 </td>
+                    </tr>
+                    <tr>
+                        <td id="left-proof">2.2.2</td>
+                        <td id="left">subproof of 2.2</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>

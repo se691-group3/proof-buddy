@@ -1,0 +1,51 @@
+{% extends 'proofchecker/base.html' %} {% load static %} {% block content %}
+
+<div class="container">
+  <h3>Courses</h3>
+  {{courses}}
+</div>
+
+{% if course_id %}
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Student</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    {% for student in students %}
+    <tr>
+      <td>
+        <a href="{% url 'student_grades' course.id %}">{{student}}  </a>
+      </td>
+   
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{{students}}
+
+{% else %}
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Course Name</th>
+  
+    </tr>
+  </thead>
+  <tbody>
+    {% for course in courses %}
+    <tr>
+      <td>
+        <a href="{% url 'student_grades' course.id %}"> {{course.title}} </a>
+      </td>
+  
+     
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endif %} {% endblock %}

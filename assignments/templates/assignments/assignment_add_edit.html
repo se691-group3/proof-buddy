@@ -1,0 +1,92 @@
+{% extends 'proofchecker/base.html' %}{% load static %}
+{% load crispy_forms_filters %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="row">
+        <div>
+            {% if assignment.id %}
+                <h2>Edit Assignment</h2>
+            {% else %}
+                <h2>Create An Assignment</h2>
+            {% endif %}
+            <hr>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label for="id_title" class="col-md-4">{{ form.title.label }}</label>
+                    <div class="col-md-4">
+                        {{ form.title }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="id_course" class="col-md-4">{{ form.course.label }}</label>
+                    <div class="col-md-4">
+                        {{ form.course }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="id_due_by" class="col-md-4">{{ form.due_by.label }}</label>
+                    <div class="col-md-4">
+                        {{ form.due_by }}
+                    </div>
+                </div>
+                <div class="form-group row"></div>
+                <div class="form-group row">
+                    <label for="id_due_by" class="col-md-4">Problems</label>
+                    <div class="col-md-8">
+                        <button type="button" class="btn btn-success" onclick="add_problem(this)" title="Add Problem">
+                            Add
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <ol>
+                        {% for problem in problems %}
+                            <li>
+                                <a href="{% url 'edit_problem' problem.id %}?assignment={{ assignment.id }}">{{ problem.question }}</a>
+                                <a class='btn-danger' href="{% url 'delete_problem' problem.id %}">Delete</a>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+
+                <div id="id_errorResponseMain" class="hidden">
+                    <hr>
+                    <div style="color:red" id="id_errorResponse">
+                    </div>
+                    <hr>
+                </div>
+
+                <button type="submit" class="btn btn-success">Save</button>
+                {% if form.instance.id %}
+                    <a href="{% url 'delete_assignment' form.instance.id %}"
+                       class="card-link btn btn-secondary">Delete</a>
+                {% endif %}
+
+                <div id="htmx" hidden>
+                    <div id="returnValue"></div>
+                    {% if form.instance.id %}
+                        <button id="hx-btn" hx-post="/assignment/{{ form.instance.id }}/update"
+                                hx-trigger="click"
+                                hx-target="#returnValue"
+                                hx-swap="innerText">
+                            HX BTN EDIT
+                        </button>
+                    {% else %}
+                        <button id="hx-btn" hx-post="/assignments/add"
+                                hx-trigger="click"
+                                hx-target="#returnValue"
+                                hx-swap="innerText">
+                            HX BTN ADD
+                        </button>
+                    {% endif %}
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script src="{% static 'js/assignments.js' %}"></script>
+{% endblock %}

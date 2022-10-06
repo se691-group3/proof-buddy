@@ -1,0 +1,44 @@
+{% extends "proofchecker/base.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle" src="{{ user.student.image.url }}">
+        </div>
+        <div class="media-body text-center">
+
+        <h3>- My Profile -</h3>
+        <br>
+        <p><span style="font-weight: bold;">Username -</span> {{user.username}}</p>
+        <br>
+        <p><span style="font-weight: bold;">Name -</span> {{user.first_name}} {{user.last_name}}</p>
+        <br>
+        <p><span style="font-weight: bold;">Email -</span> {{user.email}}</p>
+        <br>
+        <p><span style="font-weight: bold;">Role -</span> Student</p>
+        <br>
+        <p><span style="font-weight: bold;">Mobile -</span> {{user.student.mobile}}</p>
+        <br>
+        <p><span style="font-weight: bold;">DOB -</span> {{user.student.dob}}</p>
+        <br>
+        <p><span style="font-weight: bold;">Bio -</span> {{user.student.bio}}</p>
+        <br>
+        <a href="{% url 'student_profile_update' %}" class="btn btn-primary btn-lg" role="button">Update Profile</a>
+
+        </div>
+
+
+        <!-- <form id="updateProfileForm" action="" method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+            {{ form|crispy }}
+            </fieldset>
+        </form> -->
+        
+
+    </div>
+
+{% endblock %}

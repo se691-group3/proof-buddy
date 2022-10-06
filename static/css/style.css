@@ -1,0 +1,17 @@
+.lost__points {
+  margin-bottom: 0;
+  align-self: center;
+}
+
+.proof__submit-btn {
+  display: flex;
+}
+.proof__submit-btn label {
+  margin-bottom: 0;
+  align-self: center;
+}
+
+/* .proof__submit-btn input[name="lost_points"] {
+  width: 4.5rem;
+  margin-right: 1rem;
+} */

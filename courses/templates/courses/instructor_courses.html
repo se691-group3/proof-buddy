@@ -1,0 +1,35 @@
+{% extends 'proofchecker/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <br>
+        <h5><b>Courses</b></h5>
+        <hr>
+        <a href="{% url 'add_course' %}" class="btn btn-primary btn-sm"> Add a new course </a>
+        <hr>
+        <div class="row mt-3">
+            {% for object in object_list %}
+                <div class="card mx-2 mb-3" style="max-width: 20rem;">
+                    <div class="card-header">
+                        <h5 style="text-align: center"><b>{{ object.title }}</b></h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Term:</b> {{ object.term }}</li>
+                        <li class="list-group-item"><b>Section:</b> {{ object.section }}</li>
+                        <li class="list-group-item"><b>Total Students:</b> {{ object.students.count }}</li>
+                    </ul>
+                    <div class="card-body">
+                        <a href="{% url 'course_details' object.id %}" class="card-link btn btn-primary btn-sm">View /
+                            Edit</a>
+                        <a href="{% url 'delete_course' object.id %}"
+                           class="card-link btn btn-secondary btn-sm">Delete</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block additionalFiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+{% endblock %}

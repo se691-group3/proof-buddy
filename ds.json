@@ -1,0 +1,67 @@
+{
+  "Proofs": [
+    {
+      "name": "ds",
+      "created_by": "",
+      "complete": true,
+      "rules": "tfl_basic",
+      "ruleList": [
+        "ds"
+      ],
+      "premises": [
+        {
+          "lineNum": 1,
+          "expr": "A\u2228B",
+          "rule": "Premise"
+        },
+        {
+          "lineNum": 2,
+          "expr": "\u00acA",
+          "rule": "Premise"
+        }
+      ],
+      "conclusion": {
+        "lineNum": "5",
+        "expr": "B",
+        "rule": "\u2228E 1,3,4"
+      },
+      "lines": [
+        {
+          "lineNum": "1",
+          "expr": "A\u2228B",
+          "rule": "Premise"
+        },
+        {
+          "lineNum": "2",
+          "expr": "\u00acA",
+          "rule": "Premise"
+        },
+        {
+          "lineNum": "3.1",
+          "expr": "A",
+          "rule": "Assumption"
+        },
+        {
+          "lineNum": "3.2",
+          "expr": "\u22a5",
+          "rule": "\u00acE 2, 3.1"
+        },
+        {
+          "lineNum": "3.3",
+          "expr": "B",
+          "rule": "X 3.2"
+        },
+        {
+          "lineNum": "4.1",
+          "expr": "B",
+          "rule": "Assumption"
+        },
+        {
+          "lineNum": "5",
+          "expr": "B",
+          "rule": "\u2228E 1,3,4"
+        }
+      ]
+    }
+  ]
+}

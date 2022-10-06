@@ -1,0 +1,54 @@
+{% extends 'proofchecker/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <br>
+        <h5><b>Courses</b></h5>
+        <hr>
+        {% if courses_to_enroll %}
+            <form class="form-inline" action="">
+                {% csrf_token %}
+                <p>Please join a Course!</p>
+                <div class="form-group mx-2">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Select A Course
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {% for course in courses_to_enroll %}
+                                <a class="dropdown-item"
+                                   href="{% url 'enroll_course' course.id %}">{{ course.title }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <hr>
+        {% else %}
+            <p style="color:#0056b3;">No courses are available to be enrolled in currently.</p>
+        {% endif %}
+        <p>Enrolled Courses:</p>
+        <div class="row mt-3">
+            {% for object in object_list %}
+                <div class="card mx-2 mb-3" style="max-width: 20rem;">
+                    <div class="card-header">
+                        <h5 style="text-align: center"><b>{{ object.title }}</b></h5>
+                        <p><b>Instructor:</b> {{ object.instructor.user.username }}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Term:</b> {{ object.term }}</li>
+                        <li class="list-group-item"><b>Section:</b> {{ object.section }}</li>
+                        <li class="list-group-item"><b>Total Students:</b> {{ object.students.count }}</li>
+                    </ul>
+                    <div class="card-body">
+                        <a href="{% url 'course_details' object.id %}" class="card-link btn btn-primary btn-sm">View</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+{% block additionalFiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+{% endblock %}

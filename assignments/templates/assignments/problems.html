@@ -1,0 +1,33 @@
+{% extends 'proofchecker/base.html' %}
+{% load static %}
+{% block content %}
+
+
+    <a href="{% url 'add_problem' %}" class="btn btn-primary">Add problem</a>
+
+    <hr>
+
+    <div class="d-flex flex-row justify-content-start">
+        <div class="row">
+            {% for object in object_list %}
+                <div class="col">
+                    <div class="card bg-light mb-3" style="width: 20rem;">
+                        <div class="card-header">
+                            <h5 style="text-align: center"><b> {{ object.question }}</b></h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><b>Premise(s):</b> {{ object.proof.premises }}</li>
+                            <li class="list-group-item"><b>Conclusion:</b> {{ object.proof.conclusion }}</li>
+                            <li class="list-group-item"><b>Point</b> {{ object.point }}</li>
+                        </ul>
+                        <div class="card-body">
+                            <a href="{% url 'problem_details' object.id %}" class="card-link btn btn-primary">Edit</a>
+                            <a href="{% url 'delete_problem' object.id %}"
+                               class="card-link btn btn-secondary">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

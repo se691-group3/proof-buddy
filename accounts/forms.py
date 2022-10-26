@@ -14,9 +14,9 @@ class StudentSignUpForm(UserCreationForm):
     email = forms.EmailField()
 
     def clean_email(self):
-        if User.objects.filter(email=self.cleaned_data['email']).exists():
-            raise forms.ValidationError(
-                "The given e-mail address is already registered")
+        # if User.objects.filter(email=self.cleaned_data['email']).exists():
+        #     raise forms.ValidationError(
+        #         "The given e-mail address is already registered")
         return self.cleaned_data['email']
 
     class Meta:
@@ -27,7 +27,7 @@ class StudentSignUpForm(UserCreationForm):
     def save(self):
         user = super().save(commit=False)
         user.is_student = True
-        user.is_active = False
+        user.is_active = True
         user.save()
 
         student = Student.objects.create(user=user)
@@ -39,9 +39,9 @@ class InstructorSignUpForm(UserCreationForm):
     email = forms.EmailField()
 
     def clean_email(self):
-        if User.objects.filter(email=self.cleaned_data['email']).exists():
-            raise forms.ValidationError(
-                "The given e-mail address is already registered")
+        # if User.objects.filter(email=self.cleaned_data['email']).exists():
+        #     raise forms.ValidationError(
+        #         "The given e-mail address is already registered")
         return self.cleaned_data['email']
 
     class Meta:
@@ -51,7 +51,7 @@ class InstructorSignUpForm(UserCreationForm):
     def save(self):
         user = super().save(commit=False)
         user.is_instructor = True
-        user.is_active = False
+        user.is_active = True
         user.save()
 
         instructor = Instructor.objects.create(user=user)

@@ -8,19 +8,19 @@
         <h1 class="display-4 fw-bold pb-3 font-weight-bold">Proof Buddy</h1>
 
         {% if user.is_authenticated %} {% if user.is_student %} {% if user.first_name %}
-            <h3>Welcome, {{ user.first_name }} {{ user.last_name }}!</h3>
+            <h3>Welcome, {{ user.first_name }} {{ user.last_name }}</h3>
         {% else %}
             <h3>Welcome, {{ user.username }} to your Student Account!</h3>
         {% endif %}
         {% elif user.is_instructor %} {% if user.first_name %}
-                <h3>Welcome, {{ user.first_name }} {{ user.last_name }}!</h3>
+                <h3>Welcome, {{ user.first_name }} {{ user.last_name }}</h3>
             {% else %}
-                <h3>Welcome, {{ user.username }} !</h3>
+                <h3>Welcome, {{ user.username }} </h3>
             {% endif %}
 
 
         {% endif %} {% else %}
-            <h3>Welcome!</h3>
+            <h3>Welcome</h3>
         {% endif %}
 
 

@@ -3,9 +3,9 @@
 
 {% block content %}
 <div class="px-4 pt-5 my-5 text-center">
-    <h1 class="display-4 fw-bold"> Join Today! </h2>
-    <p class="lead">Select below the type of account you want to create</p>
-    <a href="{% url 'student_signup' %}" class="btn btn-primary btn-lg" role="button">I'm a Student</a>
-    <a href="{% url 'instructor_signup' %}" class="btn btn-secondary btn-lg" role="button">I'm an Instructor</a>
+    <h3 class="display-4 pb-3 ">Join Today!</h3>
+    <p class="lead my-4">Select the type of account to create</p>
+    <a href="{% url 'student_signup' %}" class="btn btn-primary btn-lg mx-3" role="button">Student</a>
+    <a href="{% url 'instructor_signup' %}" class="btn btn-warning btn-lg mx-3" role="button">Instructor</a>
 </div>
 {% endblock %}

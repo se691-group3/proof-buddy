@@ -1,14 +1,14 @@
 {% extends 'proofchecker/base.html' %}
 {% load static %}
 {% block content %}
-
-    <a href="{% url 'all_proofs' %}" class="btn btn-primary mt-3"> Back to all proofs </a>
+<div class="py-5 my-5 px-5 mx-5">
+    <a href="{% url 'all_proofs' %}" class="btn btn-primary "> Back to all proofs </a>
 
     <hr>
 
 
 
-    <h2 class="display-4"><b>{{ object.name }}</b></h5>
+    <h2 class="display-4"><b>{{ object.name }}</b></h2>
 
     <ul class="list-group list-group-flush">
         <li class="list-group-item"><b>Premise(s):</b> {{ object.premises }}</li>
@@ -50,7 +50,7 @@
     {% endif %}
     <a href="{% url 'update_proof' object.id %}" class="card-link btn btn-primary"> Edit </a>
     {#<a href="{% url 'delete_proof' object.id %}" class="card-link btn btn-secondary"> Delete </a>#}
-
+</div>
 {% endblock %}
 
 {% block js_block %}

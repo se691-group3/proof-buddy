@@ -1,11 +1,12 @@
 {% extends "proofchecker/base.html" %}
 {% block content %}
-    <div class="container">
-        <a href="{% url 'add_proof' %}" class="btn btn-primary mt-3 btn-sm"> Add a new Proof </a>
-        <hr>
-        <h4>Saved Proofs</h4>
-        <div class="row mt-3">
-            {% for object in object_list %}
+    <div class="py-5 my-5 px-5 mx-5">
+        <div class="container">
+            <a href="{% url 'add_proof' %}" class="btn btn-primary btn-sm"> Add a new Proof </a>
+            <hr>
+            <h4>Saved Proofs</h4>
+            <div class="row mt-3">
+                {% for object in object_list %}
                     <div class="card mx-2 mb-3" style="max-width: 20rem;">
                         <div class="card-header">
                             <h5 style="text-align: center"><b> {{ object.name }}</b></h5>
@@ -23,26 +24,26 @@
                                 Delete </a>
                         </div>
                     </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-
-            {% if is_paginated %}
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}  </a></li>
-
-                    {% endif %}
                 {% endfor %}
+            </div>
+        </div>
 
-            {% endif %}
-        </ul>
-    </nav>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
 
+                {% if is_paginated %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}  </a></li>
+
+                        {% endif %}
+                    {% endfor %}
+
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 
 {% endblock %}

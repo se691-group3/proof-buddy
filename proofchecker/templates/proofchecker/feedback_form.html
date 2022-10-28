@@ -2,13 +2,13 @@
 {% load static %}
 {% block content %}
 
-<div class="py-5 my-5">
+<div class="py-5 my-5 px-5 mx-5">
 
 <h3>Report Bug / Feedback</h3>
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
+   {{ form.as_p }}
     <input type="submit" />
 </form>
 

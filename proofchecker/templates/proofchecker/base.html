@@ -9,9 +9,12 @@
 
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.6.0"></script>
-
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"> -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
 
     <!-- FontAwesome -->
     <link rel="stylesheet" href="{% static 'fa/css/all.min.css' %}">
@@ -37,294 +40,183 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.3/js/bootstrap-select.min.js"></script> {% endcomment %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 
-    <title> {% block title %}Proof Checker{% endblock %} </title>
+    <title> {% block title %}Proof Buddy{% endblock %} </title>
     {% block head %}{% endblock %} {% block additionalFiles %}{% endblock %}
 </head>
 
 <body>
 
-    <div class="page-container">
-        <nav class="nav-left">
+<div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
 
-            <div class="nav-left__border">
-                <svg id="left-nav-close-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="32" fill="currentColor" class="bi bi-chevron-double-right"
-                    viewBox="0 0 16 16" preserveAspectRatio="none">
-                    <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
-                    />
-                    <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
-                    />
-                </svg>
-                <svg id="left-nav-open-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="32" fill="currentColor" class="bi bi-chevron-double-right"
-                    viewBox="0 0 16 16" preserveAspectRatio="none">
-                    <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
-                    />
-                    <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
-                    />
-                </svg>
+    {% include 'proofchecker/right_navigation_menu.html' %}
+</div>
+<div id="main">
+
+
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top bg-light">
+        <a class="navbar-brand font-weight-bold btn btn-light mx-0 " href="{% url 'home' %}">
+            <img src="../../../media/logos/logo.png" width="35" height="auto"
+                 class="d-inline-block align-top"
+                 alt="">
+            Proof Buddy</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                {% if  user.is_authenticated %}
+
+                    {% if  user.is_student %}
+
+                        <li class="nav-item">
+                            <a href="{% url 'student_courses' %}" class=" btn btn-light">Courses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'all_assignments' %}" class="btn btn-light">Assignments</a>
+                        </li>
+                    {% elif  user.is_instructor %}
+                        <li class="nav-item">
+                            <a href="{% url 'student_courses' %}" class=" btn btn-light">Courses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'all_assignments' %}" class=" btn btn-light">Assignments</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a href="{% url 'all_proofs' %}" class="btn btn-light">All Proofs</a>
+                    </li>
+                    {% if  user.is_instructor %}
+                        <li class="nav-item">
+                            <a href="{% url 'student_proofs' %}" class="btn btn-light">Student Proofs</a>
+                        </li>
+                    {% endif %}
+
+                {% endif %}
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle btn btn-light" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        Help
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'version_log' %}">Version Log</a>
+                        <a class="dropdown-item" href="{% url 'feedback' %}">Report Bug / Feedback</a>
+                        <div class="dropdown-divider"></div>
+
+                        <a class="dropdown-item" href="{% url 'devs' %}">About</a>
+                    </div>
+                </li>
+
+            </ul>
+
+            <ul class="navbar-nav">
+                {% if  user.is_authenticated %}
+
+                    {% if  user.is_student %}
+
+                        <li class="nav-item pr-4">
+                            <a href="{% url 'student_profile' %}" class="nav-link">
+                                <i class="material-icons"
+                                   style=" font-size:35px;vertical-align: middle; line-height: 0;"> account_box</i>
+                            </a>
+
+                        </li>
+                    {% elif  user.is_instructor %}
+                        <li class="nav-item pr-4">
+                            <a href="{% url 'instructor_profile' %}" class="nav-link">
+                                <i class="material-icons"
+                                   style=" font-size:35px;vertical-align: middle; line-height: 0;"> account_box</i>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                    <li class="nav-item pr-5">
+                        <a class="btn btn-primary my-2 my-sm-0 btn-danger" type="submit"
+                           href="{% url 'logout' %}">Logout</a>
+                    </li>
+
+                    </ul>
+
+                {% else %}
+                    <ul class="navbar-nav ">
+                        <li class="nav-item pr-3">
+                            <span id="proof-badge-warning" class="badge badge-warning align-bottom font-weight-bold">Proofs can't be saved without signing in</span>
+                        </li>
+
+                        <li class="nav-item pr-4" style="color: black">
+                            <a class="btn btn-light" href="{% url 'login' %}">Log in</a>
+                        </li>
+                        <li class="nav-item pr-5">
+                            <a class="btn btn-primary my-2 my-sm-0" type="submit"
+                               href="{% url 'signup' %}">Sign Up
+                            </a>
+                        </li>
+
+                    </ul>
+                {% endif %}
+        </div>
+    </nav>
+
+
+    <div class="container">
+        {% if messages %} {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
             </div>
-
-            {% if user.is_authenticated %}
-
-            <a href="{% url 'home' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Home">
-                    <i class="material-icons"> home</i>
-                </div>
-                <span class="nav-left__label">Home</span>
-            </a>
-
-            {% if user.is_student %}
-
-            <a href="{% url 'student_profile' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Profile">
-                    <i class="material-icons"> person</i>
-                </div>
-                <span class="nav-left__label">Profile</span>
-            </a>
-
-            <a href="{% url 'student_courses' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Courses">
-                    <i class="material-icons">assignment</i>
-                </div>
-                <span class="nav-left__label">Courses</span>
-            </a>
-
-            <a href="{% url 'all_assignments' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Assignments">
-                    <i class="material-icons">assignment</i>
-                </div>
-                <span class="nav-left__label">Assignments</span>
-            </a>
-            {% elif user.is_instructor %}
-
-            <a href="{% url 'instructor_profile' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Profile">
-                    <i class="material-icons"> person</i>
-                </div>
-                <span class="nav-left__label">Profile</span>
-            </a>
-
-            <a href="{% url 'instructor_courses' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Courses">
-                    <i class="material-icons">assignment</i>
-                </div>
-                <span class="nav-left__label">Courses</span>
-            </a>
-
-            <a href="{% url 'all_assignments' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Assignments">
-                    <i class="material-icons">assignment</i>
-                </div>
-                <span class="nav-left__label">Assignments</span>
-            </a>
-
-            <!-- {#
-            <a href="{% url 'all_problems' %}" class="nav__link">#} {#
-                <div class="nav__icon-container">#} {#
-                    <i class="material-icons"> assignment</i>#} {# </div>#} {#
-                <span class="nav-left__label">Problems</span>#} {# </a>#}  -->
-
-            {% endif %}
-
-            <a href="{% url 'all_proofs' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Proofs">
-                    <i class="material-icons"> assignment</i>
-                </div>
-                <span class="nav-left__label">Proofs</span>
-            </a>
-
-            {% if user.is_instructor %}
-            <a href="{% url 'student_proofs' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Student Proofs">
-                    <i class="material-icons">assignment</i>
-                </div>
-                <span class="nav-left__label">Student Proofs</span>
-            </a>
-            {% endif %}
-
-            {% comment %} {% if user.is_instructor %}
-            <a href="{% url 'student_grades' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Student Grades">
-                    <i class="material-icons">grading</i>
-                </div>
-                <span class="nav-left__label">Student Grades</span>
-            </a>
-            {% endif %} {% endcomment %}
-
-            <a href="{% url 'logout' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Logout">
-                    <i class="material-icons"> logout</i>
-                </div>
-                <span class="nav-left__label">Logout</span>
-            </a>
-
-            {% else %}
-
-            <a href="{% url 'home' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Home">
-                    <i class="material-icons"> home</i>
-                </div>
-                <span class="nav-left__label">Home</span>
-            </a>
-            <a href="{% url 'login' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Login">
-                    <i class="material-icons"> login</i>
-                </div>
-                <span class="nav-left__label">Login</span>
-            </a>
-            <a href="{% url 'signup' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Sign Up">
-                    <i class="material-icons"> create</i>
-                </div>
-                <span class="nav-left__label">Sign Up</span>
-            </a>
+        {% endfor %} {% endif %}
+    </div>
+    {% block content %}{% endblock %}
 
 
-            {% endif %}
+    <div class="buttons openbtn" onclick="openNav()">
+        <button class="btn btn-primary rounded-pill " id="sidebarCollapse">
+            Proof Rules
+        </button>
 
-            <a href="{% url 'version_log' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Version Log">
-                    <i class="material-icons"> assignment</i>
-                </div>
-                <span class="nav-left__label">Version Log</span>
-            </a>
-
-            <a href="{% url 'devs' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Our Team">
-                    <i class="material-icons"> person</i>
-                </div>
-                <span class="nav-left__label">Our Team</span>
-            </a>
-
-            <a href="{% url 'feedback' %}" class="nav__link">
-                <div class="nav__icon-container" data-toggle="tooltip" data-placement="right" title="Report Bug or Feedback">
-                    <i class="material-icons"> info</i>
-                </div>
-                <span class="nav-left__label">Report Bug / Feedback </span>
-            </a>
-            
-
-
-        </nav>
-        <main class="main">
-            <div class="container">
-                {% if messages %} {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endfor %} {% endif %}
-            </div>
-            {% block content %}{% endblock %}
-        </main>
-        <nav class="nav-right">
-            <div class="nav-right__border">
-                <svg id="right-nav-close-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="32" fill="currentColor" class="bi bi-chevron-double-right"
-                    viewBox="0 0 16 16" preserveAspectRatio="none">
-                    <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
-                    />
-                    <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
-                    />
-                </svg>
-                <svg id="right-nav-open-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="32" fill="currentColor" class="bi bi-chevron-double-right"
-                    viewBox="0 0 16 16" preserveAspectRatio="none">
-                    <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
-                    />
-                    <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
-                    />
-                </svg>
-            </div>
-            <span class="nav-right__label">
-                {% include 'proofchecker/right_navigation_menu.html' %}
-            </span>
-        </nav>
     </div>
 
-    <!-- jquery to add hover text on icons -->
-    <script>
-        $(document).ready(function () {
-            $('[data-toggle="tooltip"]').tooltip();
-        });
-    </script>
+</div>
+<footer>DEVELOPED BY DREXEL UNIVERSITY</footer>
+<script>
+    function openNav() {
+        document.getElementById("mySidebar").style.width = "250px";
+        document.getElementById("main").style.marginRight = "250px";
+    }
 
-    <script>
-        // Navigation for left
-        {
-            const leftCollapsedClass = "nav-left--collapsed";
-            const lsKeyLeft = "navLeftCollapsed";
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+        document.getElementById("main").style.marginRight = "0";
+    }
+</script>
+<script>
+    setTimeout(() => {
+        const box = document.getElementById('proof-badge-warning');
+        box.style.display = 'none';
+    }, 5000);
+</script>
 
-            const navLeft = document.querySelector(".nav-left");
-            const navLeftBorder = navLeft.querySelector(".nav-left__border");
-
-            if (localStorage.getItem(lsKeyLeft) === "true") {
-                navLeft.classList.add(leftCollapsedClass);
-            }
-
-            navLeftBorder.addEventListener("click", () => {
-                navLeft.classList.toggle(leftCollapsedClass);
-                localStorage.setItem(lsKeyLeft, navLeft.classList.contains(leftCollapsedClass));
-                console.log(navLeft.classList);
-                if (navLeft.classList[1] == "nav-left--collapsed") {
-                    console.log("collapsed");
-
-                    var navLeftOpenArrow = document.getElementById("left-nav-open-arrow");
-                    var navLeftCloseArrow = document.getElementById("left-nav-close-arrow");
-                    navLeftCloseArrow.style.display = "none";
-                    navLeftOpenArrow.style.display = "block";
-
-                } else {
-                    var navLeftOpenArrow = document.getElementById("left-nav-open-arrow");
-                    var navLeftCloseArrow = document.getElementById("left-nav-close-arrow");
-                    navLeftCloseArrow.style.display = "block";
-                    navLeftOpenArrow.style.display = "none";
-                }
-            })
-
-        }
-    </script>
-    <script>
-        // Navigation for Right
-        {
-            const rightCollapsedClass = "nav-right--collapsed";
-            const lsKeyRight = "navRightCollapsed";
-
-            const navRight = document.querySelector(".nav-right");
-            const navRightBorder = navRight.querySelector(".nav-right__border");
-
-            if (localStorage.getItem(lsKeyRight) === "true") {
-                navRight.classList.add(rightCollapsedClass);
-            }
-
-            navRightBorder.addEventListener("click", () => {
-                navRight.classList.toggle(rightCollapsedClass);
-                localStorage.setItem(lsKeyRight, navRight.classList.contains(rightCollapsedClass));
-
-                if (navRight.classList[1] == "nav-right--collapsed") {
-                    console.log("collapsed");
-
-                    var navRightOpenArrow = document.getElementById("right-nav-open-arrow");
-                    var navRightCloseArrow = document.getElementById("right-nav-close-arrow");
-                    navRightCloseArrow.style.display = "none";
-                    navRightOpenArrow.style.display = "block";
-
-                } else {
-                    var navRightOpenArrow = document.getElementById("right-nav-open-arrow");
-                    var navRightCloseArrow = document.getElementById("right-nav-close-arrow");
-                    navRightCloseArrow.style.display = "block";
-                    navRightOpenArrow.style.display = "none";
-                }
-            });
-
-        }
-    </script>
-
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
         crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
 </body>
 
 </html>

@@ -1,41 +1,9 @@
 
 .full-menu{
   height:100%;
-  margin-left: 25px;
+  margin-left: 15px;
   overflow: hidden;
   overflow-y : scroll;
-}
-
-#menu-option-buttons{
-  padding-top: 10px;
-  text-align: center;
-}
-
-#rules{
-  width:135px;
-}
-
-#help{
-  width:135px;
-}
-
-.rules-buttons{
-  text-align: center;
-  padding-bottom: 5px;
-}
-
-#TFL{
-  width:135px;
-}
-#FOL{
-  width:135px;
-}
-
-.right-nav-divider {
-  border: none;
-  height: 1px;
-  background-color: grey; 
-  margin-right:10px;
 }
 
 
@@ -47,7 +15,7 @@
 
 #main-header{
   font-weight:bold;
-  font-size: 25px;
+  font-size: 22px;
   text-decoration: underline;
 }
 
@@ -64,7 +32,7 @@
   font-size: 16px;
   padding-top:6px;
   padding-left:2px;
-  padding-bottom: 0px;
+  padding-bottom: 0;
 }
 
 #instruction{
@@ -84,7 +52,7 @@ table{
 
 #rules-information {
   text-align:left;
-  display:visible;
+
 }
 
 #help-information {
@@ -119,7 +87,5 @@ table{
 #help-table{
   width:90%;
 }
-
-
 
 

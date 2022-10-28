@@ -9,7 +9,8 @@
         <ol class="list-group">
             <li class="list-group-item list-group-item-primary"> Student : {{ student.user.username }}</li>
             {% for proof in proofs %}
-                <li class="list-group-item"><a href="{% url 'update_proof' proof.id %}" target="_blank">{{ proof.name }} : {{ proof.premises }} ∴ {{ proof.conclusion }}</a></li>
+                <li class="list-group-item"><a href="{% url 'update_proof' proof.id %}" target="_blank">{{ proof.name }}
+                    : {{ proof.premises }} ∴ {{ proof.conclusion }}</a></li>
             {% endfor %}
         </ol>
     {% else %}

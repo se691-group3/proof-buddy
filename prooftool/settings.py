@@ -168,8 +168,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'proofchecker.pwreset@gmail.com'
-EMAIL_HOST_PASSWORD = 'drexelproofs'
+EMAIL_HOST_USER = 'proofbuddy.drexel@gmail.com'
+# Email password is 'drexelproofs'
+EMAIL_HOST_PASSWORD = 'mlozjsxhmhfekned' #This is an app specific password. Cannot use email password due to Google security policy
 
 #Colton said to add the parts below
 # Heroku: Update database configuration from $DATABASE_URL.

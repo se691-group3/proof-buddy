@@ -27,7 +27,7 @@ class StudentSignUpForm(UserCreationForm):
     def save(self):
         user = super().save(commit=False)
         user.is_student = True
-        user.is_active = True
+        user.is_active = False
         user.save()
 
         student = Student.objects.create(user=user)
@@ -51,7 +51,7 @@ class InstructorSignUpForm(UserCreationForm):
     def save(self):
         user = super().save(commit=False)
         user.is_instructor = True
-        user.is_active = True
+        user.is_active = False
         user.save()
 
         instructor = Instructor.objects.create(user=user)

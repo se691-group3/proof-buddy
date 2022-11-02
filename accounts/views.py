@@ -34,23 +34,23 @@ class StudentSignUpView(CreateView):
         user = form.save()
 
         # Email Activation Setup
-        # domain = get_current_site(self.request).domain
-        # mail_subject = 'Activate Your Account'
-        # uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-        # link = reverse('activate', kwargs={
-        #     'uidb64': uidb64, 'token': account_activation_token.make_token(user)
-        # })
-        # activate_url = "http://" + domain + link
-        # email_body = "Hi " + user.username + \
-        #              ", Please click on the link to confirm your registration.\n" + activate_url
-        # to_email = form.cleaned_data.get('email')
-        # email = EmailMessage(
-        #     mail_subject, email_body, to=[to_email])
-        # email.send()
+        domain = get_current_site(self.request).domain
+        mail_subject = 'Activate Your Account'
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        link = reverse('activate', kwargs={
+            'uidb64': uidb64, 'token': account_activation_token.make_token(user)
+        })
+        activate_url = "http://" + domain + link
+        email_body = "Hi " + user.username + \
+                     ", Please click on the link to confirm your registration.\n" + activate_url
+        to_email = form.cleaned_data.get('email')
+        email = EmailMessage(
+            mail_subject, email_body, to=[to_email])
+        email.send()
 
-        # username = form.cleaned_data.get('username')
-        # messages.success(
-        #     self.request, f'Account created for {user.username}. Check Mail to activate the account.')
+        username = form.cleaned_data.get('username')
+        messages.success(
+            self.request, f'Account created for {user.username}. Check Mail to activate the account.')
         return redirect('login')
 
 
@@ -61,7 +61,7 @@ def activate(request, uidb64, token):
     except Exception as e:
         pass
 
-    if user is not None:
+    if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
         messages.success(request, f'Account activated for {user.username}')
@@ -83,23 +83,23 @@ class InstructorSignUpView(CreateView):
     def form_valid(self, form):
         user = form.save()
 
-        # domain = get_current_site(self.request).domain
-        # mail_subject = 'Activate Your Account'
-        # uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-        # link = reverse('activate', kwargs={
-        #     'uidb64': uidb64, 'token': account_activation_token.make_token(user)
-        # })
-        # activate_url = "http://" + domain + link
-        # email_body = "Hi " + user.username + \
-        #              ", Please click on the link to confirm your registration.\n" + activate_url
-        # to_email = form.cleaned_data.get('email')
-        # email = EmailMessage(
-        #     mail_subject, email_body, to=[to_email])
-        # email.send()
+        domain = get_current_site(self.request).domain
+        mail_subject = 'Activate Your Account'
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        link = reverse('activate', kwargs={
+            'uidb64': uidb64, 'token': account_activation_token.make_token(user)
+        })
+        activate_url = "http://" + domain + link
+        email_body = "Hi " + user.username + \
+                     ", Please click on the link to confirm your registration.\n" + activate_url
+        to_email = form.cleaned_data.get('email')
+        email = EmailMessage(
+            mail_subject, email_body, to=[to_email])
+        email.send()
 
-        # username = form.cleaned_data.get('username')
-        # messages.success(
-        #     self.request, f'Account created for {user.username}. Check Mail to activate the account.')
+        username = form.cleaned_data.get('username')
+        messages.success(
+            self.request, f'Account created for {user.username}. Check Mail to activate the account.')
         return redirect('login')
 
 

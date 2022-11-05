@@ -916,7 +916,7 @@ function update_rule_line_references(updated_rows) {
                 }
                 for (let i = 0; i < new_rule_text.length; i++) {
                     if (i > 0 & i < new_rule_text.length - 1) {
-                        new_rule_text[i] = `${new_rule_text[i]},`
+                        new_rule_text[i] = `${new_rule_text[i]}`
                     }
                 }
 

@@ -22,7 +22,7 @@ def verify_proof(proof: ProofObj, parser):
     response = ProofResponse()
 
     #want to test FOL trees
-    print("as string:", tree2Str(myMakeTree(proof.lines[-1].getExpr(),1)))
+    # print("as string:", tree2Str(myMakeTree(proof.lines[-1].getExpr(),1)))
 
 
     if proof.complete: # checking if proof has already been validated previously. Note: as soon as ANY edits made, must change this to False!

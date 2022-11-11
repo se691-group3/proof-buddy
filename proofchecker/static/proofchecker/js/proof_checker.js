@@ -897,7 +897,9 @@ function update_rule_line_references(updated_rows) {
 
         while (row !== null) {
             if (!row.hidden) {
-                let rule_text = row.children[2].children[0].value.split(/[ ,]+/)
+                let old_rule = row.children[2].children[0].value;
+                let cleaned_rule = clean_rule(old_rule);
+                let rule_text = cleaned_rule.split(/[ ,]+/);
                 let new_rule_text = [rule_text[0]];
 
                 for (let i = 0; i < rule_text.length; i++) {
@@ -927,6 +929,15 @@ function update_rule_line_references(updated_rows) {
     }
 }
 
+function clean_rule(old_rule) {
+    rule_errors = ['∧ ', '∨ ', '¬ ', '→ ', '↔ ', '∀ ', '∃ '];
+    new_rule = old_rule;
+    let rule_prefix = old_rule.substring(0,2);
+    if (rule_errors.includes(rule_prefix)) {
+        new_rule = old_rule[0] + old_rule.substring(2,old_rule.length)
+    }
+    return new_rule;
+}
 
 
 /** This function adds indentation to all of the sub proofs */

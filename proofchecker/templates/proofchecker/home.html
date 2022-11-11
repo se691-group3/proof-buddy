@@ -1,40 +1,44 @@
 {% extends 'proofchecker/base.html' %} {% block content %}
-    
-<div class="py-5 my-5">
-
-    <h1 class="display-3 fw-bold pb-3">ProofChecker</h1>
-
-    {% if user.is_authenticated %} {% if user.is_student %} {% if user.first_name %}
-      <h3>Welcome, {{user.first_name}} {{user.last_name}}!</h3>
-    {% else %}
-       <h3>Welcome, {{user.username}} to your Student Account!</h3>
-    {% endif %}
-    {% elif user.is_instructor %} {% if user.first_name %}
-        <h3>Welcome, {{user.first_name}} {{user.last_name}}!</h3>
-    {% else %}
-        <h3>Welcome, {{user.username}} !</h3>
-     {% endif %}
 
 
-    {% endif %} {% else %}
-        <h3>Welcome, Guest!</h3>
-    {% endif %}
+    <div class="py-5 my-5 px-5 mx-5">
+
+        <img src="../../../media/logos/drexel-dragon-all_blue.png" class="drexel-logo img-fluid pb-4 mb-4" alt="">
+
+        <h1 class="display-4 fw-bold pb-3 font-weight-bold">Proof Buddy</h1>
+
+        {% if user.is_authenticated %} {% if user.is_student %} {% if user.first_name %}
+            <h3>Welcome, {{ user.first_name }} {{ user.last_name }}</h3>
+        {% else %}
+            <h3>Welcome, {{ user.username }} to your Student Account!</h3>
+        {% endif %}
+        {% elif user.is_instructor %} {% if user.first_name %}
+                <h3>Welcome, {{ user.first_name }} {{ user.last_name }}</h3>
+            {% else %}
+                <h3>Welcome, {{ user.username }} </h3>
+            {% endif %}
 
 
-    {% if user.is_authenticated %}
-        <p class="lead pt-4"> Begin working on some <a href="{% url 'all_proofs' %}">proofs</a>!</p>
-    {% else %}
-        <p class="lead pt-4"> <strong><a href="{% url 'login' %}">Log in</a></strong> to begin working on some proofs!</p>
-        <p class="lead pt-4"> Don't have an account?  <a href="{% url 'signup' %}">Sign up</a> now!</p>
-        <br />
-        <br />
-        <br />
-        <br />
-        <p class="pt-6"> Or, try out a proof without signing in with our new <a href="{% url 'proof_checker' %}"> TFL ProofChecker </a> tool! </p>
-        <div class="alert alert-warning"><strong>WARNING:</strong> You cannot save proofs without signing in!</div>
-    {% endif %} 
+        {% endif %} {% else %}
+            <h3>Welcome</h3>
+        {% endif %}
 
 
-</div>
+
+        {% if user.is_authenticated %}
+            <p class="lead pt-4"> Begin working on some <a href="{% url 'all_proofs' %}">proofs</a>!</p>
+        {% else %}
+            <p class="lead pt-4"><strong><a href="{% url 'login' %}">Log in</a></strong> to begin working on
+                some
+                proofs!</p>
+            <p class="lead pt-4"> Don't have an account? <a href="{% url 'signup' %}">Sign up</a> now!</p>
+            <hr style="height:30pt; visibility:hidden;"/>
+            <!--<p class="pt-6"> Or, try out a proof without signing in with our new <a
+                    href="{% url 'proof_checker' %}"> TFL Proof Buddy </a> tool! </p> -->
+
+        {% endif %}
+
+
+    </div>
 
 {% endblock %}

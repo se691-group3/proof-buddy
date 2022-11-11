@@ -920,7 +920,6 @@ function update_rule_line_references(updated_rows) {
 
         while (row !== null) {
             if (!row.hidden) {
-
                 let old_rule = row.children[2].children[0].value;
                 let cleaned_rule = clean_rule(old_rule);
                 let rule_text = cleaned_rule.split(/[ ,]+/);
@@ -962,7 +961,6 @@ function clean_rule(old_rule) {
     }
     return new_rule;
 }
-
 
 
 /** This function adds indentation to all of the sub proofs */

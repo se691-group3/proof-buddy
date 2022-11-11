@@ -165,7 +165,7 @@ class Assignment(models.Model):
     created_by = models.ForeignKey(
         Instructor, on_delete=models.CASCADE, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    start_date = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateTimeField(null=True)
     due_by = models.DateTimeField()
     problems = models.ManyToManyField(Problem)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)

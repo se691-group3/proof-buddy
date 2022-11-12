@@ -3,40 +3,49 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div class="container w100">
-    <br>
-    <h3> Create A Course</h3>
-    <hr>
-    <form action="" method="post">
+    <div class="container">
+        <br>
+        <h3>Create A Course</h3>
+        <hr>
+        <form action="" method="post">
             {% csrf_token %}
             <div class="row">
-                <div class="col-sm-4 col-form-label"><label for="formGroupExampleInput">Title*</label></div>
+                <div class="col-sm-4 col-form-label">
+                    <label for="formGroupExampleInput">Title*</label>
+                </div>
                 <div class="col-sm-8">{{ form.title }}</div>
             </div>
             <div class="row">
-                <div class="col-sm-4 col-form-label"><label for="formGroupExampleInput2">Term*</label></div>
+                <div class="col-sm-4 col-form-label">
+                    <label for="formGroupExampleInput2">Term*</label>
+                </div>
                 <div class="col-sm-8">{{ form.term }}</div>
             </div>
             <div class="row">
-                <div class="col-sm-4 col-form-label"><label for="formGroupExampleInput2">Section*</label></div>
+                <div class="col-sm-4 col-form-label">
+                    <label for="formGroupExampleInput2">Section*</label>
+                </div>
                 <div class="col-sm-8">{{ form.section }}</div>
             </div>
             <div class="row">
-                <div class="col-sm-4 col-form-label"><label for="id_students">Select Students</label></div>
+                <div class="col-sm-4 col-form-label">
+                    <label for="id_students">Select Students</label>
+                </div>
                 <div class="col-sm-8">
-                <select class="selectpicker" multiple data-live-search="true" title="Select " id="id_students" name="studentsSelector[]">
-                    {% for student in students %}
-                        <option value={{ student.user.id }}>{{ student.user.username }}</option>
-                    {% endfor %}
-                </select>
+                    <select class="selectpicker" multiple data-live-search="true" title="Select " id="id_students" name="studentsSelector[]">
+                        {% for student in students %}
+                            <option value={{ student.user.id }}>{{ student.user.username }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
+            <br>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>
         </form>
+    </div>
 {% endblock %}
-
 
 {% block additionalFiles %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">

@@ -3,98 +3,84 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<style>
-    
-input:disabled {
-    background: transparent;
-    border: none;
-    top: 5px;
-    position: relative;
-    -webkit-appearance: none;
-    appearance: none;
-    color: #212529;
-    opacity: 1;
-  }
-</style>
-    <div class="row">
-        <div class="container">
-            <div class="row">
-                <div class="col-8">
-                    <br>
-                    <h3>Course Details</h3>
-                    <hr>
-                </div>
-                <div class="col-4">
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-8">
-            <div class="container">
-                <div clsss="row">
-                    <div class="col">
-                        <form action="" method="post">
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="col-sm-4 col-form-label"><label for="formGroupExampleInput">Title*</label>
-                                </div>
-                                <div class="col-sm-8">{{ form.title }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-4 col-form-label"><label for="formGroupExampleInput2">Term*</label>
-                                </div>
-                                <div class="col-sm-8">{{ form.term }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-4 col-form-label"><label
-                                        for="formGroupExampleInput2">Section*</label></div>
-                                <div class="col-sm-8">{{ form.section }}</div>
-                            </div>
-                            {% if request.user.is_instructor %}
-                                <div class="row">
-                                    <div class="col-sm-4 col-form-label"><label for="id_students">Select
-                                        Students</label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <select class="selectpicker" multiple data-live-search="true" title="Select "
-                                                id="id_students"
-                                                name="studentsSelector[]">
-                                            {% for student in students %}
-                                                <option {{ student.selected }}
-                                                        value="{{ student.student.user.id }}">{{ student.student.user.username }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                            {% endif %}
-                            <div class="row">
-                                {% for student in selected_students %}
-                                    {{ student.user.username }}
-                                {% endfor %}
-                            </div>
-                            <br>
-                            <div class="form-group">
-                                {% if request.user.is_instructor %}
-                                    <button type="submit" class="btn btn-primary">Save</button>{% endif %}
-                                <a class="btn btn-primary" href={% url back_view %}>Back</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <style>
+        input:disabled {
+            background: transparent;
+            border: none;
+            top: 5px;
+            position: relative;
+            -webkit-appearance: none;
+            appearance: none;
+            color: #212529;
+            opacity: 1;
+        }
+    </style>
 
-        <div class="col-4 ml-auto">
-            <div class="container">
+    <div class="container">
+        <br>
+        <h3>Course Details</h3>
+        <hr>
+        <div class="row">
+            <div class="col-8">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-4 col-form-label">
+                            <label for="formGroupExampleInput">Title*</label>
+                        </div>
+                        <div class="col-sm-8">{{ form.title }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 col-form-label">
+                            <label for="formGroupExampleInput2">Term*</label>
+                        </div>
+                        <div class="col-sm-8">{{ form.term }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 col-form-label">
+                            <label for="formGroupExampleInput2">Section*</label>
+                        </div>
+                        <div class="col-sm-8">{{ form.section }}</div>
+                    </div>
+                    {% if request.user.is_instructor %}
+                        <div class="row">
+                            <div class="col-sm-4 col-form-label">
+                                <label for="id_students">Select Students</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <select class="selectpicker" multiple data-live-search="true" title="Select "
+                                        id="id_students"
+                                        name="studentsSelector[]">
+                                    {% for student in students %}
+                                        <option {{ student.selected }}
+                                                value="{{ student.student.user.id }}">{{ student.student.user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="row">
+                        {% for student in selected_students %}
+                            {{ student.user.username }}
+                        {% endfor %}
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        {% if request.user.is_instructor %}
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        {% endif %}
+                        <a class="btn btn-primary" href={% url back_view %}>Back</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-4 ml-auto">
                 <div class="row">
                     {% if request.user.is_instructor %}
                         <a class="btn btn-light btn-sm" href={% url 'add_assignment' %}>Add Assignment</a>
                     {% endif %}
                 </div>
-                <div class="row">
-                    <hr>
-                </div>
+                <br>
                 {% if assignments %}
                     <div class="row">
                         <b>Course Assignments:</b>
@@ -106,6 +92,7 @@ input:disabled {
                     {% endfor %}
                     <hr>
                 {% endif %}
+
                 {% if request.user.is_instructor %}
                     {% if selected_students_count > 0 %}
                         <div class="row">
@@ -116,8 +103,7 @@ input:disabled {
                                 <div class="row">
                                     {{ student.student.user.username }}
                                     <div class="mr-2"></div>
-                                    <a href={% url 'course_student_proofs' course_id=course.id student_id=student.student.user.pk %} target="_blank">[view
-                                        proofs]</a>
+                                    <a href={% url 'course_student_proofs' course_id=course.id student_id=student.student.user.pk %} target="_blank">[view proofs]</a>
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -126,17 +112,13 @@ input:disabled {
             </div>
         </div>
     </div>
-{% endblock %}
 
+{% endblock %}
 
 {% block additionalFiles %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
-            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 {% endblock %}
-

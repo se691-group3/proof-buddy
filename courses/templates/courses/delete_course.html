@@ -1,16 +1,16 @@
 {% extends "proofchecker/base.html" %}
 {% load static %}
-{% block head %}
-
-{% endblock %}
 
 {% block content %}
-    <h2> Delete the course</h2>
-
-    <form method="post">
-        {% csrf_token %}
-        <p>Are you sure you want to delete "{{ object }}"?</p>
-        <input class="btn btn-danger" type="submit" value="Confirm"/>
-        <a class="btn btn-primary" href={% url 'all_courses' %}>Cancel</a>
-    </form>
+    <div class="container">
+        <br>
+        <h3>Delete the Course</h3>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            <p>Are you sure you want to delete "{{ object }}"?</p>
+            <input class="btn btn-danger" type="submit" value="Confirm"/>
+            <a class="btn btn-primary" href={% url 'all_courses' %}>Cancel</a>
+        </form>
+    </div>
 {% endblock %}

@@ -290,9 +290,6 @@
             <hr>
             <div class="row">
                 <div class="col-4 col-sm-4">
-                    <button name="check_proof" type="submit" class="btn btn-primary mb-3">
-                        Check Proof
-                    </button>
                     {% if object.pk %} 
                         {% if object.created_by == request.user %}
                             <button name="submit" type="submit" class="btn btn-primary mb-3">
@@ -304,6 +301,9 @@
                             Save
                         </button>
                     {% endif %}
+                    <button name="check_proof" type="submit" class="btn btn-primary mb-3">
+                        Check Proof
+                    </button>
                 </div>
                 Number of Steps:&nbsp
                 <div id="line_counter">0</div>

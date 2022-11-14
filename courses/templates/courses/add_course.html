@@ -34,7 +34,7 @@
                 <div class="col-sm-8">
                     <select class="selectpicker" multiple data-live-search="true" title="Select " id="id_students" name="studentsSelector[]">
                         {% for student in students %}
-                            <option value={{ student.user.id }}>{{ student.user.username }}</option>
+                            <option value="{{ student.user.id }}">{{ student.user.username }}</option>
                         {% endfor %}
                     </select>
                 </div>

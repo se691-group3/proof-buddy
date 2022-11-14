@@ -267,10 +267,11 @@
         </tr>
     </table>
     {% endif %}
-    <hr> {% if request.user.is_student %}
+    <hr> 
+    <button name="check_proof" type="submit" class="btn btn-primary mb-3">Check Proof</button>
+    {% if request.user.is_student %}
     <button name="submit" type="submit" class="btn btn-primary mb-3">Save</button>
     {% endif %}
-    <button name="check_proof" type="submit" class="btn btn-primary mb-3">Check Proof</button>
 
     <div class="row" hidden>
         <div hidden id="line_counter">0</div>

@@ -1,11 +1,12 @@
 {% extends 'proofchecker/base.html' %}
+{% load static %}
 
 {% block content %}
     <div class="container">
         <br>
-        <h5><b>Assignments</b></h5>
+        <h4><b>Assignments</b></h4>
         <hr>
-        <a href="{% url 'add_assignment' %}" class="btn btn-primary btn-sm"> Add A New Assignment</a>
+        <a href="{% url 'add_assignment' %}" class="btn btn-primary btn-sm">Add a new assignment</a>
         <hr>
         <div class="row mt-3">
             {% for object in object_list %}
@@ -19,20 +20,25 @@
                         <li class="list-group-item"><b>Due By:</b> {{ object.due_by }}</li>
                     </ul>
                     <div class="card-body">
-                        <a href="{% url 'assignment_details' object.id %}" class="card-link btn btn-primary btn-sm">View
-                            / Edit</a>
-                        <a href="{% url 'delete_assignment' object.id %}"
-                           class="card-link btn btn-secondary btn-sm">Delete </a>
-                        <a href="{% url 'get_csv_file' object.id %}"
-                           class="card-link btn btn-warning btn-sm">Download</a>
+                        <a href="{% url 'assignment_details' object.id %}" class="card-link btn btn-primary btn-sm">
+                            View / Edit</a>
+                        <a href="{% url 'delete_assignment' object.id %}" class="card-link btn btn-secondary btn-sm">
+                            Delete</a>
+                        <a href="{% url 'get_csv_file' object.id %}" class="card-link btn btn-warning btn-sm">
+                            Download</a>
 
                         {% if object.submission %}
                             <br><br>
-                            <a href="{% url 'user_assignment_request' object.id %}"
-                            class="card-link btn btn-success btn-sm">Student Delay Request</a>
+                            <a href="{% url 'user_assignment_request' object.id %}" class="card-link btn btn-success btn-sm">
+                                Student Delay Request</a>
                         {% endif %}
                     </div>
                 </div>
             {% endfor %}
         </div>
+    </div>
+{% endblock %}
+
+{% block additionalFiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 {% endblock %}

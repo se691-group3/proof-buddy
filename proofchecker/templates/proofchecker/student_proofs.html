@@ -1,62 +1,43 @@
 {% extends 'proofchecker/base.html' %}
 {% load static %}
+
 {% block content %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.3/css/bootstrap-select.css"/>
-    <hr>
-    <h4>View Proofs by Students</h4>
-    <hr>
-    <form class="form-inline" action="">
-        {% csrf_token %}
-        <div class="form-group mb-2">
-            <p>Please select a student to view all proofs </p>
-        </div>
-        <div class="form-group mx-sm-3 mb-2">
+    <div class="container">
+        <br>
+        <h4><b>View Proofs by Students</b></h4>
+        <hr>
+        <p><small style="color: darkred">Please select a student to view all proofs</small></p>
+        <hr>
+        <form action="">
+            {% csrf_token %}
             <div class="row">
                 <div class="col-sm-4 col-form-label">
                     <label for="id_students_proofs">Select Students</label>
                 </div>
-                <div class="col-sm-8">
-                    <div class="dropdown bootstrap-select show-tick">
-                        <select class="selectpicker" data-show-subtext="true" data-live-search="true"
-                                value="{{ student.pk }}"
-                                title="Select " id="id_students_proofs" onchange="onstudentproofselect(this)">
-                            {% for stu in students %}
-                                <option value="{{ stu.user.pk }}">
-                                    {{ stu.user.username }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                <div class="col-md-8">
+                    <select class="selectpicker" data-show-subtext="true" data-live-search="true" value="{{ student.pk }}" title="Select " id="id_students_proofs" onchange="onstudentproofselect(this)">
+                        {% for student in students %}
+                            <option value="{{ student.user.pk }}">{{ student.user.username }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
-        </div>
-        </div>
-    </form>
-
-    {% if proofs %}
-        <hr>
-        <ol class="list-group">
-            <li class="list-group-item list-group-item-primary"> Student : {{ student.user.username }}</li>
-            {% for proof in proofs %}
-                <li class="list-group-item"><a href="{% url 'update_proof' proof.id %}" target="_blank">{{ proof.name }}
-                    : {{ proof.premises }} ∴ {{ proof.conclusion }}</a></li>
-            {% endfor %}
-        </ol>
-    {% endif %}
-
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.3/js/bootstrap-select.js"></script>
+        </form>
+        {% if proofs %}
+            <hr>
+            <ol class="list-group">
+                <li class="list-group-item list-group-item-primary">Student: {{ student.user.username }}</li>
+                {% for proof in proofs %}
+                    <li class="list-group-item">
+                        <a href="{% url 'update_proof' proof.id %}" target="_blank">
+                            {{ proof.name }}: {{ proof.premises }} ∴ {{ proof.conclusion }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% endif %}
+    </div>
     <script>
-
         function onstudentproofselect(e) {
             let a = document.createElement('a');
             a.setAttribute('href', e.value);
@@ -64,4 +45,12 @@
             a.click();
         }
     </script>
+{% endblock %}
+
+{% block additionalFiles %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 {% endblock %}

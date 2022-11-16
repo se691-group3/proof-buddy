@@ -1,260 +1,195 @@
 {% extends 'proofchecker/base.html' %}{% load static %}
 {% load crispy_forms_filters %}
-
 {% load crispy_forms_tags %}
 
 {% block content %}
-<style>
-    .ans-box {
-        border: 2px solid black;
-        width: 3rem;
-        text-align: center;
-    }
+    <style>
+        .ans-box {
+            border: 2px solid black;
+            width: 3rem;
+            text-align: center;
+        }
 
-    .row-m {
-        margin-bottom: 8px;
-    }
-</style>
-<div class="container">
-    <br>
-    <h3>Assignment Details</h3>
-    <hr>
-    <form action="" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="assignment_pk" value={{pk}} />
-        <div class="form-group row">
-            <div class="col-md-4"><label for="id_title" class="col-md-4">{{ form.title.label }}</label></div>
-            <div class="col-md-4">
-                {{ form.title }}
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-4"><label for="id_course" class="col-md-4">{{ form.course.label }}</label></div>
-            <div class="col-md-4">
-                {{ form.course }}
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-4"><label for="id_start_date" class="col-md-4">{{ form.start_date.label }}</label></div>
-            <div class="col-md-4">
-                {{ form.start_date }}
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-4">
-                <label for="id_due_by" class="col-md-4">{{ form.due_by.label }}</label>
-            </div>
-            <div class="col-md-4">
-                {{ form.due_by }}
-            </div>
+        .row-m {
+            margin-bottom: 8px;
+        }
+    </style>
 
-            {% if request.user.is_student %}
-
-                {% if assignment_delay.status == 'pending' %}
-                    <div class="col-md-4">
-                        <button class="btn btn-warning btn-sm" disabled>Your request is pending</button>
-                    </div>
-                {% elif assignment_delay.status == 'accepted' %}
-                    <div class="col-md-4">
-                        <button class="btn btn-success btn-sm" disabled>Your request is accepted</button>
-                    </div>
-                {% elif assignment_delay.status == 'rejected' %}
-                    <div class="col-md-4">
-                        <button class="btn btn-danger btn-sm" disabled>Your request is rejected</button>
-                    </div>
-                {% endif %}
-
-                {% if can_user_request == True %}
-                    <div class="col-md-4">
-                        <a class="btn btn-primary btn-sm" href="{% url 'request_for_assignment_delay' form.instance.id %}">Request For Extra Days</a>
-                    </div>
-                {% endif %}
-
-            {% endif %}
-            
-        </div>
-
-        {% if assignment_delay.status == 'accepted' %}
-            <div class="form-group row">
-                <div class="col-md-4">
-                    <label for="id_due_by" class="col-md-4">New Submission Date</label>
-                </div>
-                <div class="col-md-4">
-                    {{ assignment_delay.submission_date|date:"m/d/Y" }}
-                </div>
-            </div>
-        {% endif %}
-
+    <div class="container">
+        <br>
+        <h3>Assignment Details</h3>
         <hr>
-        <div class="form-group row">
-            <div class="col"><label for="id_due_by" class="col-md-4"><b>Problems</b></label></div>
-            {% if request.user.is_instructor %}
-            <a class="btn btn-primary btn-sm" href="{% url 'add_problem' %}?assignment={{ assignment.id }}">Add
-                Problem</a>
-
-            {% endif %}
-        </div>
-        {% if problems %}
-        <div class="container">
-            {% if request.user.is_instructor %}
-            <hr>
-            <div class="form-group row">
-                <ol>
-                    {% for problem in problems %}
-                    <li class="mb-2">
-                        <a href="{% url 'problem_details' problem.id %}?assignment={{ assignment.id }}">
-                            {{ problem.question }}</a>
-                        <a class='btn-outline-danger btn-sm' href="{% url 'delete_problem' problem.id %}">Delete</a>
-                    </li>
-                    {% endfor %}
-                </ol>
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="assignment_pk" value={{pk}} />
+            <div class="row">
+                <div class="col-sm-4 col-form-label">
+                    <label for="id_title">{{ form.title.label }}</label>
+                </div>
+                <div class="col-sm-8">
+                    {{ form.title }}
+                </div>
             </div>
-            <hr>
-            <div class="form-group row">
-                <button type="submit" class="btn btn-primary mr-2">Save</button>
-                {% if assignment %}
-                <a href="{% url 'delete_assignment' form.instance.id %}" class="card-link btn btn-secondary">Delete</a>
+            <div class="row">
+                <div class="col-sm-4 col-form-label">
+                    <label for="id_course">{{ form.course.label }}</label>
+                </div>
+                <div class="col-sm-8">
+                    {{ form.course }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 col-form-label">
+                    <label for="id_start_date">{{ form.start_date.label }}</label>
+                </div>
+                <div class="col-sm-8">
+                    {{ form.start_date }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 col-form-label">
+                    <label for="id_due_by">{{ form.due_by.label }}</label>
+                </div>
+                <div class="col-sm-8">
+                    {{ form.due_by }}
+                </div>
+
+                {% if request.user.is_student %}
+                    {% if assignment_delay.status == 'pending' %}
+                        <div class="col-sm-4">
+                            <button class="btn btn-warning btn-sm" disabled>Your request is pending</button>
+                        </div>
+                    {% elif assignment_delay.status == 'accepted' %}
+                        <div class="col-sm-4">
+                            <button class="btn btn-success btn-sm" disabled>Your request is accepted</button>
+                        </div>
+                    {% elif assignment_delay.status == 'rejected' %}
+                        <div class="col-sm-4">
+                            <button class="btn btn-danger btn-sm" disabled>Your request is rejected</button>
+                        </div>
+                    {% endif %}
+
+                    {% if can_user_request == True %}
+                        <div class="col-sm-4">
+                            <a class="btn btn-primary btn-sm" href="{% url 'request_for_assignment_delay' form.instance.id %}">Request For Extra Days</a>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
-            {% elif request.user.is_student %}
-            <div class="form-group row">
-                <div class="col-8 row-m"></div>
-                <div class="col-2 row-m">Point Received </div>
-                <div class="col-2 row-m">Problem Points</div>
-                {% for problem in problems %}
-                <div class="col-8 row-m">
-                    {{ forloop.counter }}.
-                    {% if assignment.is_submitted %}
-                        
-                        {% if submission and assignment.is_late_submitted == False and grading == False %}
+
+            {% if assignment_delay.status == 'accepted' %}
+                <div class="row">
+                    <div class="col-sm-4 col-form-label">
+                        <label for="id_due_by" class="col-md-4">New Submission Date</label>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ assignment_delay.submission_date|date:"m/d/Y" }}
+                    </div>
+                </div>
+            {% endif %}
+
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <label for="id_due_by" class="col-md-4"><b>Problems</b></label>
+                </div>
+                {% if request.user.is_instructor %}
+                <a class="btn btn-primary btn-sm" href="{% url 'add_problem' %}?assignment={{ assignment.id }}">
+                    Add Problem</a>
+                {% endif %}
+            </div>
+            {% if problems %}
+                {% if request.user.is_instructor %}
+                <hr>
+                <div class="row">
+                    <ol>
+                        {% for problem in problems %}
+                        <li class="mb-2">
+                            <a href="{% url 'problem_details' problem.id %}?assignment={{ assignment.id }}">{{ problem.question }}</a>
+                            <a class='btn-outline-danger btn-sm' href="{% url 'delete_problem' problem.id %}">Delete</a>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+                <hr>
+                <div class="row">
+                    <button type="submit" class="btn btn-primary mr-2">Save</button>
+                    {% if assignment %}
+                    <a href="{% url 'delete_assignment' form.instance.id %}" class="card-link btn btn-secondary">Delete</a>
+                    {% endif %}
+                </div>
+                {% elif request.user.is_student %}
+                <div class="row">
+                    <div class="col-8 row-m"></div>
+                    <div class="col-2 row-m">Point Received</div>
+                    <div class="col-2 row-m">Problem Points</div>
+                    {% for problem in problems %}
+                    <div class="col-8 row-m">
+                        {{ forloop.counter }}.
+                        {% if assignment.is_submitted %}
+                            {% if submission and assignment.is_late_submitted == False and grading == False %}
+                                <a href="{% url 'problem_details' problem.id %}?assignment={{ assignment.id }}">
+                                    {{ problem.question }} 
+                                </a>
+                            {% else %}
+                                {{ problem.question }}
+                            {% endif %}
+
+                        {% elif grading == False %}
                             <a href="{% url 'problem_details' problem.id %}?assignment={{ assignment.id }}">
-                                {{ problem.question }} 
+                                {{ problem.question }}
                             </a>
                         {% else %}
                             {{ problem.question }}
                         {% endif %}
-
-                    {% elif grading == False %}
-                        <a href="{% url 'problem_details' problem.id %}?assignment={{ assignment.id }}">
-                            {{ problem.question }} </a>
-
-                    {% else %}
-                        {{ problem.question }}
-                    {% endif %}
-
+                    </div>
+                    <div class="col-2 row-m">
+                        <div class="ans-box">{{ problem.grade }}</div>
+                    </div>
+                    <div class="col-2 row-m">
+                        <div class="ans-box">{{ problem.point }}</div>
+                    </div>
+                    {% endfor %}
                 </div>
-                <div class="col-2 row-m">
-                    <div class="ans-box">{{ problem.grade }}</div>
+                <hr>
+                <div class="row">
+                    <div class="col-8" style="display: flex; justify-content: space-between;">
+                        <div>
+                            <a class="btn btn-primary" href={% url 'all_assignments' %}>Back</a>
+                            {% if assignment.is_submitted == False and grading == False %}
+                                <button type="submit" class="btn btn-success ml-2">Submit</button>
+                            {% endif %}
+
+                            {% if submission and assignment.is_late_submitted == False and grading == False %}
+                                <button type="submit" class="btn btn-success ml-2">Submit</button>
+                            {% endif %}
+                        </div>
+                        <strong>Total</strong>
+                    </div>
+                    <div class="col-2">
+                        <div class="ans-box">{{ totalgrade }}</div>
+                    </div>
+                    <div class="col-2">
+                        <div class="ans-box">{{ totalpoint }}</div>
+                    </div>
                 </div>
-                <div class="col-2 row-m">
-                    <div class="ans-box">{{ problem.point }}</div>
-                </div>
-                {% endfor %}
-                </ol>
+                <!-- {{solutions}} solutions -->
+                {% endif %}
+            {% endif %}
+        </form>
+        <div id="id_errorResponseMain" class="hidden">
+            <hr>
+            <div style="color:red" id="id_errorResponse">
             </div>
             <hr>
-            <div class="form-group row">
-                <div class="col-8" style="display: flex; justify-content: space-between;">
-                    <div>
-                        <a class="btn btn-primary" href={% url 'all_assignments' %}>Back</a>
-                        {% if assignment.is_submitted == False and grading == False %}
-                            <button type="submit" class="btn btn-success ml-2">Submit</button>
-                        {% endif %}
-
-                        {% if submission and assignment.is_late_submitted == False and grading == False %}
-                            <button type="submit" class="btn btn-success ml-2">Submit</button>
-                        {% endif %}
-                    </div>
-                    <strong>Total</strong>
-                </div>
-                <div class="col-2">
-                    <div class="ans-box">{{ totalgrade }}</div>
-                </div>
-                <div class="col-2">
-                    <div class="ans-box">{{ totalpoint }}</div>
-                </div>
-            </div>
-            <!-- {{solutions}} solutions -->
-            {% endif %}
         </div>
-        {% endif %}
-    </form>
-    <div id="id_errorResponseMain" class="hidden">
-        <hr>
-        <div style="color:red" id="id_errorResponse">
-        </div>
-        <hr>
     </div>
-</div>
-</div>
 {% endblock %}
 
-{#{% block content %}#}
-{# <div class="row">#}
-    {# <div class="container">#}
-        {# <div class="row">#}
-            {# <div class="col">#}
-                {# <br>#}
-                {# <h3>Assignment Details</h3>#}
-                {#
-                <hr>#}
-                {#
-            </div>#}
-            {# </div>#}
-        {# </div>#}
-    {# </div>#}
-{# <div class="row">#}
-    {# <div class="col-8">#}
-        {# <div class="container">#}
-            {# <div clsss="row">#}
-                {# <div class="col">#}
-                    {# <form action="" method="post">#}
-                        {# {% csrf_token %}#}
-                        {# <div class="row">#}
-                            {# <div class="col-sm-4 col-form-label"><label>Title</label>#}
-                                {# </div>#}
-                            {# <div class="col-sm-8">{{ form.title }}</div>#}
-                            {# </div>#}
-                        {# <div class="row">#}
-                            {# <div class="col-sm-4 col-form-label"><label>Courses</label>#}
-                                {# </div>#}
-                            {# <div class="col-sm-8">{{ form.course }}</div>#}
-                            {# </div>#}
-                        {# <div class="row">#}
-                            {# <div class="col-sm-4 col-form-label"><label>Due By</label>#}
-                                {# </div>#}
-                            {# <div class="col-sm-8">{{ form.due_by }}</div>#}
-                            {# </div>#}
-                        {# <br>#}
-                        {# <div class="form-group">#}
-                            {# {% if request.user.is_instructor %}#}
-                            {# <button type="submit" class="btn btn-primary">Save</button>#}
-                            {# {% endif %}#}
-                            {# <a class="btn btn-primary" href="">Back</a>#}
-                            {# </div>#}
-                        {# </form>#}
-                    {# </div>#}
-                {# </div>#}
-            {# </div>#}
-        {# </div>#}
-    {##}
-    {# <div class="col-4 ml-auto">#}
-        {# <div class="container">#}
-            {# {% if request.user.is_instructor %}#}
-            {# <div class="row">#}
-                {# <b>Problems:</b>#}
-                {# </div>#}
-            {# <ol>#}
-                {# {% for problem in problems %}#}
-                {# <li>#}
-                    {# <a href="{% url 'problem_details' problem.id %}?assignment={{ assignment.id }}">{{
-                        problem.question }}</a>#}
-                    {# <a class='btn-danger btn-sm' href="{% url 'delete_problem' problem.id %}">Delete</a>#}
-                    {# </li>#}
-                {# {% endfor %}#}
-                {# </ol>#}
-            {# {% endif %}#}
-            {# </div>#}
-        {# </div>#}
-    {# </div>#}
-{#{% endblock %}#}
+{% block additionalFiles %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+{% endblock %}

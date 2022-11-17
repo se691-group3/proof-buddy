@@ -167,6 +167,15 @@ function make_parent(obj) {
  */
 function create_subproof(obj) {
     const currentRow = document.getElementById(`${FORMSET_PREFIX}-${get_form_id(obj)}`)
+    // Ifty Rahman - code to get previous row number, then 
+    //compare to make sure we arent going in more than 1 level  beyond the immediate parent 
+    const previousRow = getPreviousValidRow(currentRow)
+    var maxIndent = check_if_max_indentation(currentRow,previousRow)
+    
+    if (maxIndent) {
+        return
+    }
+
     generate_new_subproof_row_number(currentRow)
     hide_make_parent_button()
     reset_order_fields()
@@ -174,6 +183,20 @@ function create_subproof(obj) {
     updateLineCount()
 }
 
+//function checks to see if the current row is 1 level in from the row above. Each subproof is always previous line + .1
+function check_if_max_indentation(currentRow, previousRow) {
+    let previousRowInfoObj = getObjectsRowInfo(previousRow) //get the information object from the row
+    let currentRowInfoObj = getObjectsRowInfo(currentRow)
+    let previousRowNumber = previousRowInfoObj.line_number_of_row //get the row number for a row from the row object
+    let currentRowNumber = currentRowInfoObj.line_number_of_row
+    let previousRowNumberOfPeriods = (previousRowNumber.match(/\./g) || []).length //count how many "." are in that row number
+    let currentRowNumberOfPeriods = (currentRowNumber.match(/\./g) || []).length
+    if(currentRowNumberOfPeriods == previousRowNumberOfPeriods+1 ){ //if the number of periods in current row is 1 more than the previous, cant indent anymore
+        alert("Can't indent any further")
+        return true
+    }
+    return false
+}
 
 /**
  * Moves current row up
@@ -382,7 +405,7 @@ function move_current_row_up(obj) {
 
 
 /**
- * Moves the current row up
+ * Moves the current row down
  */
 function move_current_row_down(obj) {
 
@@ -918,7 +941,7 @@ function update_rule_line_references(updated_rows) {
                 }
                 for (let i = 0; i < new_rule_text.length; i++) {
                     if (i > 0 & i < new_rule_text.length - 1) {
-                        new_rule_text[i] = `${new_rule_text[i]},`
+                        new_rule_text[i] = `${new_rule_text[i]},`;
                     }
                 }
 
@@ -1035,5 +1058,3 @@ function hide_make_parent_button() {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-
-

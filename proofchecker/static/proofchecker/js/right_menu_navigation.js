@@ -22,36 +22,18 @@ function setSecondaryOutlineButton(menuName) {
     document.getElementById(`${menuName}-rules`).style.display = "none";
 }
 
-window.onload = function () {
-    const rightMenuSelection = localStorage.getItem("right-menu-selection");
-    const ruleSelection = localStorage.getItem("rule-selection");
-    if (rightMenuSelection == "rules") {
-        setPrimaryButton("rules")
-        setSecondaryButton("help")
-    } else if (rightMenuSelection == "help") {
-        setPrimaryButton("help")
-        setSecondaryButton("rules")
-    }
 
-    if (ruleSelection == "TFL") {
-        setPrimaryOutlineButton("TFL");
-        setSecondaryOutlineButton("FOL");
-    } else if (ruleSelection == "FOL") {
-        setPrimaryOutlineButton("FOL");
-        setSecondaryOutlineButton("TFL");
-    }
-};
 
 function showInformation(e) {
 
     if (e == "rules") {
         setPrimaryButton("rules")
         setSecondaryButton("help")
-        localStorage.setItem("right-menu-selection", "rules");
+
     } else if (e == 'help') {
         setPrimaryButton("help")
         setSecondaryButton("rules")
-        localStorage.setItem("right-menu-selection", "help");
+
     }
 }
 
@@ -59,11 +41,11 @@ function showRules(e) {
     if (e === "TFL") {
         setPrimaryOutlineButton("TFL");
         setSecondaryOutlineButton("FOL");
-        localStorage.setItem("rule-selection", "TFL");
+
     } else if (e === "FOL") {
         setPrimaryOutlineButton("FOL");
         setSecondaryOutlineButton("TFL");
-        localStorage.setItem("rule-selection", "FOL");
+
     }
 }
 

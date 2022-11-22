@@ -4,6 +4,10 @@
     padding: 16px;
 }
 
+#right-menu-container{
+    min-width: 250px;
+    overflow: hidden;
+}
 
 .sidebar {
     height: 100%;
@@ -68,9 +72,6 @@ body {
     font-family: sans-serif;
 }
 
-#proof-table {
-  width: fit-content;
-}
 
 tt {
     font-family: "Lucida Console", "Menlo", "Monaco", "Courier",
@@ -89,22 +90,24 @@ tt {
 }
 
 #id_rules {
-    width: 100%;
+
     margin-bottom: 5px;
 }
 
 #id_name {
-    width: 100%;
+
     margin-bottom: 5px;
 }
 
 #id_premises {
     width: 100%;
+    max-width: 600px;
     margin-bottom: 5px;
 }
 
 #id_conclusion {
     width: 100%;
+    max-width: 600px;
     margin-bottom: 5px;
 }
 
@@ -139,6 +142,11 @@ tt {
     margin-bottom: 5px;
 }
 
+.make_parent:disabled {
+    background-color: #e1e1e1 !important;
+    border: none;
+}
+
 
 .footer-wrapper {
     min-height: calc(50vh - 30px);
@@ -160,4 +168,22 @@ body > footer {
     position: sticky;
     right: 15em;
     margin-left: 20em;
+}
+
+.line-no-CSS {
+    margin-left: 0;
+    border-top-style: hidden;
+    border-right-style: hidden;
+    border-left-style: hidden;
+    border-bottom-style: hidden;
+    background: transparent;
+    pointer-events: none;
+}
+
+.form-fields-CSS{
+ height: 31px;
+    border-top-style: hidden;
+        border-right-style: hidden;
+        border-left-style: hidden;
+        border-bottom-style: hidden;
 }

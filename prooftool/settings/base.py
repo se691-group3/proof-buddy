@@ -9,15 +9,14 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import dj_database_url #Colton said to add this
 from pathlib import Path
 import os
-
 import mimetypes
+
 mimetypes.add_type("application/javascript", ".js", True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -25,13 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-(*0ca2a@mdz2h%!hq-3#745=)d+%ommn!!xevozd2eov6f4($-'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
 # Application definition
-
 INSTALLED_APPS = [
     'accounts',
     'django.contrib.admin',
@@ -45,7 +38,6 @@ INSTALLED_APPS = [
     'proofchecker',
     'assignments',
     'courses',
-
 ]
 
 MIDDLEWARE = [
@@ -83,16 +75,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'prooftool.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -124,10 +106,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-
 # Logger
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -142,10 +121,8 @@ LOGGING = {
     }
 }
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -156,7 +133,6 @@ STATICFILES_DIRS = [
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # customized user model
 AUTH_USER_MODEL = 'proofchecker.User'
@@ -171,11 +147,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'proofbuddy.drexel@gmail.com'
 # Email password is 'drexelproofs'
 EMAIL_HOST_PASSWORD = 'mlozjsxhmhfekned' #This is an app specific password. Cannot use email password due to Google security policy
-
-#Colton said to add the parts below
-# Heroku: Update database configuration from $DATABASE_URL.
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
 
 # Activate Django-Heroku.
 # django_heroku.settings(locals()) #this line was causing error

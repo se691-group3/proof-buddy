@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['bvm83.cci.drexel.edu', 'www.bvm83.cci.drexel.edu']
 DATABASES = {
     'default': {

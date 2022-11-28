@@ -4,35 +4,38 @@
 
 
 {% block content %}
-    <div class="py-5 my-5 px-5 mx-5 d-flex  ">
-<div class="content-section">
-    <div class="media">
-        <img class="rounded-circle" src="{{ user.instructor.image.url }}">
-    </div>
-    <div class="media-body">
+    <div class="py-4 my-4 px-5 mx-5 d-flex justify-content-center">
+        <div class="content-section">
+            <div class="d-flex justify-content-center">
+                <div class="media">
+                    <img class="rounded-circle" src="{{ user.instructor.image.url }}">
+                </div>
+            </div>
+            <div class="media-body">
 
-    
-    <h3>- My Profile -</h3>
-        <br>
-        <p><span style="font-weight: bold;">Username -</span> {{user.username}}</p>
-        <br>
-        <p><span style="font-weight: bold;">Name -</span> {{user.first_name}} {{user.last_name}}</p>
-        <br>
-        <p><span style="font-weight: bold;">Email -</span> {{user.email}}</p>
-        <br>
-        <p><span style="font-weight: bold;">Role -</span> Instructor</p>
-        <br>
-        <p><span style="font-weight: bold;">Mobile -</span> {{user.instructor.mobile}}</p>
-        <br>
-        <p><span style="font-weight: bold;">DOB -</span> {{user.instructor.dob}}</p>
-        <br>
-        <p><span style="font-weight: bold;">Bio -</span> {{user.instructor.bio}}</p>
-        <br>
-        <a href="{% url 'instructor_profile_update' %}" class="btn btn-primary btn-lg" role="button">Update Profile</a>
 
-    </div>
+                <h3>- My Profile -</h3>
+                <br>
+                <p><span style="font-weight: bold;">Username -</span> {{ user.username }}</p>
+                <br>
+                <p><span style="font-weight: bold;">Name -</span> {{ user.first_name }} {{ user.last_name }}</p>
+                <br>
+                <p><span style="font-weight: bold;">Email -</span> {{ user.email }}</p>
+                <br>
+                <p><span style="font-weight: bold;">Role -</span> Instructor</p>
+                <br>
+                <p><span style="font-weight: bold;">Mobile -</span> {{ user.instructor.mobile }}</p>
+                <br>
+                <p><span style="font-weight: bold;">DOB -</span> {{ user.instructor.dob }}</p>
+                <br>
+                <p><span style="font-weight: bold;">Bio -</span> {{ user.instructor.bio }}</p>
+                <br>
+                <a href="{% url 'instructor_profile_update' %}" class="btn btn-primary btn-lg" role="button">Update
+                    Profile</a>
 
-    <!-- <form id="updateProfileForm" action="" method="POST">
+            </div>
+
+            <!-- <form id="updateProfileForm" action="" method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
             {{ form|crispy }}
@@ -40,6 +43,6 @@
     </form> -->
 
 
-</div>
+        </div>
     </div>
 {% endblock %}

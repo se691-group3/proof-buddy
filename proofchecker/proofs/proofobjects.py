@@ -45,7 +45,7 @@ class ProofObj:
     #note that premises and conclusion are lineObjects not strings!  WAIT: maybe they are strs sometimes, since crashed line2Dict
     def __init__(self, rules='tfl_basic', premises=[], conclusion='', lines=[], created_by='', name="", complete=False):
         self.rules = rules 
-        self.ruleList = ["ds"] #TODO: for future, this will have to be a list of allowed rules, not a specific string, presently rules='fol_derived' etc
+        self.ruleList = [] #TODO: for future, this will have to be a list of allowed rules, not a specific string, presently rules='fol_derived' etc
         self.premises = premises
         self.conclusion = conclusion
         self.lines = lines

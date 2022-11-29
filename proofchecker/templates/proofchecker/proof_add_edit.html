@@ -140,10 +140,10 @@
                             {% else %}
                         <tr id="proofline_set-{{ forloop.counter0 }}" class="proofline_set ">
                     {% endif %}
-
-                    <td>{{ line.line_no }}</td>
-                    <td>{{ line.formula }}</td>
-                    <td>{{ line.rule }}</td>
+                {% load widget_tweaks %}
+                    <td>{{ line.line_no|add_class:"line-no-CSS"  }}</td>
+                    <td>{{ line.formula|add_class:"form-fields-CSS" }}</td>
+                    <td>{{ line.rule|add_class:"form-fields-CSS" }}</td>
                     <td>
                         <button class="insert-row btn btn-primary btn-sm" type="button"
                                 name="proofline_set-{{ forloop.counter0 }}-insert-btn"
@@ -227,11 +227,10 @@
                     </tr>
                     {% endfor %}
                     </tbody>
-                    {% load widget_tweaks %}
+
                     <tr id="empty-form" class="hidden">
 
                         <td>{{ formset.empty_form.line_no|add_class:"line-no-CSS" }}</td>
-
                         <td>{{ formset.empty_form.formula|add_class:"form-fields-CSS" }}</td>
                         <td>{{ formset.empty_form.rule|add_class:"form-fields-CSS" }}</td>
                         <td>

@@ -1,4 +1,4 @@
-{% extends 'proofchecker/base.html' %} {% load static %} {% block content %}
+{% extends 'proofchecker/base.html' %} {% load static %} {% block content %} {% load widget_tweaks %}
     <div class="pt-3 mt-3 px-3 mx-3">
         {% if object.pk %} {% if object.created_by == request.user %}
             <h3 class="font-weight-bold mb-2">Edit Proof </h3>
@@ -140,7 +140,7 @@
                             {% else %}
                         <tr id="proofline_set-{{ forloop.counter0 }}" class="proofline_set ">
                     {% endif %}
-                    {% load widget_tweaks %}
+
                     <td>{{ line.line_no|add_class:"line-no-CSS" }}</td>
                     <td>{{ line.formula|add_class:"form-fields-CSS" }}</td>
                     <td>{{ line.rule|add_class:"form-fields-CSS" }}</td>

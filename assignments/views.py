@@ -256,9 +256,9 @@ def assignment_details_view(request, pk=None):
             # print("dddddd", response.err_msg)
 
             # if studentPk is not None:
-            # assignment.is_submitted = True
-            # assignment.is_late_submitted = True
-            assignment.problems.add(*problems)
+                # assignment.is_submitted = True
+                # assignment.is_late_submitted = True
+            assignment.problems.add(problems)
             assignment.save()
 
             return HttpResponseRedirect(reverse("all_assignments"))

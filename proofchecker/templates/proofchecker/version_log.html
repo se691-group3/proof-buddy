@@ -1,134 +1,222 @@
 {% extends "proofchecker/base.html" %}
 {% block content %}
-<div class="px-5 mx-5">
-    <h1 class="display-4 fw-bold pb-3 pt-5 mt-5">Version Log</h1>
+    <div class="px-5 mx-5">
+        <h1 class="display-4 fw-bold pb-3 pt-5 mt-5">Version Log</h1>
 
-    <br/>
+        <br/>
 
-    <h5><u>Version 1.0.7 - 4/7/2022</u> (Current)</h5>
-    <ul>
-        <li>Fixed a bug with the basic TFL elimination rules (Conjunction, Disjunction, Implication, and Biconditional
-            Elimination).
-            These rules now check that the root operand on line m properly matches the rule being applied.
-        </li>
-    </ul>
-
-
-    <h5><u>Version 1.0.6 - 3/13/2022</u></h5>
-    <ul>
-        <li>Added an "Upload Image" option to the Report Bug/Feedback form so that users can send screenshots
-            when reporting their feedback
-        </li>
-    </ul>
-
-
-    <h5><u>Version 1.0.5 - 3/10/2022</u></h5>
-    <ul>
-        <li>Added line re-ordering functionality to the Proof form.</li>
+        <h5><u>Version 2.1.2 - 11/22/2022</u></h5>
         <ul>
-            <li>Added an "Up Arrow" button which swaps the current row
-                with the one above if they're sequential or
-                pushes current row up into the previous row's level.
-            </li>
-            <li>added a "Down Arrow" button which swaps the current row
-                with the one below it if they're sequential or
-                pushes current row down into the next row's level.
+            <li>Created settings for multiple environments to keep database separate
             </li>
         </ul>
-        <li>Added hover text to the left-menu icons when the menu is collapsed.</li>
-    </ul>
 
-
-    <h5><u>Version 1.0.4 - 3/10/2022</u></h5>
-    <ul>
-        <li>Added Assignments functionality:</li>
+        <h5><u>Version 2.1.1 - 11/16/2022</u></h5>
         <ul>
-            <li>Instructors can create Assignments for a course
-                that can be viewed by all Students enrolled in that course.
-            </li>
-            <li>Instructors can add Problems to an assignment. A Problem is essentially an incomplete proof
-                with additional attributes ("points" and "target steps").
-            </li>
-            <li>Students can access Assignments for courses in which they are enrolled.</li>
-            <li>Students can attempt to solve Assignment problems and save their solutions as proofs.</li>
-        </ul>
-    </ul>
-
-    <h5><u>Version 1.0.3 - 3/6/2022</u></h5>
-    <ul>
-        <li>Added automatic updating of line numbers in citations.</li>
-        <ul>
-            <li>As users add and delete lines within a proof,
-                citations in the "rule" field will change to reflect the new, updated line number.
-            </li>
-            <li>Line numbers also update when lines are moved into or out of a subproof</li>
-        </ul>
-        <li>Added a "Courses" component to the system.</li>
-        <ul>
-            <li>Instructors can create courses, specifying a course title, term, and section.</li>
-            <li>Instructors can enroll students in their courses.</li>
-            <li>Instructors can view proofs created by students in their courses.</li>
-            <li>Students can view courses they are enrolled in.</li>
-            <li>Students can join available courses in which they are not already enrolled.</li>
-        </ul>
-        <li>Added a "Report Bug / Feedback" page that allows users to send bug reports and additional feedback to the
-            development team.
-        </li>
-    </ul>
-
-    <h5><u>Version 1.0.2 - 3/3/2022</u></h5>
-    <ul>
-        <li>Proofchecker will now recognize "Fxab" as validate predicate syntax in FOL (in addition to "F(x, a, b)").
-        </li>
-        <li>The escape commands for symbols in proof fields have been updated as follows:</li>
-        <ul>
-            <li>Implies: <tt>\imp</tt></li>
-            <li>Contradiction: <tt>\con</tt></li>
-            <li>Universal Quantifier: <tt>\all</tt></li>
-            <li>Existential Quantifier: <tt>\exi</tt></li>
-        </ul>
-    </ul>
-
-    <h5><u>Version 1.0.1 - 2/27/2022</u></h5>
-    <ul>
-        <li>ProofChecker will now validate the restriction "<i>c</i> must not have appeared earlier in the proof" for
-            rule "∃E".
-        </li>
-        <li>ProofChecker will now validate the restriction "B must not contain <i>c</i>" for rule "∃E".</li>
-        <li>ProofChecker will now validate the restriction "<i>c</i> must be a generic free variable" for rule "∀I".
-        </li>
-        <li>Fixed a bug where the CQ rule was not verifying whether the variables and domains on two lines were the
-            same.
-        </li>
-        <li>Split the TFL Rules and FOL Rules into separate tabs in the right-hand navigation.</li>
-        <li>Added a counter to the Create/Edit Proof pages that displays the number of steps in the proof.</li>
-    </ul>
-
-    <h5><u>Version 1.0.0 - 2/27/2022</u></h5>
-    <ul>
-        <li>Fixed a bug with the basic FOL rules preventing verification of sentences containing multiple predicates.
-        </li>
-        <ul>
-            <li><b>Note:</b> ProofChecker currently does not validate the restriction "<i>c</i> must not have appeared
-                earlier in the proof" for rule "∃E".
-            </li>
-            <li><b>Note:</b> ProofChecker currently does not validate the restriction "<i>c</i> must be a generic free
-                variable" for rule "∀I".
+            <li>Adding case for proofs with no premise
             </li>
         </ul>
-        <li>Added a "Students Proofs" page for Instructor accounts so that instructors can view proofs created by
-            students.
-        </li>
-        <li>Renamed the "Proofs" page to "My Proofs" for clarity.</li>
-        <li>Added pagination on the "My Proofs" page to prevent Proof cards from overflowing the boundaries of the
-            page.
-        </li>
-        <li>Added a "Download" button on the Create/Edit Proof pages that allows the user to download a PDF file
-            containing their proof.
-        </li>
-        <li>Added a note under the ∀I image in the Rules tab explaining that "<i>c</i> must be a generic free variable".
-        </li>
-    </ul>
-</div>
+
+        <h5><u>Version 2.1.0 - 11/13/2022</u></h5>
+        <ul>
+            <li>Fixed button order to be more consistent across different pages
+            </li>
+        </ul>
+
+        <h5><u>Version 2.0.8 - 11/11/2022</u></h5>
+        <ul>
+            <li>Bug in code for start date on assignments. Made start date a required field
+            </li>
+        </ul>
+
+        <h5><u>Version 2.0.7 - 11/9/2022</u></h5>
+        <ul>
+            <li>Fixed Line Indentation bug that previously allowed user to indent further than they should
+            </li>
+        </ul>
+
+        <h5><u>Version 2.0.6 - 11/7/2022</u></h5>
+        <ul>
+            <li>Fixed not being able to create course in instructor account
+            </li>
+        </ul>
+
+        <h5><u>Version 2.0.5 - 11/5/2022</u></h5>
+        <ul>
+            <li>Fixed Comma bug + Rule Parsing Bug
+            </li>
+        </ul>
+
+        <h5><u>Version 2.0.4 - 11/4/2022</u></h5>
+        <ul>
+            <li>Fixed comma being added to rule when new row is added.
+            </li>
+        </ul>
+
+
+        <h5><u>Version 2.0.3 - 11/2/2022</u></h5>
+        <ul>
+            <li>Merging bug fix for creating an account. Users can now create an account using valid email. Email will
+                be sent and user must click link in email to activate.
+            </li>
+        </ul>
+
+        <h5><u>Version 2.0.2 - 10/28/2022</u></h5>
+        <ul>
+            <li>Commentated out a line in home.html regarded old proofchecker
+            </li>
+        </ul>
+
+
+        <h5><u>Version 2.0.1 - 10/28/2022</u></h5>
+        <ul>
+            <li>Removed left sidebar in favor of putting menu on top navbar</li>
+            <li>Restructured right sidebar to allow more space when it is hidden</li>
+            <li>Changed sidebar to allow content to push right when opened</li>
+            <li>Centered most pages notably except proof buddy engine, version log, developers</li>
+            <li>Added Drexel’s logo to homepage</li>
+            <li>Put a footer on each page stating app developed by Drexel University</li>
+            <li>Added ability to show and hide subrules for proofs</li>
+        </ul>
+
+        <h5><u>Version 2.0.0 - 10/26/2022</u></h5>
+        <ul>
+            <li>Disabled email activation requirement for bug fixes
+            </li>
+        </ul>
+
+        <h5><u>Version 1.0.7 - 4/7/2022</u></h5>
+        <ul>
+            <li>Fixed a bug with the basic TFL elimination rules (Conjunction, Disjunction, Implication, and
+                Biconditional
+                Elimination).
+                These rules now check that the root operand on line m properly matches the rule being applied.
+            </li>
+        </ul>
+
+
+        <h5><u>Version 1.0.6 - 3/13/2022</u></h5>
+        <ul>
+            <li>Added an "Upload Image" option to the Report Bug/Feedback form so that users can send screenshots
+                when reporting their feedback
+            </li>
+        </ul>
+
+
+        <h5><u>Version 1.0.5 - 3/10/2022</u></h5>
+        <ul>
+            <li>Added line re-ordering functionality to the Proof form.</li>
+            <ul>
+                <li>Added an "Up Arrow" button which swaps the current row
+                    with the one above if they're sequential or
+                    pushes current row up into the previous row's level.
+                </li>
+                <li>added a "Down Arrow" button which swaps the current row
+                    with the one below it if they're sequential or
+                    pushes current row down into the next row's level.
+                </li>
+            </ul>
+            <li>Added hover text to the left-menu icons when the menu is collapsed.</li>
+        </ul>
+
+
+        <h5><u>Version 1.0.4 - 3/10/2022</u></h5>
+        <ul>
+            <li>Added Assignments functionality:</li>
+            <ul>
+                <li>Instructors can create Assignments for a course
+                    that can be viewed by all Students enrolled in that course.
+                </li>
+                <li>Instructors can add Problems to an assignment. A Problem is essentially an incomplete proof
+                    with additional attributes ("points" and "target steps").
+                </li>
+                <li>Students can access Assignments for courses in which they are enrolled.</li>
+                <li>Students can attempt to solve Assignment problems and save their solutions as proofs.</li>
+            </ul>
+        </ul>
+
+        <h5><u>Version 1.0.3 - 3/6/2022</u></h5>
+        <ul>
+            <li>Added automatic updating of line numbers in citations.</li>
+            <ul>
+                <li>As users add and delete lines within a proof,
+                    citations in the "rule" field will change to reflect the new, updated line number.
+                </li>
+                <li>Line numbers also update when lines are moved into or out of a subproof</li>
+            </ul>
+            <li>Added a "Courses" component to the system.</li>
+            <ul>
+                <li>Instructors can create courses, specifying a course title, term, and section.</li>
+                <li>Instructors can enroll students in their courses.</li>
+                <li>Instructors can view proofs created by students in their courses.</li>
+                <li>Students can view courses they are enrolled in.</li>
+                <li>Students can join available courses in which they are not already enrolled.</li>
+            </ul>
+            <li>Added a "Report Bug / Feedback" page that allows users to send bug reports and additional feedback to
+                the
+                development team.
+            </li>
+        </ul>
+
+        <h5><u>Version 1.0.2 - 3/3/2022</u></h5>
+        <ul>
+            <li>Proofchecker will now recognize "Fxab" as validate predicate syntax in FOL (in addition to "F(x, a,
+                b)").
+            </li>
+            <li>The escape commands for symbols in proof fields have been updated as follows:</li>
+            <ul>
+                <li>Implies: <tt>\imp</tt></li>
+                <li>Contradiction: <tt>\con</tt></li>
+                <li>Universal Quantifier: <tt>\all</tt></li>
+                <li>Existential Quantifier: <tt>\exi</tt></li>
+            </ul>
+        </ul>
+
+        <h5><u>Version 1.0.1 - 2/27/2022</u></h5>
+        <ul>
+            <li>ProofChecker will now validate the restriction "<i>c</i> must not have appeared earlier in the proof"
+                for
+                rule "∃E".
+            </li>
+            <li>ProofChecker will now validate the restriction "B must not contain <i>c</i>" for rule "∃E".</li>
+            <li>ProofChecker will now validate the restriction "<i>c</i> must be a generic free variable" for rule "∀I".
+            </li>
+            <li>Fixed a bug where the CQ rule was not verifying whether the variables and domains on two lines were the
+                same.
+            </li>
+            <li>Split the TFL Rules and FOL Rules into separate tabs in the right-hand navigation.</li>
+            <li>Added a counter to the Create/Edit Proof pages that displays the number of steps in the proof.</li>
+        </ul>
+
+        <h5><u>Version 1.0.0 - 2/27/2022</u></h5>
+        <ul>
+            <li>Fixed a bug with the basic FOL rules preventing verification of sentences containing multiple
+                predicates.
+            </li>
+            <ul>
+                <li><b>Note:</b> ProofChecker currently does not validate the restriction "<i>c</i> must not have
+                    appeared
+                    earlier in the proof" for rule "∃E".
+                </li>
+                <li><b>Note:</b> ProofChecker currently does not validate the restriction "<i>c</i> must be a generic
+                    free
+                    variable" for rule "∀I".
+                </li>
+            </ul>
+            <li>Added a "Students Proofs" page for Instructor accounts so that instructors can view proofs created by
+                students.
+            </li>
+            <li>Renamed the "Proofs" page to "My Proofs" for clarity.</li>
+            <li>Added pagination on the "My Proofs" page to prevent Proof cards from overflowing the boundaries of the
+                page.
+            </li>
+            <li>Added a "Download" button on the Create/Edit Proof pages that allows the user to download a PDF file
+                containing their proof.
+            </li>
+            <li>Added a note under the ∀I image in the Rules tab explaining that "<i>c</i> must be a generic free
+                variable".
+            </li>
+        </ul>
+    </div>
 
 {% endblock %}

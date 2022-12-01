@@ -1,4 +1,4 @@
-{% extends 'proofchecker/base.html' %} {% load static %} {% block content %}
+{% extends 'proofchecker/base.html' %} {% load static %} {% block content %} {% load widget_tweaks %}
     <div class="pt-3 mt-3 px-3 mx-3">
         {% if object.pk %} {% if object.created_by == request.user %}
             <h3 class="font-weight-bold mb-2">Edit Proof </h3>
@@ -141,9 +141,9 @@
                         <tr id="proofline_set-{{ forloop.counter0 }}" class="proofline_set ">
                     {% endif %}
 
-                    <td>{{ line.line_no }}</td>
-                    <td>{{ line.formula }}</td>
-                    <td>{{ line.rule }}</td>
+                    <td>{{ line.line_no|add_class:"line-no-CSS" }}</td>
+                    <td>{{ line.formula|add_class:"form-fields-CSS" }}</td>
+                    <td>{{ line.rule|add_class:"form-fields-CSS" }}</td>
                     <td>
                         <button class="insert-row btn btn-primary btn-sm" type="button"
                                 name="proofline_set-{{ forloop.counter0 }}-insert-btn"
@@ -227,11 +227,10 @@
                     </tr>
                     {% endfor %}
                     </tbody>
-                    {% load widget_tweaks %}
+
                     <tr id="empty-form" class="hidden">
 
                         <td>{{ formset.empty_form.line_no|add_class:"line-no-CSS" }}</td>
-
                         <td>{{ formset.empty_form.formula|add_class:"form-fields-CSS" }}</td>
                         <td>{{ formset.empty_form.rule|add_class:"form-fields-CSS" }}</td>
                         <td>
@@ -373,8 +372,52 @@
             <hr>
         </form>
 
-        <button id="download" name="download" type="submit" class="btn btn-primary mb-3">Download</button>
+        <div class="dropdown mb-3">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"
+                    aria-expanded="false">
+                Download
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" id="download" type="submit">Screenshot</a>
+                <a class="dropdown-item disabled" id="download_latex" type="submit">Latex file</a>
+                <a class="dropdown-item disabled" id="download_jupyter" type="submit">Jupyter file</a>
+            </div>
+        </div>
+    <!--<button name="auto_save" type="submit" class="btn btn-primary">Auto save test</button>-->
+        <!--<button id="download" name="download" type="submit" class="btn btn-primary mb-3">Download</button>-->
     </div>
+<!--
+    <script type="text/javascript">
+        let typingTimer;                //timer identifier
+        const doneTypingInterval = 2000;  //time in ms, 5 seconds for example
+        const $input = $('#proof-table');
+
+        //on keyup, start the countdown
+        $input.on('keyup', function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        });
+
+        //on keydown, clear the countdown
+        $input.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
+
+        //user is "finished typing," do something
+        let timer;
+        function doneTyping() {
+            const box = document.getElementById('auto-save-message');
+            const datetime = new Date().toLocaleTimeString();
+            document.getElementById("time").textContent = datetime;
+            box.style.visibility = 'visible';
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                box.style.visibility = 'hidden';
+            }, 6000);
+
+
+        }
+    </script>-->
     <script src="{% static 'js/syntax.js' %}"></script>
     <script src="{% static 'js/valid_input.js' %}"></script>
     <script src="{% static 'js/proof_checker.js' %}"></script> {% endblock %}

@@ -45,13 +45,14 @@ def all_assignments_view(request):
 
 
 def instructor_assignments_view(request):
-    cols = ['id','title', 'course__title', 'due_by']
+    cols = ['id', 'title', 'course__title', 'due_by']
     object_list = Assignment.objects.filter(created_by__user=request.user).values(*cols)
     for obj in object_list:
         obj['course'] = obj['course__title']
         obj.pop('course__title')
 
-        assignment_delay_qs = AssignmentDelay.objects.filter(assignment_id=obj['id'], submission_date__isnull=True).exists()
+        assignment_delay_qs = AssignmentDelay.objects.filter(assignment_id=obj['id'],
+                                                             submission_date__isnull=True).exists()
         if assignment_delay_qs:
             obj.update({'submission': True})
         else:
@@ -70,7 +71,7 @@ def student_assignments_view(request):
     print("today_date:", today_date)
     object_list = Assignment.objects.filter(
         course__in=Course.objects.filter(Q(students__user=request.user)),
-        start_date__lte=today_date 
+        start_date__lte=today_date
     )
     print("object_list:", object_list)
     context = {
@@ -135,7 +136,7 @@ def assignment_details_view(request, pk=None):
             return HttpResponseRedirect("/assignments")
 
     assignment_date = assignment.due_by.strftime("%Y-%m-%d")
-        
+
     user_assignment_delay_obj = None
     can_user_request = None
     submission_date = None
@@ -145,7 +146,8 @@ def assignment_details_view(request, pk=None):
 
     total_problem = Assignment.objects.filter(id=assignment.id).values_list('problems__id').count()
     print("total_problem:", total_problem)
-    total_grading = StudentProblemSolution.objects.filter(assignment=assignment, student_id=studentPk, grade__isnull=False).count()
+    total_grading = StudentProblemSolution.objects.filter(assignment=assignment, student_id=studentPk,
+                                                          grade__isnull=False).count()
     print("total_grading:", total_grading)
 
     if total_grading >= total_problem:
@@ -168,7 +170,7 @@ def assignment_details_view(request, pk=None):
             submission_date = submission_date.strftime("%Y-%m-%d")
             if submission_date >= current_date and status == "accepted":
                 submission_allowed = True
-        
+
     # print("submission_date:", submission_date)
     # print("submission_allowed:", submission_allowed)
 
@@ -208,7 +210,6 @@ def assignment_details_view(request, pk=None):
                     # setattr(problem, 'grade', solution.grade)
                 totalgrade = totalgrade + problem.grade
                 break
-   
 
     if request.POST:
         if form.is_valid():
@@ -219,7 +220,7 @@ def assignment_details_view(request, pk=None):
                     assignment=assignment, student=get_student
                 )
 
-# note that "prooff" is NOT a typo!
+                # note that "prooff" is NOT a typo!
                 for i in get_proof:
                     get_proof = i.proof
                     prooff = ProofObj(lines=[])  #
@@ -257,7 +258,7 @@ def assignment_details_view(request, pk=None):
             # if studentPk is not None:
                 # assignment.is_submitted = True
                 # assignment.is_late_submitted = True
-            assignment.problems.add(*problems)
+            assignment.problems.add(problems)
             assignment.save()
 
             return HttpResponseRedirect(reverse("all_assignments"))
@@ -485,12 +486,20 @@ def problem_solution_view(request, problem_id=None):
                 response = verify_proof(proof, parser)
 
             elif "submit" in request.POST:
+
                 proof.save()
                 formset.save()
                 messages.success(request, "Solution saved successfully")
                 return HttpResponseRedirect(
                     reverse("assignment_details", kwargs={"pk": assignmentPk})
                 )
+
+            elif "auto_save" in request.POST:
+                import logging
+                logging.info("Auto-save function called")
+                proof.save()
+                formset.save()
+                messages.success(request, "Solution saved successfully")
 
     if request.user.is_student:
         problem_form.disabled_all()
@@ -523,17 +532,18 @@ class ProblemDeleteView(DeleteView):
 def get_csv_file(request, id):
     print("assignment_id:", id)
     all_student = StudentProblemSolution.objects.filter(assignment_id=id).values('student').distinct()
-    response = HttpResponse('')     
-    response['Content-Disposition'] = 'attachment; filename=student_grading.csv'     
-    writer = csv.writer(response)     
-    writer.writerow(['Username', 'Name', 'Email', 'Course', 'Assignment', 'Problem', 'Point Recieved', 'Problem Total', 'Total Points'])
+    response = HttpResponse('')
+    response['Content-Disposition'] = 'attachment; filename=student_grading.csv'
+    writer = csv.writer(response)
+    writer.writerow(['Username', 'Name', 'Email', 'Course', 'Assignment', 'Problem', 'Point Recieved', 'Problem Total',
+                     'Total Points'])
 
     problem_obj = Assignment.objects.filter(id=id).values('problems__point')
     total_points = 0
     for problem in problem_obj:
         total_points += problem['problems__point']
         # print("PID; ", Problem.objects.filter(id=problem['problems__id']))
-    
+
     for student_grading in all_student:
         print("student_grading:", student_grading)
         student_grading = StudentProblemSolution.objects.filter(assignment_id=id, student=student_grading['student'])
@@ -548,8 +558,8 @@ def get_csv_file(request, id):
             grade = obj.grade
             problem_total = obj.problem.point
             total = total_points
-            writer.writerow([username, full_name, email, course, assignment, problem, grade, problem_total, total])     
-        
+            writer.writerow([username, full_name, email, course, assignment, problem, grade, problem_total, total])
+
     return response
 
 
@@ -569,7 +579,9 @@ def user_assignment_request(request, a_id):
     print("assignment_id", assignment_id)
     assignment_obj = Assignment.objects.get(id=assignment_id)
     if assignment_obj.created_by.user == request.user:
-        delay_assignment = AssignmentDelay.objects.filter(assignment=assignment_obj, submission_date__isnull=True).values('id', 'student__user__username')
+        delay_assignment = AssignmentDelay.objects.filter(assignment=assignment_obj,
+                                                          submission_date__isnull=True).values('id',
+                                                                                               'student__user__username')
         if request.method == "GET":
             context = {'assignment': assignment_obj, 'students': delay_assignment}
             return render(request, "assignments/assignment_delay_request.html", context)
@@ -593,7 +605,7 @@ def user_assignment_request(request, a_id):
             else:
                 messages.warning(request, "New date should be greater then today's date")
                 return HttpResponseRedirect(f"/user_assignment_request/{assignment_id}")
-                
+
         return HttpResponseRedirect('/assignments')
     else:
         return HttpResponse("not authorize to view")

@@ -5,40 +5,56 @@
 
         <img src="../../../media/logos/drexel-dragon-all_blue.png" class="drexel-logo img-fluid pb-4 mb-4" alt="">
 
-        <h1 class="display-4 fw-bold pb-3 font-weight-bold">Proof Buddy</h1>
+        <div class="home-container-left">
 
-        {% if user.is_authenticated %} {% if user.is_student %} {% if user.first_name %}
-            <h3>Welcome, {{ user.first_name }} {{ user.last_name }}</h3>
-        {% else %}
-            <h3>Welcome, {{ user.username }} to your Student Account!</h3>
-        {% endif %}
-        {% elif user.is_instructor %} {% if user.first_name %}
+            <div class="home-title-text">
+                PROOFS<br> MADE EASY
+            </div>
+
+            <br>
+            {% if user.is_authenticated %} {% if user.is_student %} {% if user.first_name %}
                 <h3>Welcome, {{ user.first_name }} {{ user.last_name }}</h3>
             {% else %}
-                <h3>Welcome, {{ user.username }} </h3>
+                <h3>Hi <span class="wave">👋</span> <strong>{{ user.username }}</strong>, this is student account</h3>
             {% endif %}
+            {% elif user.is_instructor %} {% if user.first_name %}
+                    <h3>Welcome, {{ user.first_name }} {{ user.last_name }}</h3>
+                {% else %}
+                    <h3>Welcome, {{ user.username }} </h3>
+                {% endif %}
 
+            {% endif %}{% endif %}
 
-        {% endif %} {% else %}
-            <h3>Welcome</h3>
-        {% endif %}
+            {% if user.is_authenticated %}
+                <br>
+                <a class="btn btn-primary btn-lg home-btn" type="submit" href="{% url 'all_proofs' %}">Begin</a>
 
-
-
-        {% if user.is_authenticated %}
-            <p class="lead pt-4"> Begin working on some <a href="{% url 'all_proofs' %}">proofs</a>!</p>
-        {% else %}
+            {% else %}
+                <div id="home-text-container">
+                    <p>
+                        This web app is the platform created by professors and students to provide a way for student to
+                        learn about proofs and check their progress.
+                    </p>
+                </div>
+                <!--
             <p class="lead pt-4"><strong><a href="{% url 'login' %}">Log in</a></strong> to begin working on
                 some
                 proofs!</p>
-            <p class="lead pt-4"> Don't have an account? <a href="{% url 'signup' %}">Sign up</a> now!</p>
-            <hr style="height:30pt; visibility:hidden;"/>
-            <!--<p class="pt-6"> Or, try out a proof without signing in with our new <a
+            <p class="lead pt-4"> Don't have an account? <a href="{% url 'signup' %}">Sign up</a> now!</p>-->
+
+                <br>
+                <a class="btn btn-primary btn-lg home-btn" type="submit" href="{% url 'signup' %}">Sign Up</a>
+
+                <a class="btn btn-lg btn-secondary home-btn ml-4" href="{% url 'login' %}">Log in</a>
+
+                <hr style="height:30pt; visibility:hidden;"/>
+                <!--<p class="pt-6"> Or, try out a proof without signing in with our new <a
                     href="{% url 'proof_checker' %}"> TFL Proof Buddy </a> tool! </p> -->
 
-        {% endif %}
+            {% endif %}
 
 
+        </div>
     </div>
 
 {% endblock %}

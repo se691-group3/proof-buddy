@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 
 #main {
     transition: margin-right .5s;
@@ -70,6 +72,8 @@ body {
     height: 100%;
     margin: 0;
     font-family: sans-serif;
+
+
 }
 
 
@@ -163,10 +167,11 @@ body > footer {
 }
 
 .drexel-logo {
-    width: 30em;
+    transform: translateY(15%);
+    width: 40em;
     float: right;
     position: sticky;
-    right: 15em;
+    right: 10em;
     margin-left: 20em;
 }
 
@@ -187,3 +192,55 @@ body > footer {
         border-left-style: hidden;
         border-bottom-style: hidden;
 }
+
+
+#home-text-container{
+    width: 35em;
+    line-height: 25px;
+    font-size: 20px;
+}
+
+.home-btn{
+    font-size: 20px;
+    border-radius:40px;
+
+    width: 6em;
+}
+@media screen and (min-width: 600px) {
+    .home-container-left {
+        position: relative;
+
+        transform: translateY(30%);
+        left: 130px;
+        overflow: hidden;
+    }
+}
+.home-title-text{
+    font-size: 4.5em;
+    font-weight: bold;
+    font-family: 'Press Start 2P', cursive;
+
+}
+
+
+.wave {
+  animation-name: wave-animation;  /* Refers to the name of your @keyframes element below */
+  animation-duration: 2.5s;        /* Change to speed up or slow down */
+  animation-iteration-count: infinite;  /* Never stop waving :) */
+  transform-origin: 70% 70%;       /* Pivot around the bottom-left palm */
+  display: inline-block;
+}
+
+@keyframes wave-animation {
+    0% { transform: rotate( 0.0deg) }
+   10% { transform: rotate(14.0deg) }  /* The following five values can be played with to make the waving more or less extreme */
+   20% { transform: rotate(-8.0deg) }
+   30% { transform: rotate(14.0deg) }
+   40% { transform: rotate(-4.0deg) }
+   50% { transform: rotate(10.0deg) }
+   60% { transform: rotate( 0.0deg) }  /* Reset for the last half to pause */
+  100% { transform: rotate( 0.0deg) }
+}
+
+
+

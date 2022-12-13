@@ -151,11 +151,6 @@ tt {
     border: none;
 }
 
-
-.footer-wrapper {
-    min-height: calc(50vh - 30px);
-}
-
 body > footer {
     position: sticky;
     top: 100vh;

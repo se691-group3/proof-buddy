@@ -6,7 +6,7 @@ from proofchecker.utils.constants import Constants
 from proofchecker.utils.tfllexer import IllegalCharacterError
 from proofchecker.proofs.exprMethods import myMakeTree, instanceOf #no longer needed for this file
 from proofchecker.rules.newrule import NewRule #purely for testing
-
+# testing git
 # print(loadJson("ds")) ; used for demo
 
 def verify_proof(proof: ProofObj, parser):

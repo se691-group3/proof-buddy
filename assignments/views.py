@@ -207,7 +207,7 @@ def assignment_details_view(request, pk=None):
             if solution.problem.pk == problem.pk:
                 if solution.grade:
                     problem.grade = solution.grade
-                    # setattr(problem, 'grade', solution.grade)
+                    problem.save()
                 totalgrade = totalgrade + problem.grade
                 break
 
@@ -253,12 +253,6 @@ def assignment_details_view(request, pk=None):
                             scroe_lost = more_line * i.problem.lost_points
                             i.grade = i.problem.point - scroe_lost
                             i.save()
-            # print("dddddd", response.err_msg)
-
-            # if studentPk is not None:
-                # assignment.is_submitted = True
-                # assignment.is_late_submitted = True
-            assignment.problems.add(problems)
             assignment.save()
 
             return HttpResponseRedirect(reverse("all_assignments"))
@@ -526,7 +520,10 @@ class ProblemView(ListView):
 class ProblemDeleteView(DeleteView):
     model = Problem
     template_name = "assignments/delete_problem.html"
-    success_url = "/problems/"
+    # Return to the assignment detail page
+    def get_success_url(self):
+        #get the assingment ID that has the deleting problem to create a returning URL
+        return "/assignment/" + str(Assignment.objects.get(problems=self.object).id) + "/details"
 
 
 def get_csv_file(request, id):

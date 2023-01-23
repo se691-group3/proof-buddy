@@ -6,7 +6,7 @@ from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import ListView, DeleteView
+from django.views.generic import ListView, UpdateView, DeleteView
 import csv
 
 from accounts.decorators import instructor_required
@@ -280,6 +280,58 @@ class AssignmentDeleteView(DeleteView):
     template_name = "assignments/delete_assignment.html"
     success_url = "/assignments/"
 
+class AssignmentDuplicateView(DeleteView):
+    model = Assignment
+    template_name = "assignments/duplicate_assignment.html"
+    success_url = "/assignments/"
+
+    def post(self, request, *args, **kwargs):
+        return self.duplicate()
+
+    def duplicate(self):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        assignment = self.get_object()
+        assignment.pk = None
+        old_title = assignment.title
+        assignment.title = ''
+        assignment.save()
+        copy = self.find_copy(old_title)
+        assignment.title = self.generate_title(copy, old_title)
+        self.duplicate_problems(assignment.pk, assignment)
+        return HttpResponseRedirect(success_url)
+
+    def duplicate_problems(self, assignment):
+        problems = self.object.problems.all()
+        for problem in problems:
+            problem.pk = None
+            proof = problem.proof
+            proof.pk = None
+            proof.save()
+            problem.proof_id = proof.pk
+            problem.save()
+            assignment.problems.add(problem)
+        assignment.save()
+    
+    def find_copy(self, title):
+        try:
+            index_of_copy = title.index('(Copy ')
+            return Assignment.objects.filter(title__contains=title[:index_of_copy-1]).count()
+        except:
+            return Assignment.objects.filter(title=title).count()
+        
+
+    def generate_title(self, copy, title):
+        try:
+            index_of_copy = title.index('(Copy ')
+            new_title = title[:index_of_copy] + '(Copy ' + str(copy) + ')'
+            while (Assignment.objects.filter(title=new_title).count() > 0):
+                copy+=1
+                new_title = title[:index_of_copy] + '(Copy ' + str(copy) + ')'
+            return title[:index_of_copy] + '(Copy ' + str(copy) + ')'
+        except:
+            return title + ' (Copy ' + str(copy) + ')'
+        
 
 @login_required
 def create_problem(request):

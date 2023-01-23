@@ -1,0 +1,16 @@
+{% extends "proofchecker/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <br>
+        <h3>Duplicate Assignment</h3>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            <p>Are you sure you want to duplicate "{{ object }}"?</p>
+            <input class="btn btn-danger" type="submit" value="Confirm"/>
+            <a class="btn btn-primary" href={% url 'all_assignments' %}>Cancel</a>
+        </form>
+    </div>
+{% endblock %}

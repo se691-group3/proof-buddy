@@ -148,13 +148,23 @@
         {% endfor %} {% endif %}
     </div>
     {% block content %}{% endblock %}
-
+<!--
     <div class="buttons openbtn" onclick="openNav()">
         <button class="btn btn-primary rounded-pill " id="sidebarCollapse">
             Proof Rules
         </button>
     </div>
+    -->
+
+<div class="proof-button" onclick="openNav()" >
+  <span class="proof-button-icon">?</span>
+  <span class="proof-button-text">Proof Rules</span>
 </div>
+</div>
+
+
+
+
 <footer>DEVELOPED BY DREXEL UNIVERSITY</footer>
 <script>
     function openNav() {

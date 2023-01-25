@@ -12,7 +12,16 @@
             {% for object in object_list %}
                 <div class="card mx-2 mb-3" style="max-width: 20rem;">
                     <div class="card-header">
-                        <h5 style="text-align: center"><b> {{ object.title }}</b></h5>
+                        <h5 style="text-align: center"><b> {{ object.title }}</b>
+                            
+                            <!-- <a href="{% url 'duplicate_assignment' object.id %}" class="card-link btn btn-primary btn-sm">
+                                <span>
+                                    <i class="fa fa-copy"></i>
+                                </span>
+                            </a> 
+                        COMMENTING OUT FOR STEVE'S VIDEO NEED TO FIX THIS -->
+                        </h5>
+                        
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><b>Title:</b> {{ object.title }}</li>
@@ -41,4 +50,5 @@
 
 {% block additionalFiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {% endblock %}

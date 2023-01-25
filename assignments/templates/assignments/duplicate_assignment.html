@@ -4,13 +4,13 @@
 {% block content %}
     <div class="container">
         <br>
-        <h2>Delete Problem</h2>
+        <h3>Duplicate Assignment</h3>
         <hr>
         <form method="post">
             {% csrf_token %}
-            <p>Are you sure you want to delete "{{ object.question }}"?</p>
+            <p>Are you sure you want to duplicate "{{ object }}"?</p>
             <input class="btn btn-danger" type="submit" value="Confirm"/>
-            <a class="btn btn-primary" href="javascript:javascript:history.go(-1)">Cancel</a>
+            <a class="btn btn-primary" href={% url 'all_assignments' %}>Cancel</a>
         </form>
     </div>
 {% endblock %}

@@ -1,7 +1,12 @@
-from urllib import request
+import os
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+import pandas as pd
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.forms import ModelForm
+
 
 from proofchecker.models import Student, Instructor, User
 
@@ -66,7 +71,6 @@ class UserForm(forms.ModelForm):
 
 
 class StudentProfileForm(forms.ModelForm):
-
     class Meta:
         model = Student
         fields = ['image', 'bio', 'dob', 'mobile']
@@ -76,10 +80,24 @@ class StudentProfileForm(forms.ModelForm):
 
 
 class InstructorProfileForm(forms.ModelForm):
-
     class Meta:
         model = Instructor
         fields = ['image', 'bio', 'dob', 'mobile']
         widgets = {
             'dob': DateInput(),
         }
+
+
+class CSVUploadForm(forms.Form):
+    file = forms.FileField()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        file = cleaned_data.get("file")
+        if not file.name.endswith(".csv"):
+            raise ValidationError(
+                {
+                    "file": "Filetype not supported, the file must be a '.csv'",
+                }
+            )
+        return cleaned_data

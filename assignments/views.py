@@ -486,7 +486,7 @@ def problem_solution_view(request, problem_id=None):
                 response = verify_proof(proof, parser)
 
             elif "submit" in request.POST:
-
+                assignmentPk.assignment.resubmissions -= 1
                 proof.save()
                 formset.save()
                 messages.success(request, "Solution saved successfully")
@@ -494,12 +494,6 @@ def problem_solution_view(request, problem_id=None):
                     reverse("assignment_details", kwargs={"pk": assignmentPk})
                 )
 
-            elif "auto_save" in request.POST:
-                import logging
-                logging.info("Auto-save function called")
-                proof.save()
-                formset.save()
-                messages.success(request, "Solution saved successfully")
 
     if request.user.is_student:
         problem_form.disabled_all()

@@ -7,6 +7,8 @@
 
         <h1 class="display-4 fw-bold pb-3 font-weight-bold">Proof Buddy</h1>
 
+        <a class="btn btn-primary" href="{% url 'custom-csv-view' %}">Bulk Create</a>
+
         {% if user.is_authenticated %} {% if user.is_student %} {% if user.first_name %}
             <h3>Welcome, {{ user.first_name }} {{ user.last_name }}</h3>
         {% else %}

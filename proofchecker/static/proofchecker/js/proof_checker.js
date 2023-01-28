@@ -126,7 +126,7 @@ function start_proof(element) {
     update_form_count()
     hide_make_parent_button()
     element.hidden = true
-    document.getElementById("btn_restart_proof").classList.remove("hidden")
+    document.getElementById("btn_restart_proof").removeAttribute("hidden")
     reset_order_fields()
     updateLineCount()
 }

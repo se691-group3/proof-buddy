@@ -18,14 +18,34 @@
         {% endif %}
         <form id="proof_form" action="" method="post">
             {% csrf_token %}
-            {% for line in problem_form %}
-                <div class="row">
-                    <div class="col-sm-4 col-form-label">
-                        <label>{{ line.label }}</label>
+            {% if request.user.is_student %}
+                {% for line in problem_form %}
+                    {% if line.label == 'Target steps' and problem_form.initial.show_target_steps == False %}
+                    {% else %}
+                        {% if line.label == 'Show target steps' %}
+                        {% else %}
+                            <div class="row">
+                                <div class="col-sm-4 col-form-label">
+                                    <label>{{ line.label }}</label>
+                                </div>
+                                <div class="col-sm-8">{{ line }}</div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            {% if request.user.is_instructor %}
+                {% for line in problem_form %}
+                    <div class="row">
+                        <div class="col-sm-4 col-form-label">
+                            <label>{{ line.label }}</label>
+                        </div>
+                        <div class="col-sm-8">{{ line }}</div>
                     </div>
-                    <div class="col-sm-8">{{ line }}</div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% endif %}
+
             {% for line in proof_form %}
                 <div class="row">
                     <div class="col-sm-4 col-form-label">
@@ -116,7 +136,7 @@
             </div>
             {% if formset %} {{ formset.management_form }}
                 <!-- Display lines -->
-                <table class="table table-striped table-bordered table-hover table-sm table-responsive" id="proof-table">
+                <table class="table table-striped table-bordered table-hover table-sm table-responsive" id="proof-table" hidden>
                     <thead id="column-titles">
                         <tr class="font-weight-bold">
                             <td>Line #</td>

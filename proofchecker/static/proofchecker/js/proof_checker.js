@@ -85,6 +85,10 @@ function start_proof(element) {
     const premises = document.getElementById('id_premises').value;
     const premiseArray = premises.split(";").map(item => item.trim());
     const prooflineTableBody = document.getElementById(FORMSET_TBODY_ID);
+    const proofTable = document.getElementById('proof-table');
+
+    //Show proof table when after clicking Start Proof button
+    proofTable.removeAttribute('hidden');
 
     // If there are zero premises:
     if ((premiseArray.length === 1) && (premiseArray[0] == "")) {

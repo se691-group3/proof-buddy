@@ -1,12 +1,7 @@
-import os
 from django import forms
-import pandas as pd
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.forms import ModelForm
-
 
 from proofchecker.models import Student, Instructor, User
 
@@ -101,3 +96,32 @@ class CSVUploadForm(forms.Form):
                 }
             )
         return cleaned_data
+
+    def check_columns(self, required_columns, dict_reader):
+        for req_col in required_columns:
+            if req_col not in dict_reader.fieldnames:
+                raise ValidationError(
+                    {
+                        f"A required column is missing from the uploaded CSV: '{req_col}'"
+                    }
+                )
+
+    def clean_email(self):
+        # if User.objects.filter(email=self.cleaned_data['email']).exists():
+        #     raise forms.ValidationError(
+        #         "The given e-mail address is already registered")
+        return self.cleaned_data['email']
+
+    @transaction.atomic
+    def save(self, email_address):
+        user = User()
+        user.username = email_address[0:email_address.find('@')]
+        user.email = email_address
+        user.password = User.objects.make_random_password(length=16)
+        user.is_student = True
+        user.is_active = False
+        user.save()
+
+        student = Student.objects.create(user=user)
+        student.save()
+        return user

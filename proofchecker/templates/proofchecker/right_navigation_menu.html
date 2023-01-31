@@ -14,6 +14,7 @@
         <div id="menu">
 
             <div id="rules-information">
+                <!--
                 <div class="rules-buttons">
                     <div class="mb-3 d-flex justify-content-center">
                         <button id="TFL" type="button" class="btn btn-primary mx-2" onclick="showRules(this.id)">TFL
@@ -152,9 +153,14 @@
 
 
                             </div>
+
                         </div>
+
                     </div>
+
                     <br>
+                    -->
+                <div id="TFL-rules">
                     <div class="basic-TFL-rules">
                         <div id="main-header">Basic TFL Rules:</div>
                         <div id="Conjunction">
@@ -212,7 +218,7 @@
                                  class="py-3 px-1">
                         </div>
                     </div>
-                    <div class="derived-TFL-rules">
+                    <div id="derived-TFL-rules">
                         <div id="main-header">Derived TFL Rules:</div>
                         <div id="Reiteration">
                             <div id="item-name">Reiteration:</div>
@@ -254,6 +260,7 @@
                     </div>
                 </div>
                 <div id="FOL-rules">
+                    <!--
                     <div class="d-flex justify-content-center">
                         <button class="btn btn-primary btn-sm" type="button" data-toggle="collapse"
                                 data-target="#collapseFOLRules"
@@ -311,7 +318,8 @@
 
                     </div>
                     <br>
-                    <div class="basic-FOL-rules">
+                    -->
+                    <div id="basic-FOL-rules">
                         <div id="main-header">Basic FOL Rules:</div>
                         <div id="Existential">
                             <div id="item-name">Existential:</div>
@@ -364,7 +372,7 @@
                                  class="py-3 px-1">
                         </div>
                     </div>
-                    <div class="derived-FOL-rules">
+                    <div id="derived-FOL-rules">
                         <div id="main-header">Derived FOL Rules:</div>
                         <div id="Conversion-of-Quantifiers">
                             <div id="item-name">Conversion of Quantifiers:</div>
@@ -488,6 +496,7 @@
 </div>
 
 <script type="text/javascript">
+
     $(document).ready(function () {
         // $('.basic-TFL-rules').hide();
         //$('.derived-TFL-rules').hide();
@@ -574,8 +583,14 @@
 </script>
 
 <script type="text/javascript">
+    if ("{{ rules }}" == "tfl_basic") {
+        document.getElementById(`FOL-rules`).style.display = "none";
+        document.getElementById(`derived-TFL-rules`).style.display = "none";
 
+    }
+    if ("{{ rules }}" == "fol_basic") {
+        document.getElementById(`TFL-rules`).style.display = "none";
+        document.getElementById(`derived-FOL-rules`).style.display = "none";
 
-    document.getElementById(`FOL-rules`).style.display = "none";
-
+    }
 </script>

@@ -21,6 +21,7 @@ from proofchecker.models import (
     Student,
     StudentProblemSolution,
     User,
+    RULES_CHOICES
 )
 from proofchecker.proofs.proofchecker import verify_proof
 from proofchecker.proofs.proofobjects import ProofObj, ProofLineObj
@@ -278,6 +279,7 @@ def assignment_details_view(request, pk=None):
         'submission': submission_allowed,
         'grading': all_problem_grading_complete,
     }
+
     return render(request, "assignments/assignment_details.html", context)
 
 
@@ -361,6 +363,7 @@ def problem_details_view(request, pk=None):
         pass
 
     proof = Proof.objects.get(problem=problem)
+
     proof_form = ProblemProofForm(request.POST or None, instance=proof)
 
     ProofLineFormset = inlineformset_factory(
@@ -494,7 +497,6 @@ def problem_solution_view(request, problem_id=None):
                     reverse("assignment_details", kwargs={"pk": assignmentPk})
                 )
 
-
     if request.user.is_student:
         problem_form.disabled_all()
         proof_form.disabled_all()
@@ -505,6 +507,7 @@ def problem_solution_view(request, problem_id=None):
         "proof_form": proof_form,
         "formset": formset,
         "response": response,
+        "rules":  proof.rules
     }
     return render(request, "assignments/problem_solution.html", context)
 

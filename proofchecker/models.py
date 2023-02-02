@@ -124,6 +124,7 @@ class ProofLine(models.Model):
     formula = models.CharField(max_length=255, null=True, blank=True)
     rule = models.CharField(max_length=255, null=True, blank=True)
     ORDER = models.IntegerField(null=True)
+    comment= models.TextField(blank=True)
 
     def __str__(self):
         return ('{}. Line {}: {}, {}'.format(

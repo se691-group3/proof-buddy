@@ -37,7 +37,7 @@ class ProblemForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProblemForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['onkeydown'] = 'replaceCharacter(this)'
+            visible.field.widget.attrs['onkeyup'] = 'replaceCharacter(this)'
 
     def disabled_all(self):
         self.fields['question'].widget.attrs['read-only'] = True
@@ -63,7 +63,7 @@ class ProblemProofForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProblemProofForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['onkeydown'] = 'replaceCharacter(this)'
+            visible.field.widget.attrs['onkeyup'] = 'replaceCharacter(this)'
 
     def disabled_all(self):
         self.fields['rules'].widget.attrs['read-only'] = True

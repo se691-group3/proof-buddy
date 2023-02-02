@@ -298,7 +298,7 @@ class AssignmentDuplicateView(DeleteView):
         assignment.save()
         copy = self.find_copy(old_title)
         assignment.title = self.generate_title(copy, old_title)
-        self.duplicate_problems(assignment)
+        self.duplicate_problems(assignment.pk, assignment)
         return HttpResponseRedirect(success_url)
 
     def duplicate_problems(self, assignment):

@@ -32,19 +32,18 @@ class AssignmentForm(forms.ModelForm):
 class ProblemForm(forms.ModelForm):
     class Meta:
         model = Problem
-        fields = ['question', 'point', 'target_steps', 'show_target_steps', 'lost_points']
+        fields = ['question', 'point', 'target_steps', 'lost_points']
 
     def __init__(self, *args, **kwargs):
         super(ProblemForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['onkeyup'] = 'replaceCharacter(this)'
+            visible.field.widget.attrs['onkeydown'] = 'replaceCharacter(this)'
 
     def disabled_all(self):
         self.fields['question'].widget.attrs['read-only'] = True
         self.fields['point'].widget.attrs['read-only'] = True
         self.fields['target_steps'].widget.attrs['read-only'] = True
         self.fields['lost_points'].widget.attrs['read-only'] = True
-        self.fields['show_target_steps'].widget.attrs['read-only'] = True
 class StudentProblemForm(ProblemForm):
     def __init__(self, *args, **kwargs):
         super(StudentProblemForm, self).__init__(*args, **kwargs)
@@ -63,7 +62,7 @@ class ProblemProofForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProblemProofForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['onkeyup'] = 'replaceCharacter(this)'
+            visible.field.widget.attrs['onkeydown'] = 'replaceCharacter(this)'
 
     def disabled_all(self):
         self.fields['rules'].widget.attrs['read-only'] = True

@@ -124,6 +124,7 @@ class ProofLine(models.Model):
     formula = models.CharField(max_length=255, null=True, blank=True)
     rule = models.CharField(max_length=255, null=True, blank=True)
     ORDER = models.IntegerField(null=True)
+    comment= models.TextField(blank=True)
 
     def __str__(self):
         return ('{}. Line {}: {}, {}'.format(
@@ -140,6 +141,7 @@ class Problem(models.Model):
     target_steps = models.PositiveIntegerField()
     lost_points = models.PositiveIntegerField()
     proof = models.OneToOneField(Proof, on_delete=models.CASCADE)
+    show_target_steps = models.BooleanField(default=True)
     # If the proof is deleted, the problem is deleted
 
 

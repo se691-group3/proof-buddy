@@ -5,7 +5,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, DeleteView
@@ -20,6 +20,9 @@ from proofchecker.utils import tflparser
 from .forms import ProofForm, ProofLineForm, FeedbackForm
 from .models import Proof, Problem, ProofLine
 
+from pylatex import Document, Section, Subsection, Tabular
+from pylatex.utils import italic, bold
+
 
 def home(request):
     proofs = Proof.objects.all()
@@ -29,6 +32,7 @@ def home(request):
 
 def version_log(request):
     return render(request, 'proofchecker/version_log.html')
+
 
 def devs(request):
     return render(request, 'proofchecker/devs.html')
@@ -161,7 +165,6 @@ def proof_create_view(request):
 @login_required
 def proof_update_view(request, pk=None):
     obj = get_object_or_404(Proof, pk=pk)
-
     if obj.created_by == request.user or request.user.is_instructor:
         ProofLineFormset = inlineformset_factory(
             Proof, ProofLine, form=ProofLineForm, extra=0, can_order=True)
@@ -191,7 +194,7 @@ def proof_update_view(request, pk=None):
                             proof.lines.append(proofline)
 
                     # Determine which parser to user based on selected rules
-                    if ((proof.rules == 'fol_basic') or (proof.rules == 'fol_derived')):
+                    if (proof.rules == 'fol_basic') or (proof.rules == 'fol_derived'):
                         parser = folparser.parser
                     else:
                         parser = tflparser.parser
@@ -205,12 +208,42 @@ def proof_update_view(request, pk=None):
                         formset.save()
                         return HttpResponseRedirect(reverse('all_proofs'))
 
+                elif 'autosave' in request.POST:
+                    if len(formset.forms) > 0:
+                        parent.created_by = request.user
+                        parent.save()
+                        formset.save()
+
+        if 'download_latex' in request.POST:
+            geometry_options = {"tmargin": "1cm", "lmargin": "10cm"}
+            doc = Document(geometry_options=geometry_options)
+
+            # creating a pdf with title "the simple stuff"
+            with doc.create(Section('The simple stuff')):
+                doc.append('Some regular text and some')
+                doc.append(italic('italic text. '))
+                doc.append('\nAlso some crazy characters: $&#{}')
+
+
+                # creating subsection of a pdf
+                with doc.create(Subsection('Table of something')):
+                    with doc.create(Tabular('rc|cl')) as table:
+                        table.add_hline()
+                        table.add_row((1, 2, 3, 4))
+                        table.add_hline(1, 2)
+                        table.add_empty_row()
+                        table.add_row((4, 5, 6, 7))
+
+            # making a pdf using .generate_pdf
+            doc.generate_pdf('full', clean_tex=False)
+
         context = {
             "object": obj,
             "form": form,
             "formset": formset,
             "response": response
         }
+
         return render(request, 'proofchecker/proof_add_edit.html', context)
     else:
         raise PermissionDenied()
@@ -276,7 +309,7 @@ def feedback_form(request):
                 mail_subject, email_body, to=[to_email])
             try:
                 attach = request.FILES['attach']
-                if  attach != None and attach.content_type != None:
+                if attach != None and attach.content_type != None:
                     email.attach(attach.name, attach.read(), attach.content_type)
             except:
                 print()
@@ -297,8 +330,8 @@ def student_proofs_view(request, pk=None):
     for course in courses:
         for student in course.students.all():
             student.selected = False
-            if student.pk==pk :
-                 student.selected = True
+            if student.pk == pk:
+                student.selected = True
             students.append(student)
 
     students = list(set(students))
@@ -337,7 +370,7 @@ def student_grades_view(request, course_id=None):
 
     context = {
         "students": students,
-        "courses":   courses.all(),
+        "courses": courses.all(),
         "course_id": course_id
     }
     return render(request, 'proofchecker/student_grades.html', context)

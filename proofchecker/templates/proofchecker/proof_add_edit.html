@@ -1,4 +1,6 @@
 {% extends 'proofchecker/base.html' %} {% load static %} {% block content %} {% load widget_tweaks %}
+
+
     <div class="pt-3 mt-3 px-3 mx-3">
         {% if object.pk %} {% if object.created_by == request.user %}
             <h3 class="font-weight-bold mb-2">Edit Proof </h3>
@@ -115,6 +117,7 @@
                     </div>
                 </div>
             </div>
+
             {% if formset %} {{ formset.management_form }}
                 <!-- Display lines -->
                 <table class="table table-hover table-striped table-sm table-responsive"
@@ -319,8 +322,14 @@
                 {% if object.pk %} {% if object.created_by == request.user %}
                     <button name="submit" type="submit" class="btn btn-primary mb-3">Save</button>
 
+                    </button>
+
+
                 {% endif %} {% else %}
                     <button name="submit" type="submit" class="btn btn-primary mb-3">Save</button>
+
+                    </button>
+
                 {% endif %}
             </div>
 
@@ -376,47 +385,52 @@
                     aria-expanded="false">
                 Download
             </button>
+
             <div class="dropdown-menu">
                 <a class="dropdown-item" id="download" type="submit">Screenshot</a>
-                <a class="dropdown-item disabled" id="download_latex" type="submit">Latex file</a>
+                <a class="dropdown-item" id="download_latex" onclick="latexPDF()">Latex file</a>
                 <a class="dropdown-item disabled" id="download_jupyter" type="submit">Jupyter file</a>
             </div>
         </div>
-    <!--<button name="auto_save" type="submit" class="btn btn-primary">Auto save test</button>-->
-        <!--<button id="download" name="download" type="submit" class="btn btn-primary mb-3">Download</button>-->
-    </div>
-<!--
-    <script type="text/javascript">
-        let typingTimer;                //timer identifier
-        const doneTypingInterval = 2000;  //time in ms, 5 seconds for example
-        const $input = $('#proof-table');
 
-        //on keyup, start the countdown
+    </div>
+    <script type="text/javascript">
+        let typingTimer;
+        const doneTypingInterval = 2000;
+        const $input = $('#proof_form');
+
         $input.on('keyup', function () {
             clearTimeout(typingTimer);
             typingTimer = setTimeout(doneTyping, doneTypingInterval);
         });
 
-        //on keydown, clear the countdown
         $input.on('keydown', function () {
             clearTimeout(typingTimer);
         });
 
-        //user is "finished typing," do something
         let timer;
+
         function doneTyping() {
             const box = document.getElementById('auto-save-message');
             const datetime = new Date().toLocaleTimeString();
             document.getElementById("time").textContent = datetime;
             box.style.visibility = 'visible';
+            autoSave()
             clearTimeout(timer);
             timer = setTimeout(() => {
                 box.style.visibility = 'hidden';
             }, 6000);
-
-
         }
-    </script>-->
+
+        function autoSave() {
+            $.post('', $('#proof_form').serialize() + '&autosave');
+        };
+
+        function latexPDF() {
+            $.post('', $('#proof_form').serialize() + '&download_latex');
+        };
+    </script>
     <script src="{% static 'js/syntax.js' %}"></script>
     <script src="{% static 'js/valid_input.js' %}"></script>
-    <script src="{% static 'js/proof_checker.js' %}"></script> {% endblock %}
+    <script src="{% static 'js/proof_checker.js' %}"></script>
+{% endblock %}

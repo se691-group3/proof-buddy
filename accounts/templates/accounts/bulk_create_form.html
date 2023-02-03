@@ -4,6 +4,9 @@
 
 {% block content %}
     <div class="py-5 my-5 d-flex justify-content-center">
+    {% if user.is_authenticated %}
+        {% if  user.is_instructor %}
+
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form|crispy }}
@@ -11,6 +14,12 @@
                 <button class="btn btn-primary" type="submit">Process CSV</button>
             </div>
         </form>
-    </div>
 
+{% elif user.is_student %}
+    <h2>Forbidden for non-instructor accounts</h2>
+            {% endif %}
+             {% else %}
+        <h2>Forbidden</h2>
+{% endif %}
+</div>
 {% endblock %}

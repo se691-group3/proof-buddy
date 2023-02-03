@@ -264,6 +264,40 @@
 
         <button id="download" name="download" type="submit" class="btn btn-primary mb-3">Download</button>
 
+        <script type="text/javascript">
+            let typingTimer;
+            const doneTypingInterval = 2000;
+            const $input = $('#proof_form');
+
+            $input.on('keyup', function () {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(doneTyping, doneTypingInterval);
+            });
+
+            $input.on('keydown', function () {
+                clearTimeout(typingTimer);
+            });
+
+            let timer;
+
+            function doneTyping() {
+                const box = document.getElementById('auto-save-message');
+                const datetime = new Date().toLocaleTimeString();
+                document.getElementById("time").textContent = datetime;
+                box.style.visibility = 'visible';
+                autoSave()
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    box.style.visibility = 'hidden';
+                }, 6000);
+            }
+
+            function autoSave() {
+                $.post('', $('#proof_form').serialize() + '&autosave');
+            };
+        </script>
+
+
         <script src="{% static 'js/proof_checker.js' %}"></script>
         <script src="{% static 'js/syntax.js' %}"></script>
         <script src="{% static 'js/valid_input.js' %}"></script>

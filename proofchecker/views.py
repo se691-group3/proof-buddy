@@ -1,14 +1,18 @@
+import pylatex
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.utils.datetime_safe import datetime
 from django.views.generic import ListView, DetailView, DeleteView
+
+from pylatex import Document, Section, Subsection, Tabular
+from pylatex.utils import bold
 
 from accounts.decorators import instructor_required
 from proofchecker.models import Student, Course, StudentProblemSolution
@@ -19,9 +23,6 @@ from proofchecker.utils import folparser
 from proofchecker.utils import tflparser
 from .forms import ProofForm, ProofLineForm, FeedbackForm
 from .models import Proof, Problem, ProofLine
-
-from pylatex import Document, Section, Subsection, Tabular
-from pylatex.utils import italic, bold
 
 
 def home(request):
@@ -164,6 +165,7 @@ def proof_create_view(request):
 
 @login_required
 def proof_update_view(request, pk=None):
+    now = datetime.now()
     obj = get_object_or_404(Proof, pk=pk)
     if obj.created_by == request.user or request.user.is_instructor:
         ProofLineFormset = inlineformset_factory(
@@ -215,27 +217,39 @@ def proof_update_view(request, pk=None):
                         formset.save()
 
         if 'download_latex' in request.POST:
-            geometry_options = {"tmargin": "1cm", "lmargin": "10cm"}
-            doc = Document(geometry_options=geometry_options)
+            if len(formset.forms) > 0:
+                parent.created_by = request.user
+                parent.save()
+                formset.save()
 
-            # creating a pdf with title "the simple stuff"
-            with doc.create(Section('The simple stuff')):
-                doc.append('Some regular text and some')
-                doc.append(italic('italic text. '))
-                doc.append('\nAlso some crazy characters: $&#{}')
+                geometry_options = {"tmargin": "2cm", "lmargin": "2cm"}
+                doc = Document(geometry_options=geometry_options)
 
+                line_number_counter = 0
+                form_count = formset.total_form_count()
 
-                # creating subsection of a pdf
-                with doc.create(Subsection('Table of something')):
-                    with doc.create(Tabular('rc|cl')) as table:
-                        table.add_hline()
-                        table.add_row((1, 2, 3, 4))
-                        table.add_hline(1, 2)
-                        table.add_empty_row()
-                        table.add_row((4, 5, 6, 7))
+                doc.append(pylatex.Command('fontsize', arguments=['15', '12']))
+                doc.append(pylatex.Command('selectfont'))
 
-            # making a pdf using .generate_pdf
-            doc.generate_pdf('full', clean_tex=False)
+                with doc.create(Section(formset.data['name'])):
+                    doc.append('Rules: ' + formset.data['rules'] + "\n")
+                    doc.append('Premises: ' + formset.data['premises'] + "\n")
+                    doc.append('Conclusion: ' + formset.data['conclusion'] + "\n")
+
+                    with doc.create(Subsection('Proof Table')):
+                        with doc.create(Tabular('r|cc')) as table:
+                            table.add_row(bold('Line #'), bold('Expression'), bold('Rule'))
+                            table.add_hline()
+                            while line_number_counter < form_count:
+                                if 'proofline_set-' + str(line_number_counter) + '-line_no' in formset.data.keys():
+                                    table.add_row(
+                                        formset.data['proofline_set-' + str(line_number_counter) + '-line_no'],
+                                        formset.data['proofline_set-' + str(line_number_counter) + '-formula'],
+                                        formset.data['proofline_set-' + str(line_number_counter) + '-rule'],
+                                    )
+                                    table.add_hline()
+                                line_number_counter = line_number_counter + 1
+                    doc.generate_tex(formset.data['name'] + '-' + now.strftime("%d_%m_%Y.%H-%M-%S"))
 
         context = {
             "object": obj,

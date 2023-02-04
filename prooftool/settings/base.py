@@ -14,7 +14,8 @@ import os
 import mimetypes
 
 mimetypes.add_type("application/javascript", ".js", True)
-
+DEBUG = True
+ALLOWED_HOSTS = ['*']
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'assignments',
     'courses',
     'widget_tweaks',
+    'pylatex',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +61,7 @@ INTERNAL_IPS = [
 ROOT_URLCONF = 'prooftool.urls'
 
 TEMPLATES = [
+
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join((BASE_DIR), 'templates/')],
@@ -70,8 +73,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+
         },
+
     },
+
 ]
 
 WSGI_APPLICATION = 'prooftool.wsgi.application'
@@ -108,19 +114,7 @@ USE_L10N = True
 USE_TZ = True
 
 # Logger
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {"class": "logging.StreamHandler"},
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "INFO",
-        },
-    }
-}
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -147,7 +141,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'proofbuddy.drexel@gmail.com'
 # Email password is 'drexelproofs'
-EMAIL_HOST_PASSWORD = 'mlozjsxhmhfekned' #This is an app specific password. Cannot use email password due to Google security policy
+EMAIL_HOST_PASSWORD = 'mlozjsxhmhfekned'  # This is an app specific password. Cannot use email password due to Google security policy
 
 # Activate Django-Heroku.
 # django_heroku.settings(locals()) #this line was causing error

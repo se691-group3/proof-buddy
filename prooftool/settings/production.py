@@ -1,10 +1,11 @@
 from .base import *
 
-DEBUG = False
-ALLOWED_HOSTS = ['bvm83.cci.drexel.edu', 'www.bvm83.cci.drexel.edu']
+DEBUG = True
+ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'production_db',
     }
 }
+

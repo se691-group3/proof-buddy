@@ -388,8 +388,7 @@
 
             <div class="dropdown-menu">
                 <a class="dropdown-item" id="download" type="submit">Screenshot</a>
-                <a class="dropdown-item" id="download_latex" onclick="latexPDF()">Latex file</a>
-                <a class="dropdown-item disabled" id="download_jupyter" type="submit">Jupyter file</a>
+                <a class="dropdown-item" onclick="latexTEX()">LaTeX.tex file</a>
             </div>
         </div>
 
@@ -426,7 +425,7 @@
             $.post('', $('#proof_form').serialize() + '&autosave');
         };
 
-        function latexPDF() {
+        function latexTEX() {
             $.post('', $('#proof_form').serialize() + '&download_latex');
         };
     </script>

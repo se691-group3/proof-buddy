@@ -10,9 +10,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.datetime_safe import datetime
 from django.views.generic import ListView, DetailView, DeleteView
-
-from pylatex import Document, Section, Subsection, Tabular
-from pylatex.utils import bold
+from pylatex import Document, Section, Tabular
+from pylatex.position import FlushLeft, HorizontalSpace
+from pylatex.utils import bold, NoEscape
 
 from accounts.decorators import instructor_required
 from proofchecker.models import Student, Course, StudentProblemSolution
@@ -223,34 +223,44 @@ def proof_update_view(request, pk=None):
                 formset.save()
 
                 geometry_options = {"tmargin": "2cm", "lmargin": "2cm"}
-                doc = Document(geometry_options=geometry_options)
+                doc = Document(geometry_options=geometry_options, inputenc='utf8x')
+
+                doc.preamble.append(pylatex.Command('title', formset.data['name']))
+                doc.preamble.append(pylatex.Command('author', str(request.user)))
+                doc.preamble.append(NoEscape(r'\renewcommand{\baselinestretch}{1.25}'))
 
                 line_number_counter = 0
                 form_count = formset.total_form_count()
 
                 doc.append(pylatex.Command('fontsize', arguments=['15', '12']))
                 doc.append(pylatex.Command('selectfont'))
+                doc.append(NoEscape(r'\maketitle'))
 
-                with doc.create(Section(formset.data['name'])):
+                with doc.create(Section('Proof Details')):
                     doc.append('Rules: ' + formset.data['rules'] + "\n")
                     doc.append('Premises: ' + formset.data['premises'] + "\n")
                     doc.append('Conclusion: ' + formset.data['conclusion'] + "\n")
 
-                    with doc.create(Subsection('Proof Table')):
-                        with doc.create(Tabular('r|cc')) as table:
+                    with doc.create(Section('Proof Table')):
+                        with doc.create(Tabular('r|c|c')) as table:
                             table.add_row(bold('Line #'), bold('Expression'), bold('Rule'))
                             table.add_hline()
+
                             while line_number_counter < form_count:
                                 if 'proofline_set-' + str(line_number_counter) + '-line_no' in formset.data.keys():
+                                    line_number_object = FlushLeft()
+                                    dot_count = formset.data['proofline_set-' + str(line_number_counter) + '-line_no'].count('.')/2
+                                    line_number_object.append(NoEscape(r'\hspace{'+str(dot_count)+'cm}'))
+                                    line_number_object.append(formset.data['proofline_set-' + str(line_number_counter) + '-line_no'])
                                     table.add_row(
-                                        formset.data['proofline_set-' + str(line_number_counter) + '-line_no'],
+                                        line_number_object,
                                         formset.data['proofline_set-' + str(line_number_counter) + '-formula'],
                                         formset.data['proofline_set-' + str(line_number_counter) + '-rule'],
                                     )
                                     table.add_hline()
                                 line_number_counter = line_number_counter + 1
-                    doc.generate_tex(formset.data['name'] + '-' + now.strftime("%d_%m_%Y.%H-%M-%S"))
 
+                doc.generate_tex(formset.data['name'] + '-' + now.strftime("%d_%m_%Y.%H-%M-%S"))
         context = {
             "object": obj,
             "form": form,

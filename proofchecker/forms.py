@@ -1,5 +1,4 @@
 from django import forms
-from django.forms import Textarea
 
 from .models import Proof, ProofLine, Feedback
 
@@ -12,7 +11,7 @@ class ProofForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProofForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['onkeyup'] = 'replaceCharacter(this)'
+            visible.field.widget.attrs['onkeydown'] = 'replaceCharacter(this)'
 
 
 class ProofCheckerForm(forms.ModelForm):
@@ -23,7 +22,7 @@ class ProofCheckerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProofCheckerForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['onkeyup'] = 'replaceCharacter(this)'
+            visible.field.widget.attrs['onkeydown'] = 'replaceCharacter(this)'
 
 
 class ProofLineForm(forms.ModelForm):
@@ -44,7 +43,7 @@ class ProofLineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProofLineForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['onkeyup'] = 'replaceCharacter(this)'
+            visible.field.widget.attrs['onkeydown'] = 'replaceCharacter(this)'
 
 
 class FeedbackForm(forms.ModelForm):

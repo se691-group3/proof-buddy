@@ -142,7 +142,6 @@ class Problem(models.Model):
     target_steps = models.PositiveIntegerField()
     lost_points = models.PositiveIntegerField()
     proof = models.OneToOneField(Proof, on_delete=models.CASCADE)
-    show_target_steps = models.BooleanField(default=True)
     # If the proof is deleted, the problem is deleted
 
 

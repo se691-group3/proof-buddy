@@ -64,21 +64,6 @@ function updateLineCount() {
     }
     document.getElementById("line_counter").innerText = counter;
 }
-
-//
-function update_comment_button() {
-    let comment_forms = document.querySelectorAll(`[id$="comment"]`);
-    comment_forms.forEach(function(form){
-        const form_id = get_form_id(form)
-        const form_add_comment_btn=document.getElementById(`id_${FORMSET_PREFIX}-${form_id}-comment-btn`)
-        if (form.value.length > 0){
-            set_comment_btn_active(form_add_comment_btn)
-        } else {
-            set_comment_btn_inactive(form_add_comment_btn)
-        }
-    })
-}
-
 /**
  * this function decides whether to show START_PROOF button or RESTART_PROOF button
  */
@@ -107,10 +92,6 @@ function start_proof(element) {
     const premises = document.getElementById('id_premises').value;
     const premiseArray = premises.split(";").map(item => item.trim());
     const prooflineTableBody = document.getElementById(FORMSET_TBODY_ID);
-    const proofTable = document.getElementById('proof-table');
-
-    //Show proof table when after clicking Start Proof button
-    proofTable.removeAttribute('hidden');
 
     // If there are zero premises:
     if ((premiseArray.length === 1) && (premiseArray[0] == "")) {
@@ -148,7 +129,7 @@ function start_proof(element) {
     update_form_count()
     hide_make_parent_button()
     element.hidden = true
-    document.getElementById("btn_restart_proof").removeAttribute("hidden")
+    document.getElementById("btn_restart_proof").classList.remove("hidden")
     reset_order_fields()
     updateLineCount()
 }
@@ -196,13 +177,8 @@ function create_subproof(obj) {
     // Ifty Rahman - code to get previous row number, then 
     //compare to make sure we arent going in more than 1 level  beyond the immediate parent 
     const previousRow = getPreviousValidRow(currentRow)
-    // Check if previousRow is null - this happens when we try to create sub proof for the first line
-    // RECOMMENDATION: instead of having a check here, we can disable "create sub proof" button for the first line
-    if (previousRow === null){
-        alert("Can't create sub-proof for the first line")
-        return
-    }
     var maxIndent = check_if_max_indentation(currentRow,previousRow)
+    
     if (maxIndent) {
         return
     }
@@ -218,6 +194,9 @@ function create_subproof(obj) {
 function check_if_max_indentation(currentRow, previousRow) {
     let previousRowInfoObj = getObjectsRowInfo(previousRow) //get the information object from the row
     let currentRowInfoObj = getObjectsRowInfo(currentRow)
+    if (currentRowInfoObj.line_number_of_row == 1){
+        return false
+    }
     let previousRowNumber = previousRowInfoObj.line_number_of_row //get the row number for a row from the row object
     let currentRowNumber = currentRowInfoObj.line_number_of_row
     let previousRowNumberOfPeriods = (previousRowNumber.match(/\./g) || []).length //count how many "." are in that row number
@@ -237,7 +216,6 @@ function move_up(obj) {
     update_row_indentations();
     hide_make_parent_button();
     reset_order_fields();
-    update_comment_button();
 }
 
 
@@ -358,10 +336,9 @@ function move_current_row_up(obj) {
 
     // Get the current row
     const currentRow = document.getElementById(`${FORMSET_PREFIX}-${get_form_id(obj)}`)
-    const currentRowId = get_form_id(currentRow)
 
     // Get the previous row
-    let previousRow = getPreviousValidRow(currentRow)
+    let previousRow = getPreviousValidRow(currentRow);
 
     // If the previous row is hidden then continue to search until you find a visible previous row or null
     while (true) {
@@ -373,7 +350,6 @@ function move_current_row_up(obj) {
 
     // If the previous row is not null then continue
     if (previousRow != null) {
-        const previousRowId = get_form_id(previousRow)
         // Get previous row information
         let previousRowInfo = getObjectsRowInfo(previousRow);
         // Get current row information
@@ -382,7 +358,7 @@ function move_current_row_up(obj) {
         // Get original previous row line number
         const originalPreviousRowLineNumber = previousRowInfo.line_number_of_row;
         // Get original previous row expression
-        const originalPreviousRowExpression = document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-formula`).value
+        const originalPreviousRowExpression = previousRow.children[1].children[0].value;
         // get original previous row rule
         const originalPreviousRowRule = document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-rule`).value
         //get original previous row comment
@@ -393,8 +369,7 @@ function move_current_row_up(obj) {
         // Get original current row line number
         const originalCurrentRowLineNumber = currentRowInfo.line_number_of_row;
         // Get original current row expression
-        // const originalCurrentRowExpression = currentRow.children[1].children[0].value;
-        const originalCurrentRowExpression = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-formula`).value
+        const originalCurrentRowExpression = currentRow.children[1].children[0].value;
         // get original current row rule
         //const originalCurrentRowRule = currentRow.children[2].children[0].value;
         const originalCurrentRowRule = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-rule`).value
@@ -404,18 +379,16 @@ function move_current_row_up(obj) {
         const originalCurrentRowResponse = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-response`).value
 
         // Insert row after previous row
-        //let insertObj = previousRow.children[3].children[0]
-        //let insertObj = document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-insert-btn`)
-        insert_row_current_level(previousRowId);
+        let insertObj = previousRow.children[3].children[0]
+        insert_row_current_level(get_form_id(insertObj));
         update_row_indentations()
         // Get the newly inserted row
         let newlyInsertedRow = previousRow.nextElementSibling;
-        let newlyInsertedRowId = get_form_id(newlyInsertedRow)
 
         // If they are in line with each other then swap
         if (previousRowInfo.string_of_prefix == currentRowInfo.string_of_prefix) {
             // Change newly inserted row expression to the original previous row expression
-            document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-formula`).value = originalPreviousRowExpression;
+            newlyInsertedRow.children[1].children[0].value = originalPreviousRowExpression;
             // Change newly inserted row rule to the original previous row rule
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-rule`).value = originalPreviousRowRule;
             // Change newly inserted row comment to the original previous row comment
@@ -424,7 +397,7 @@ function move_current_row_up(obj) {
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-response`).value = originalPreviousRowResponse;
 
             // Change previous row expression to the original current row expression
-            document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-formula`).value = originalCurrentRowExpression;
+            previousRow.children[1].children[0].value = originalCurrentRowExpression;
             // Change previous row rule to the original current row rule
             document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-rule`).value = originalCurrentRowRule;
             // Change previous row comment to the original current row comment
@@ -436,14 +409,14 @@ function move_current_row_up(obj) {
             // Update the line references originally pointing to the current row to the previous row
             updated_rows[originalCurrentRowLineNumber] = originalPreviousRowLineNumber;
             // Update the line references originally pointing to the previous row to the newly added row
-            updated_rows[originalPreviousRowLineNumber] = document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-line_no`).value
+            updated_rows[originalPreviousRowLineNumber] = newlyInsertedRow.children[0].children[0].value;
             update_rule_line_references(updated_rows);
 
         }
         // Otherwise move current in line
         else {
             // Change newly inserted row expression to the original current row expression
-            document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-formula`).value = originalCurrentRowExpression
+            newlyInsertedRow.children[1].children[0].value = originalCurrentRowExpression;
             // Change newly inserted row rule to the original current row rule
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-rule`).value = originalCurrentRowRule
             // Change newly inserted row comment to the original current row comment
@@ -452,8 +425,9 @@ function move_current_row_up(obj) {
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-response`).value = originalCurrentRowResponse;
 
             // Update the line references originally pointing to the current row to the newly added row
-            updated_rows[originalCurrentRowLineNumber] = document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-line_no`).value
-            update_rule_line_references(updated_rows)
+            updated_rows[originalCurrentRowLineNumber] = newlyInsertedRow.children[0].children[0].value;
+            update_rule_line_references(updated_rows);
+
         }
         // Delete the original current row
         delete_row(get_form_id(obj))
@@ -465,13 +439,14 @@ function move_current_row_up(obj) {
  * Moves the current row down
  */
 function move_current_row_down(obj) {
+
+
     // Get the current row
     const currentRow = document.getElementById(`${FORMSET_PREFIX}-${get_form_id(obj)}`)
-    const currentRowId = get_form_id(currentRow)
 
 
     // Get the next row
-    let nextRow = getNextValidRow(currentRow)
+    let nextRow = getNextValidRow(currentRow);
 
     // If the next row is hidden move to the next element until you find one that's not hidden
     while (true) {
@@ -483,7 +458,6 @@ function move_current_row_down(obj) {
 
     // If the next row is not null then move the row down
     if (nextRow != null) {
-        let nextRowId = get_form_id(nextRow)
         // Get current row information
         let currentRowInfo = getObjectsRowInfo(currentRow);
         // Get next row information
@@ -492,7 +466,7 @@ function move_current_row_down(obj) {
         // Get original current row line number
         const originalCurrentRowLineNumber = currentRowInfo.line_number_of_row;
         // Get original current row expression
-        const originalCurrentRowExpression = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-formula`).value
+        const originalCurrentRowExpression = currentRow.children[1].children[0].value;
         // get original current row rule
         const originalCurrentRowRule = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-rule`).value
         //get original current row comment
@@ -513,12 +487,12 @@ function move_current_row_down(obj) {
         const originalNextRowResponse = document.getElementById(`id_${FORMSET_PREFIX}-${nextRowId}-response`).value
 
         // Insert row after next row
-        insert_row_current_level(nextRowId);
+        let insertObj = nextRow.children[3].children[0]
+        insert_row_current_level(get_form_id(insertObj));
         update_row_indentations()
 
         // Get information for inserted row
         let newlyInsertedRow = nextRow.nextElementSibling;
-        const newlyInsertedRowId = get_form_id(newlyInsertedRow)
 
         // if the prefix of current and next match then it is a swap
         if (currentRowInfo.string_of_prefix == nextRowInfo.string_of_prefix) {
@@ -531,9 +505,8 @@ function move_current_row_down(obj) {
             // Change newly inserted row response to the original previous row response
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-response`).value = originalCurrentRowResponse;
 
-
             //Update the line references originally pointing to current row to newly added row
-            updated_rows[originalCurrentRowLineNumber] = document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-line_no`).value
+            updated_rows[originalCurrentRowLineNumber] = newlyInsertedRow.children[0].children[0].value;
             update_rule_line_references(updated_rows)
         }
         // otherwise you're switching the level of current to match next
@@ -559,7 +532,7 @@ function move_current_row_down(obj) {
             // Update the line references originally pointing to the current row to the next row
             updated_rows[originalCurrentRowLineNumber] = originalNextRowLineNumber
             // Update the line references originally potinting to the next row to the newly added row
-            updated_rows[originalNextRowLineNumber] = document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-line_no`).value
+            updated_rows[originalNextRowLineNumber] = newlyInsertedRow.children[0].children[0].value;
             update_rule_line_references(updated_rows)
 
         }
@@ -748,7 +721,7 @@ function sort_table() {
  * Text replacement - replaces escape commands with symbols
  */
 function replaceCharacter(e) {
-    let txt = document.getElementById(e.id).value;
+    let txt = document.getElementById(ev.id).value;
     txt = txt.replace("\\and", "∧");
     txt = txt.replace("\\or", "∨");
     txt = txt.replace("\\imp", "→");
@@ -759,7 +732,6 @@ function replaceCharacter(e) {
     txt = txt.replace("\\exi", "∃");
     txt = txt.replace("\\in", "∈");
     document.getElementById(e.id).value = txt;
-
 }
 
 

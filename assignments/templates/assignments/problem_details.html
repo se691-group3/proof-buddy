@@ -16,33 +16,14 @@
         {% endif %}
         <form id="proof_form" action="" method="post">
             {% csrf_token %}
-            {% if request.user.is_student %}
-                {% for line in problem_form %}
-                    {% if line.label == 'Target steps' and problem_form.initial.show_target_steps == False %}
-                    {% else %}
-                        {% if line.label == 'Show target steps' %}
-                        {% else %}
-                            <div class="row">
-                                <div class="col-sm-4 col-form-label">
-                                    <label>{{ line.label }}</label>
-                                </div>
-                                <div class="col-sm-8">{{ line }}</div>
-                            </div>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-
-            {% if request.user.is_instructor %}
-                {% for line in problem_form %}
-                    <div class="row">
-                        <div class="col-sm-4 col-form-label">
-                            <label>{{ line.label }}</label>
-                        </div>
-                        <div class="col-sm-8">{{ line }}</div>
+            {% for line in problem_form %}
+                <div class="row">
+                    <div class="col-sm-4 col-form-label">
+                        <label>{{ line.label }}</label>
                     </div>
-                {% endfor %}
-
+                    <div class="col-sm-8">{{ line }}</div>
+                </div>
+            {% endfor %}
             {% for line in proof_form %}
                 <div class="row">
                     <div class="col-sm-4 col-form-label">
@@ -55,7 +36,7 @@
             <button id="btn_start_proof" class="btn btn-primary mt-3" type="button" onclick="start_proof(this)">
                 Start Proof
             </button>
-            <button id="btn_restart_proof" class="btn btn-primary mt-3" type="button" onclick="restart_proof()" hidden>
+            <button id="btn_restart_proof" class="hidden btn btn-primary mt-3" type="button" onclick="restart_proof()">
                 Restart Proof
             </button>
             {% endif %}

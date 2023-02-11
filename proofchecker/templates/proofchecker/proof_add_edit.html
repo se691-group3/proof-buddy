@@ -314,7 +314,6 @@
                 </table>
             {% endif %}
 
-
             <div style="clear: left">
 
                 <button name="check_proof" type="submit" class="btn btn-primary mb-3">Check Proof</button>
@@ -388,7 +387,8 @@
 
             <div class="dropdown-menu">
                 <a class="dropdown-item" id="download" type="submit">Screenshot</a>
-                <a class="dropdown-item" onclick="latexTEX()">LaTeX.tex file</a>
+
+                <a href="{% url 'get-latex-file' object.pk %}" class="dropdown-item">LaTeX.tex file</a>
             </div>
         </div>
 
@@ -423,10 +423,7 @@
 
         function autoSave() {
             $.post('', $('#proof_form').serialize() + '&autosave');
-        };
 
-        function latexTEX() {
-            $.post('', $('#proof_form').serialize() + '&download_latex');
         };
     </script>
     <script src="{% static 'js/syntax.js' %}"></script>

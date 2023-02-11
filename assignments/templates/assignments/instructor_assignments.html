@@ -24,8 +24,10 @@
                             View / Edit</a>
                         <a href="{% url 'delete_assignment' object.id %}" class="card-link btn btn-secondary btn-sm">
                             Delete</a>
-                        <a href="{% url 'get_csv_file' object.id %}" class="card-link btn btn-warning btn-sm">
-                            Download</a>
+                        <a href="{% url 'get_grading_csv_file' object.id %}" class="card-link btn btn-warning btn-sm">
+                            Download Grading CSV</a>
+                        <a href="{% url 'get_problem_anaylsis_csv_file' object.id %}" class="card-link btn btn-warning btn-sm">
+                            Download Problem Analysis CSV</a>
 
                         {% if object.submission %}
                             <br><br>

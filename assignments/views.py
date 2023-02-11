@@ -405,6 +405,7 @@ def problem_details_view(request, pk=None):
         "problem_form": problem_form,
         "proof_form": proof_form,
         "formset": formset,
+        "rules": proof.rules
     }
     return render(request, "assignments/problem_details.html", context)
 
@@ -507,7 +508,7 @@ def problem_solution_view(request, problem_id=None):
         "proof_form": proof_form,
         "formset": formset,
         "response": response,
-        "rules":  proof.rules
+        "rules": proof.rules
     }
     return render(request, "assignments/problem_solution.html", context)
 
@@ -526,7 +527,7 @@ class ProblemDeleteView(DeleteView):
     success_url = "/problems/"
 
 
-def get_csv_file(request, id):
+def get_problem_anaylsis_csv_file(request, id):
     print("assignment_id:", id)
     all_student = StudentProblemSolution.objects.filter(assignment_id=id).values('student').distinct()
     response = HttpResponse('')
@@ -556,6 +557,37 @@ def get_csv_file(request, id):
             problem_total = obj.problem.point
             total = total_points
             writer.writerow([username, full_name, email, course, assignment, problem, grade, problem_total, total])
+
+    return response
+
+
+def get_grading_csv_file(request, id):
+    print("assignment_id:", id)
+    all_student = StudentProblemSolution.objects.filter(assignment_id=id).values('student').distinct()
+    response = HttpResponse('')
+    response['Content-Disposition'] = 'attachment; filename=student_grading.csv'
+    writer = csv.writer(response)
+    writer.writerow(['Username', 'Course', 'Assignment', 'Point Recieved', 'Total Points'])
+
+    problem_obj = Assignment.objects.filter(id=id).values('problems__point')
+    total_points = 0
+    for problem in problem_obj:
+        total_points += problem['problems__point']
+        # print("PID; ", Problem.objects.filter(id=problem['problems__id']))
+
+    for student_grading in all_student:
+        print("student_grading:", student_grading)
+        student_grading = StudentProblemSolution.objects.filter(assignment_id=id, student=student_grading['student'])
+        for obj in student_grading:
+            print("obj:", obj)
+            username = obj.student.user.username
+
+            course = obj.assignment.course.title
+            assignment = obj.assignment.title
+            grade = obj.grade
+
+            total = total_points
+            writer.writerow([username, course, assignment, grade, total])
 
     return response
 

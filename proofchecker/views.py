@@ -209,7 +209,8 @@ def proof_update_view(request, pk=None):
             "object": obj,
             "form": form,
             "formset": formset,
-            "response": response
+            "response": response,
+            "createdby": obj.proofline_set.instance.studentproblemsolution.assignment.created_by #Very long because this is trying to get the author of the assignment, not the solution's
         }
         return render(request, 'proofchecker/proof_add_edit.html', context)
     else:

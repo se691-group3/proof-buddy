@@ -26,8 +26,6 @@ function reload_page() {
     set_start_restart_at_beginning()
     //Decide if we should display the table
     set_table_visibility()
-    //Update comment button style
-    update_comment_button()
 
     hide_make_parent_button()
     update_row_indentations()
@@ -79,20 +77,6 @@ function update_comment_button() {
             set_comment_btn_inactive(form_add_comment_btn)
         }
     })
-}
-
-function set_comment_btn_active(obj){
-    if (obj !== null){
-        obj.style.backgroundColor='#FDCA40'
-        obj.children[0].style.fill='white'
-    }
-}
-
-function set_comment_btn_inactive(obj){
-    if (obj !== null){
-        obj.style.backgroundColor=''
-        obj.children[0].style.fill='orange'
-    }
 }
 
 /**
@@ -167,11 +151,6 @@ function start_proof(element) {
     document.getElementById("btn_restart_proof").removeAttribute("hidden")
     reset_order_fields()
     updateLineCount()
-}
-
-function add_comment(obj){
-    const comment_form = document.getElementById(`id_${FORMSET_PREFIX}-${get_form_id(obj)}-comment`)
-    comment_form.toggleAttribute("hidden")
 }
 
 /**
@@ -270,7 +249,6 @@ function move_down(obj) {
     update_row_indentations();
     hide_make_parent_button();
     reset_order_fields();
-    update_comment_button();
 }
 
 /**
@@ -409,6 +387,8 @@ function move_current_row_up(obj) {
         const originalPreviousRowRule = document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-rule`).value
         //get original previous row comment
         const originalPreviousRowComment = document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-comment`).value
+        //get original previous row response
+        const originalPreviousRowResponse = document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-response`).value
 
         // Get original current row line number
         const originalCurrentRowLineNumber = currentRowInfo.line_number_of_row;
@@ -420,6 +400,8 @@ function move_current_row_up(obj) {
         const originalCurrentRowRule = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-rule`).value
         //get original current row comment
         const originalCurrentRowComment = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-comment`).value
+        //get original current row response
+        const originalCurrentRowResponse = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-response`).value
 
         // Insert row after previous row
         //let insertObj = previousRow.children[3].children[0]
@@ -438,6 +420,8 @@ function move_current_row_up(obj) {
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-rule`).value = originalPreviousRowRule;
             // Change newly inserted row comment to the original previous row comment
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-comment`).value = originalPreviousRowComment;
+            // Change newly inserted row response to the original previous row response
+            document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-response`).value = originalPreviousRowResponse;
 
             // Change previous row expression to the original current row expression
             document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-formula`).value = originalCurrentRowExpression;
@@ -445,6 +429,8 @@ function move_current_row_up(obj) {
             document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-rule`).value = originalCurrentRowRule;
             // Change previous row comment to the original current row comment
             document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-comment`).value = originalCurrentRowComment
+            // Change previous row response to the original current row response
+             document.getElementById(`id_${FORMSET_PREFIX}-${previousRowId}-response`).value = originalCurrentRowResponse
 
 
             // Update the line references originally pointing to the current row to the previous row
@@ -462,6 +448,8 @@ function move_current_row_up(obj) {
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-rule`).value = originalCurrentRowRule
             // Change newly inserted row comment to the original current row comment
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-comment`).value = originalCurrentRowComment;
+            // Change newly inserted row response to the original current row response
+            document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-response`).value = originalCurrentRowResponse;
 
             // Update the line references originally pointing to the current row to the newly added row
             updated_rows[originalCurrentRowLineNumber] = document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-line_no`).value
@@ -509,6 +497,8 @@ function move_current_row_down(obj) {
         const originalCurrentRowRule = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-rule`).value
         //get original current row comment
         const originalCurrentRowComment = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-comment`).value
+        //get original current row response
+        const originalCurrentRowResponse = document.getElementById(`id_${FORMSET_PREFIX}-${currentRowId}-response`).value
 
 
         // Get original next row line number
@@ -519,6 +509,8 @@ function move_current_row_down(obj) {
         const originalNextRowRule = document.getElementById(`id_${FORMSET_PREFIX}-${nextRowId}-rule`).value
         //get original current row comment
         const originalNextRowComment = document.getElementById(`id_${FORMSET_PREFIX}-${nextRowId}-comment`).value
+        //get original current row response
+        const originalNextRowResponse = document.getElementById(`id_${FORMSET_PREFIX}-${nextRowId}-response`).value
 
         // Insert row after next row
         insert_row_current_level(nextRowId);
@@ -536,6 +528,8 @@ function move_current_row_down(obj) {
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-rule`).value = originalCurrentRowRule;
             // Change newly inserted row comment to the original previous row comment
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-comment`).value = originalCurrentRowComment;
+            // Change newly inserted row response to the original previous row response
+            document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-response`).value = originalCurrentRowResponse;
 
 
             //Update the line references originally pointing to current row to newly added row
@@ -550,6 +544,8 @@ function move_current_row_down(obj) {
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-rule`).value = originalNextRowRule
             // Change newly inserted row comment to the original next row comment
             document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-comment`).value = originalNextRowComment;
+            // Change newly inserted row response to the original next row response
+            document.getElementById(`id_${FORMSET_PREFIX}-${newlyInsertedRowId}-response`).value = originalNextRowResponse;
 
             // Change next row expression to the original current row expression
             document.getElementById(`id_${FORMSET_PREFIX}-${nextRowId}-formula`).value = originalCurrentRowExpression
@@ -557,6 +553,8 @@ function move_current_row_down(obj) {
             document.getElementById(`id_${FORMSET_PREFIX}-${nextRowId}-rule`).value = originalCurrentRowRule
             // Change next row comment to the original current row comment
             document.getElementById(`id_${FORMSET_PREFIX}-${nextRowId}-comment`).value = originalCurrentRowComment;
+            // Change next row response to the original current row response
+            document.getElementById(`id_${FORMSET_PREFIX}-${nextRowId}-response`).value = originalCurrentRowResponse;
 
             // Update the line references originally pointing to the current row to the next row
             updated_rows[originalCurrentRowLineNumber] = originalNextRowLineNumber
@@ -762,18 +760,6 @@ function replaceCharacter(e) {
     txt = txt.replace("\\in", "∈");
     document.getElementById(e.id).value = txt;
 
-    //Change the comment button style accordingly depending on if comment form has data in it
-    if (e.id.includes("comment")){
-        const parentRowObj = e.parentNode.parentNode;
-        const rowId = get_form_id(parentRowObj);
-        const addCommentBtn = document.getElementById(`id_${FORMSET_PREFIX}-${rowId}-comment-btn`)
-        if (txt.length > 0){
-           set_comment_btn_active(addCommentBtn)
-
-        } else {
-           set_comment_btn_inactive(addCommentBtn)
-        }   
-    }
 }
 
 
@@ -1102,7 +1088,7 @@ function updateFormsetId(old_id, new_id) {
     const targeted_element = document.getElementById(FORMSET_PREFIX + '-' + old_id)
     if (targeted_element !== null) {
         document.getElementById(FORMSET_PREFIX + '-' + old_id).setAttribute('id', `${FORMSET_PREFIX}-${new_id}`)
-        const fields = ['line_no', 'formula', 'rule', 'insert-btn', 'make_parent-btn', 'create_subproof-btn', 'move_up-btn', 'move_down-btn', 'delete-btn', 'id', 'DELETE', 'ORDER', 'comment']
+        const fields = ['line_no', 'formula', 'rule', 'insert-btn', 'make_parent-btn', 'create_subproof-btn', 'move_up-btn', 'move_down-btn', 'delete-btn', 'id', 'DELETE', 'ORDER', 'comment','response']
         fields.forEach(function (field) {
             document.getElementById('id_' + FORMSET_PREFIX + '-' + old_id + '-' + field).setAttribute('name', `${FORMSET_PREFIX}-${new_id}-${field}`)
             document.getElementById('id_' + FORMSET_PREFIX + '-' + old_id + '-' + field).setAttribute('id', `id_${FORMSET_PREFIX}-${new_id}-${field}`)

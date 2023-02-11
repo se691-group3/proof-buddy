@@ -105,13 +105,13 @@ class Proof(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return ("{}. Proof {}:\nPremises: {},\nConclusion: {}\nLine Count: {}").format(
+        return ('{}. Proof {}:\nPremises: {},\nConclusion: {}\nLine Count: {}'.format(
             self.pk,
             self.name,
             self.premises,
             self.conclusion,
             self.proofline_set.count()
-        )
+        ))
 
     def get_absolute_url(self):
         return "/proofs"
@@ -125,6 +125,7 @@ class ProofLine(models.Model):
     rule = models.CharField(max_length=255, null=True, blank=True)
     ORDER = models.IntegerField(null=True)
     comment= models.TextField(blank=True)
+    response=models.TextField(blank=True)
 
     def __str__(self):
         return ('{}. Line {}: {}, {}'.format(

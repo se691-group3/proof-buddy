@@ -38,6 +38,17 @@ class RacTree:
             ans+=str(ch)+" "
         return ans[:-1]+")"
     
+    def __eq__(self, other) ->bool:
+        #return str(self)==str(other) would probably also work as a shortcut?
+        n=len(self.children)
+        if isinstance(other,RacTree):
+            # note that checking self.parent == other.parent would cause infinite loop!
+            # note that self.data is an ERobj so needed equality checker for that too
+            return self.data==other.data and self.path==other.path and \
+                n==len(other.children) and \
+                    all([self.children[i]==other.children[i] for i in range(n)])          
+        return False
+       
     # given a list of ints, returns node with that path
     def nodeFromPath(self, mylist:list):
         if mylist==[]:
@@ -127,7 +138,7 @@ def makeRtree(expList:list) -> RacTree:
     while queue != []:
         node = queue[0]
         queue = queue[1:]+node.children
-        if node.parent == currPar:
+        if id(node.parent) == id(currPar): # need id here to prevent full node checking
             i+=1
         else:
             currPar = node.parent
@@ -137,20 +148,21 @@ def makeRtree(expList:list) -> RacTree:
 
 def treeTest(): #testing on ((if (zero? 1) + *) 1 2)
     #recall ERobj(data=None, children=[],parent=None,path=[])
-    node0 = RacTree(ERobj("(","any"))
-    node1 = RacTree(ERobj("(","any"), parent=node0) 
-    node4=RacTree(pif,parent=node1)
-    node5 = RacTree(ERobj("(","any"),parent=node1)
-    node6 = RacTree(padd,parent=node1)
-    node7 = RacTree(pmult,parent=node1)
+    node0 = RacTree(ERobj("(","any"),path=[])
+    node1 = RacTree(ERobj("(","any"), parent=node0,path=[0]) 
+    node4=RacTree(pif,parent=node1,path=[0,0])
+    node5 = RacTree(ERobj("(","any"),parent=node1,path=[0,1])
+    node6 = RacTree(padd,parent=node1,path=[0,2])
+    node7 = RacTree(pmult,parent=node1,path=[0,3])
     node1.children=[node4,node5, node6,node7]
-    node2 = RacTree(str2ER("1"), parent=node0)
-    node3 = RacTree(str2ER("2"),parent=node0)
-    node8 = RacTree(pzeroPred, parent=node5)
-    node9 = RacTree(str2ER("1"), parent=node5)
+    node2 = RacTree(str2ER("1"), parent=node0,path=[1])
+    node3 = RacTree(str2ER("2"),parent=node0,path=[2])
+    node8 = RacTree(pzeroPred, parent=node5,path=[0,1,0])
+    node9 = RacTree(str2ER("1"), parent=node5,path=[0,1,1])
     node5.children=[node8,node9]
     node0.children = [node1, node2, node3]
     print("testing tree raw construction:",node0)
     myTree = makeRtree(str2List("((if (zero? 1) + *) 1 2)"))
     print("testing making tree from list:",myTree)
+    print("testing for tree equality vs just string equality: ",node0==myTree)
     return

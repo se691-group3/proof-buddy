@@ -4,9 +4,18 @@ from proofchecker.proofs.ERobjs import *
 # same with len, although the basic length property isn't too bad. maybe a rule?
 # same with append. maybe let student define them?
 #note that "define" is handled separately by the interface. no "cond"
-resRac = ["cons", "rest", "first", "+", "-","*","=", ">", ">=", "<","<=","quotient","remainder",\
-     "and", "or", "not", "xor", "implies","null?","null","zero?","#t","#f","-",,"'", "if","lambda"]
-digits=["0123456789"]
+resRac = ["cons", "rest", "first", "+", "-","*","=", ">", ">=", "<",\
+          "<=","quotient","remainder","and", "or", "not", "xor", \
+          "implies","null?","null","zero?","#t","#f","'", \
+          "if","lambda", "int?", "list?", "ERROR","expt"]
+
+#needed for checking ints. written by chatGPT
+def is_integer(strng:str) -> bool:
+    try:
+        int(strng)
+        return True
+    except ValueError:
+        return False
 
 class RacTree:
     def __init__(self, data=None, children=None,parent=None,path=None):
@@ -20,7 +29,7 @@ class RacTree:
             self.path=path
         self.data=data #holds the value of that node, possibly "(" for S-expr which means it has children
         self.parent=parent #pointer back to the parent (technically could be derived from path)
-
+            
     def __str__(self):
         ans="("
         if self.data.name!="(":
@@ -28,9 +37,9 @@ class RacTree:
         for ch in self.children:
             ans+=str(ch)+" "
         return ans[:-1]+")"
-        
+    
     # given a list of ints, returns node with that path
-     def nodeFromPath(self,mylist:list):
+    def nodeFromPath(self, mylist:list):
         if mylist==[]:
             return self
         ancestor = self.nodeFromPath(mylist[:-1])
@@ -38,7 +47,7 @@ class RacTree:
             return errNode #should be okay to use, even tho defined after the class
         return ancestor.children[mylist[-1]]
 
-errNode = RacTree(err)
+errNode = RacTree(perr)
 
 def str2List(expr:str) -> list:
     if expr=="":
@@ -62,10 +71,19 @@ def str2List(expr:str) -> list:
             return []
     return expList
 
-#TODO: just a function stub, in reality it would fill in all attribs appropriately based on type
-# e.g. identify ints and bools et al, not just give the name
+#TODO: still a function stub. need lookup table for defined vars, maybe more
 def str2ER(ch:str) -> ERobj: 
-    return ERobj(ch,None)
+    #note: don't overwrite ch to lower, in case lookup has uppercase
+    if ch.lower()=="lambda":
+        ch="\u03BB"
+    if ch.lower() in pdict.keys():
+        return pdict[ch.lower()]
+    if ch=="(":
+        return ERobj("(","any")
+    if is_integer(ch):
+        return ERobj(ch,"int",value=int(ch))
+    #the following error should be replaced by a lookup table for definitions
+    return perr
 
 # given a list that has a ( and index i, finds the index of the closing )
 def findClose(L:list, i:int)->int:
@@ -77,8 +95,9 @@ def findClose(L:list, i:int)->int:
             count-=1
         if count ==0:
             return j
+    return -1 # this shouldn't happen
 
-#turns a list into a RacTree in a non-recursive way
+#turns a list of string into a RacTree in a non-recursive way
 def makeRtreeHelp(expList:list) -> RacTree:
     if expList==[]: #should never hit this
         return errNode
@@ -88,7 +107,6 @@ def makeRtreeHelp(expList:list) -> RacTree:
         if expList[i]==")": #note: this assumes a wellformed string that doesn't start with )
             currPar = currPar.parent
         else:
-            #unclear bug: if children=[] is left off, there is only one shallow copied list
             newNode = RacTree(str2ER(expList[i]), children=[],parent=currPar)
             if currPar != None: #only happens for root first time
                 currPar.children.append(newNode)
@@ -117,28 +135,22 @@ def makeRtree(expList:list) -> RacTree:
         node.path=node.parent.path+[i]
     return tree
 
-''' testing on ((if (zero? 1) + *) 1 2)
-num1 = ERobj("1", "int", ins=None, outType=None, value=1, numArgs=None, length=None)
-num2 = ERobj("2", "int", ins=None, outType=None, value=2, numArgs=None, length=None)
-plus = ERobj("+", "function", ins=("int","int"), outType="int", value=None, numArgs=2, length=None)
-times = ERobj("*", "function", ins=("int","int"), outType="int", value=None, numArgs=2, length=None)
-rIf = ERobj("if", "function", ins=("bool","any","any"), outType="any", value=None, numArgs=3, length=None)
-rTrue = ERobj("#t","bool", ins=None, outType=None, value=True, numArgs=None, length=None)
-zeroPred = ERobj("zero?", "function", ins=("any"), outType="bool", value=None, numArgs=1, length=None)
-node0 = RacTree(ERobj("(","any"))
-node1 = RacTree(ERobj("(","any"), parent=node0) #(data=None, children=[],parent=None,path=[])
-node4=RacTree(rIf,parent=node1)
-node5 = RacTree(ERobj("(","any"),parent=node1)
-node6 = RacTree(plus,parent=node1)
-node7 = RacTree(times,parent=node1)
-node1.children=[node4,node5, node6,node7]
-node2 = RacTree(num1, parent=node0)
-node3 = RacTree(num2,parent=node0)
-node8 = RacTree(zeroPred, parent=node5)
-node9 = RacTree(num1, parent=node5)
-node5.children=[node8,node9]
-node0.children = [node1, node2, node3]
-print(node0)
-myTree = makeRtree(str2List("((if (zero? 1) + *) 1 2)"))
-print(myTree)
-'''
+def treeTest(): #testing on ((if (zero? 1) + *) 1 2)
+    #recall ERobj(data=None, children=[],parent=None,path=[])
+    node0 = RacTree(ERobj("(","any"))
+    node1 = RacTree(ERobj("(","any"), parent=node0) 
+    node4=RacTree(pif,parent=node1)
+    node5 = RacTree(ERobj("(","any"),parent=node1)
+    node6 = RacTree(padd,parent=node1)
+    node7 = RacTree(pmult,parent=node1)
+    node1.children=[node4,node5, node6,node7]
+    node2 = RacTree(str2ER("1"), parent=node0)
+    node3 = RacTree(str2ER("2"),parent=node0)
+    node8 = RacTree(pzeroPred, parent=node5)
+    node9 = RacTree(str2ER("1"), parent=node5)
+    node5.children=[node8,node9]
+    node0.children = [node1, node2, node3]
+    print("testing tree raw construction:",node0)
+    myTree = makeRtree(str2List("((if (zero? 1) + *) 1 2)"))
+    print("testing making tree from list:",myTree)
+    return

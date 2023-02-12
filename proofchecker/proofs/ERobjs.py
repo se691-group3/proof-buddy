@@ -13,8 +13,62 @@ class ERobj:
     def __str__(self):
         return str(self.name)
 
-cons = ERobj("cons", "function", ["any","list"],"list",[],2,None)
-err = ERobj("ERROR", "None")
+# NOTE: lambdas take the ERobj.value, as inputs, not the value itself.
+# similarly, lambda output values, not the ERobjs. So, they will need to be
+# unwrapped before being passed, and then wrapped up after the return before use.
+# these ERobjects are what will be in the data attribute of the RacTree nodes
+
+pcons = ERobj("cons", "function", ("any","list"),"list",None,2)
+prest = ERobj("rest", "function", ("list"),"list",None,1)
+pfirst = ERobj("first", "function", ("list"),"any",None,1)
+padd = ERobj("+", "function", ("int","int"),"int",lambda x,y: x+y,2)
+psubtr = ERobj("-", "function", ("int","int"),"int",lambda x,y: x-y,2)
+pmult = ERobj("*", "function", ("int","int"),"int",lambda x,y: x*y,2)
+pexpt = ERobj("expt", "function", ("int","int"),"int",lambda x,y: x**y,2)
+peq = ERobj("=", "function", ("any","any"),"bool",lambda x,y: x==y,2)
+pgtr = ERobj(">", "function", ("int","int"),"bool",lambda x,y: x>y,2)
+pgtreq = ERobj(">=", "function", ("int","int"),"bool",lambda x,y: x>=y,2)
+pless = ERobj("<", "function", ("int","int"),"bool",lambda x,y: x<y,2)
+plesseq = ERobj("<=", "function", ("int","int"),"bool",lambda x,y: x<=y,2)
+pquotient = ERobj("quotient" "function", ("int","int"),"int",lambda x,y: x//y,2)
+prem = ERobj("remainder", "function", ("int","int"),"int",lambda x,y: x%y,2)
+pand = ERobj("and", "function", ("bool","bool"),"bool",lambda x,y: x and y,2)
+por = ERobj("or", "function", ("bool","bool"),"bool",lambda x,y: x or y,2)
+pnot = ERobj("not", "function", ("bool",),"bool",lambda x: not x,1)
+pxor = ERobj("xor", "function", ("bool","bool"),"bool",lambda x,y: x!=y,2)
+pimp = ERobj("implies", "function", ("bool","bool"),"bool",lambda x,y: (not x) or y,2)
+pnullPred = ERobj("null?", "function", ("any",),"bool",lambda x: x==[],1)
+pzeroPred = ERobj("zero?", "function", ("any",),"bool",lambda x: x==0,1)
+pintPred = ERobj("int?", "function", ("any",),"bool",lambda x: isinstance(x,int),1)
+# BUG: might be bug with quoted lists, so better to refer to ERobj.type ?
+plistPred = ERobj("list?", "function", ("any",),"bool",lambda x: isinstance(x,list),1)
+pnull = ERobj("null", "list", None,None,[],None,0) # first time len attrib not None
+ptrue = ERobj("#t", "bool",value=True) 
+pfalse = ERobj("#f", "bool",value=False)
+
+#unsure if we should make output be a special kind of list, or if reg list okay?
+pquote = ERobj("'", "function", ("list",),"list",[],1) 
+
+# unicode for λ. and technically 2nd input arg should be "sexpr" but no such type
+plambda = ERobj("\u03BB", "function", ("list","any"),"function",None,2)
+
+# BAD IDEA b/c need new objects each time since diff childs: sexpr = ERobj("(", "list")
+
+#note: the output type for "if" isn't quite correct. it's really = 3rd arg, not "any"
+pif = ERobj("if", "function", ["bool","any","any"],"any",None,3)
+
+#possible problem if they name a variable ERROR, so make sure that gets reserved
+perr = ERobj("ERROR", "None")
+
+# TODO: list of the core racket-lite functions (will need to change if add more )
+pcore = [pcons, prest, pfirst, padd, psubtr, pmult, pexpt, peq, pgtr, pgtreq,\
+    pless, plesseq, pquotient, prem, pand, por, pnot, pxor, pimp, pnullPred,\
+        pzeroPred,pintPred, plistPred, pnull, ptrue,pfalse,pquote,plambda,pif,perr]
+
+# making a look-up table of ERobj by string name
+pdict ={}
+for x in pcore:
+    pdict[x.name]=x
 
 def isValidType(t) -> bool: #checks if a given string/list is a valid Equational Reasoning type (tricky due to functions)
     #( list of input types, output type)

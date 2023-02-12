@@ -7,13 +7,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect, FileResponse, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.datetime_safe import datetime
 from django.views.generic import ListView, DetailView, DeleteView
 from pylatex import Document, Section, Tabular
-from pylatex.position import FlushLeft, HorizontalSpace
+from pylatex.position import FlushLeft
 from pylatex.utils import bold, NoEscape
 
 from accounts.decorators import instructor_required

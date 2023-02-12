@@ -24,14 +24,21 @@
                             View / Edit</a>
                         <a href="{% url 'delete_assignment' object.id %}" class="card-link btn btn-secondary btn-sm">
                             Delete</a>
-                        <a href="{% url 'get_grading_csv_file' object.id %}" class="card-link btn btn-warning btn-sm">
-                            Download Grading CSV</a>
-                        <a href="{% url 'get_problem_anaylsis_csv_file' object.id %}" class="card-link btn btn-warning btn-sm">
-                            Download Problem Analysis CSV</a>
-
+                        <div class="dropdown mb-3">
+                            <button class="card-link btn btn-warning btn-sm dropdown-toggle" type="button"
+                                    data-toggle="dropdown"
+                                    aria-expanded="false">
+                                Download
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="{% url 'get_grading_csv_file' object.id %}" class="dropdown-item">Grading CSV</a>
+                                <a href="{% url 'get_problem_anaylsis_csv_file' object.id %}" class="dropdown-item">Problem Analysis CSV</a>
+                            </div>
+                        </div>
                         {% if object.submission %}
                             <br><br>
-                            <a href="{% url 'user_assignment_request' object.id %}" class="card-link btn btn-success btn-sm">
+                            <a href="{% url 'user_assignment_request' object.id %}"
+                               class="card-link btn btn-success btn-sm">
                                 Student Delay Request</a>
                         {% endif %}
                     </div>

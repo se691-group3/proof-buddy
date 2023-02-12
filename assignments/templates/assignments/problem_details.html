@@ -221,7 +221,7 @@
                             </button>
                         </td>
                         <td>
-                            <br>
+
                             <button class="move_down btn btn-sm btn-light" type="button"
                                     name="proofline_set-{{ forloop.counter0 }}-move_down-btn"
                                     id="id_proofline_set-{{ forloop.counter0 }}-move_down-btn"
@@ -309,7 +309,7 @@
                                 </svg>
                             </button>
                         </td>
-                        <br>
+
                         <td>
                             <button class="move_down btn btn-sm btn-light" type="button"
                                     name="proofline_set-__prefix__-move_down-btn"
@@ -341,7 +341,7 @@
                     </tr>
                 </table>
             {% endif %}
-            <hr>
+
             <div style="clear: left">
                 {% if request.user.is_instructor %}
                     <button name="submit" type="submit" class="btn btn-primary mb-3">
@@ -391,7 +391,20 @@
                 {% endif %}
                 <hr>
             {% endif %}
+
         </form>
+    <div class="dropdown mb-3">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"
+                    aria-expanded="false">
+                Download
+            </button>
+
+            <div class="dropdown-menu">
+                <a class="dropdown-item" id="download" type="submit">Screenshot</a>
+
+                <a href="{% url 'get-latex-file-assignment' object.pk %}" class="dropdown-item">LaTeX.tex file</a>
+            </div>
+        </div>
     </div>
     <script src="{% static 'js/proof_checker.js' %}"></script>
 

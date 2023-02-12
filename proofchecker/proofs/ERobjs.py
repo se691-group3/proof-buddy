@@ -12,6 +12,13 @@ class ERobj:
         #value is the function that tells what happens when it gets evaluated
     def __str__(self):
         return str(self.name)
+    def __eq__(self,other):
+        if isinstance(other,ERobj): #TODO: possible issue with value if not primitive
+                return self.name == other.name and self.pbType==other.pbType and \
+                    self.ins==other.ins and self.outtype==other.outtype and \
+                        self.numArgs==other.numArgs and self.length == other.length and \
+                            self.value == other.value
+        return False
 
 # NOTE: lambdas take the ERobj.value, as inputs, not the value itself.
 # similarly, lambda output values, not the ERobjs. So, they will need to be

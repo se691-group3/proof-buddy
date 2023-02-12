@@ -1,7 +1,7 @@
 {% extends 'proofchecker/base.html' %} {% load static %} {% block content %} {% load widget_tweaks %}
     <div class="pt-3 mt-3 px-3 mx-3">
-    <h3>Problem Solution!</h3>
-    <hr>
+    <h3 class="font-weight-bold mb-2">Problem Solution</h3>
+
 
     <form id="proof_form" action="" method="post">
         <table class="table table-hover table-large">
@@ -26,10 +26,10 @@
         {% endfor %}
 
             <br>
-            <button id="btn_start_proof" class="btn btn-primary mx-2" type="button" onclick="start_proof(this)">
+            <button id="btn_start_proof" class="btn btn-primary" type="button" onclick="start_proof(this)">
                 Start Proof
             </button>
-            <button id="btn_restart_proof" class="btn btn-primary mx-2 hidden" type="button" onclick="restart_proof()">
+            <button id="btn_restart_proof" class="btn btn-primary hidden" type="button" onclick="restart_proof()">
                 Restart Proof
             </button>
 
@@ -137,7 +137,7 @@
             </thead>
             <div id="valid-premise-div"/>
             <div id="valid-conclusion-div"/>
-
+<br>
             <tbody id="proofline-list">
             {% for line in formset %} {% if line.DELETE.value %}
                 <tr id="proofline_set-{{ forloop.counter0 }}" class="proofline_set hidden">
@@ -208,7 +208,7 @@
                     </svg>
                 </button>
                 </td>
-                <br>
+
                 <td>
                 <button class="move_down btn btn-sm btn-light" type="button"
                         name="proofline_set-{{ forloop.counter0 }}-move_down-btn"
@@ -305,7 +305,7 @@
                         </svg>
                     </button>
                 </td>
-                    <br>
+
                 <td>
                     <button class="move_down btn btn-sm btn-light" type="button"
                             name="proofline_set-__prefix__-move_down-btn" id="id_proofline_set-__prefix__-move_down-btn"
@@ -389,5 +389,52 @@
         {% endif %} {% endif %}
 
     </form>
+    <div class="dropdown mb-3">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"
+                    aria-expanded="false">
+                Download
+            </button>
+
+            <div class="dropdown-menu">
+                <!--<a class="dropdown-item" id="download" type="submit">Screenshot</a>-->
+
+                <a href="{% url 'get-latex-file-assignment' object.pk %}" class="dropdown-item">LaTeX.tex file</a>
+            </div>
+        </div>
     </div>
-    <script src="{% static 'js/proof_checker.js' %}"></script> {% endblock %}
+    </div>
+    <script src="{% static 'js/proof_checker.js' %}"></script>
+<script type="text/javascript">
+        let typingTimer;
+        const doneTypingInterval = 2000;
+        const $input = $('#proof_form');
+
+        $input.on('keyup', function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        });
+
+        $input.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
+
+        let timer;
+
+        function doneTyping() {
+            const box = document.getElementById('auto-save-message');
+            const datetime = new Date().toLocaleTimeString();
+            document.getElementById("time").textContent = datetime;
+            box.style.visibility = 'visible';
+            autoSave()
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                box.style.visibility = 'hidden';
+            }, 6000);
+        }
+
+        function autoSave() {
+            $.post('', $('#proof_form').serialize() + '&autosave');
+
+        };
+    </script>
+{% endblock %}

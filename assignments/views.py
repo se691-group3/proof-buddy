@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.utils.datetime_safe import datetime
 import os
 
@@ -71,7 +72,7 @@ def instructor_assignments_view(request):
 
 
 def student_assignments_view(request):
-    today_date = datetime.datetime.now()
+    today_date = datetime.now()
     today_date = today_date.strftime("%Y-%m-%d %H:%M:%S")
     print("today_date:", today_date)
     object_list = Assignment.objects.filter(
@@ -181,8 +182,8 @@ def assignment_details_view(request, pk=None):
 
     if studentPk is not None:
         date = assignment.due_by
-        today = datetime.datetime.now()
-        diff = today.replace(tzinfo=datetime.timezone.utc) - date
+        today = datetime.now()
+        diff = today.replace(tzinfo=timezone.utc) - date
         if diff and diff.days > 0:
             assignment.is_submitted = True
             assignment.save()
@@ -400,6 +401,7 @@ def problem_details_view(request, pk=None):
 
             return HttpResponseRedirect(reverse("all_assignments"))
 
+
     if request.user.is_student:
         problem_form.disabled_all()
         proof_form.disabled_all()
@@ -501,6 +503,10 @@ def problem_solution_view(request, problem_id=None):
                 return HttpResponseRedirect(
                     reverse("assignment_details", kwargs={"pk": assignmentPk})
                 )
+
+            elif 'autosave' in request.POST:
+                proof.save()
+                formset.save()
 
     if request.user.is_student:
         problem_form.disabled_all()
@@ -627,7 +633,7 @@ def user_assignment_request(request, a_id):
             print("submission_date:", submission_date)
             print("status:", status)
 
-            current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+            current_date = datetime.now().strftime("%Y-%m-%d")
 
             if submission_date > current_date:
                 if status == "rejected":

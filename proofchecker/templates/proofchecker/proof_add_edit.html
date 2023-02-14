@@ -1,5 +1,18 @@
 {% extends 'proofchecker/base.html' %} {% load static %} {% block content %} {% load widget_tweaks %}
     <div class="pt-3 mt-3 px-3 mx-3">
+
+        {% if  request.user != createdby.user %}
+            <div class="col-md-12 info-banner">
+                <div class="info">
+                    <i class="icon-info-sign"></i>
+                    <span class="extra-info">
+                    Caution: This assignment was not created for your course!
+                    </span>
+                </div>
+            </div>
+            <br>
+        {% endif %}
+
         {% if object.pk %} {% if object.created_by == request.user %}
             <h3 class="font-weight-bold mb-2">Edit Proof </h3>
         {% else %}
@@ -129,6 +142,9 @@
                         <td></td>
                         <td></td>
                         <td></td>
+                        <td></td>
+                        <td>Instructor Comment</td>
+                        <td>Student Response</td>
                     </tr>
                     </thead>
                     <div id="valid-premise-div"></div>
@@ -222,6 +238,12 @@
                         </button>
 
                     </td>
+                    <td>
+                        {{ line.comment }}
+                    </td>
+                    <td>
+                        {{ line.response }}
+                    </td>
 
                     <td hidden>{{ line.id }}{{ line.DELETE }}{{ line.ORDER }}</td>
                     </tr>
@@ -304,6 +326,12 @@
                                     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"></path>
                                 </svg>
                             </button>
+                        </td>
+                        <td>
+                            {{ formset.empty_form.comment }}
+                        </td>
+                        <td>
+                            {{ formset.empty_form.response }}
                         </td>
 
                         <td hidden>

@@ -10,7 +10,7 @@
         <hr>
         <div class="row mt-3">
             {% for object in object_list %}
-                <div class="card mx-2 mb-3" style="max-width: 20rem;">
+                <div class="card mx-2 mb-3" style="max-width: 24rem;">
                     <div class="card-header">
                         <h5 style="text-align: center"><b> {{ object.title }}</b></h5>
                     </div>
@@ -24,7 +24,6 @@
                             View / Edit</a>
                         <a href="{% url 'delete_assignment' object.id %}" class="card-link btn btn-secondary btn-sm">
                             Delete</a>
-                        <div class="dropdown mb-3">
                             <button class="card-link btn btn-warning btn-sm dropdown-toggle" type="button"
                                     data-toggle="dropdown"
                                     aria-expanded="false">
@@ -34,7 +33,7 @@
                                 <a href="{% url 'get_grading_csv_file' object.id %}" class="dropdown-item">Grading CSV</a>
                                 <a href="{% url 'get_problem_anaylsis_csv_file' object.id %}" class="dropdown-item">Problem Analysis CSV</a>
                             </div>
-                        </div>
+
                         {% if object.submission %}
                             <br><br>
                             <a href="{% url 'user_assignment_request' object.id %}"

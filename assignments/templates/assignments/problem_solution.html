@@ -397,8 +397,9 @@
 
             <div class="dropdown-menu">
                 <!--<a class="dropdown-item" id="download" type="submit">Screenshot</a>-->
-
+                {% if object.pk %} {% if object.created_by == request.user %}
                 <a href="{% url 'get-latex-file-assignment' object.pk %}" class="dropdown-item">LaTeX.tex file</a>
+                {% endif %} {% endif %}
             </div>
         </div>
     </div>

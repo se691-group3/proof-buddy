@@ -328,7 +328,9 @@
         {% endif %}
         <hr>
         <!-- Display validation errors from form fields-->
+        {% if object.pk %} {% if object.created_by == request.user %}
         <a href="{% url 'get-latex-file-assignment' object.pk %}" class="dropdown-item">LaTeX.tex file</a>
+        {% endif %}{% endif %}
         {% for line in formset %} {% for field in line %} {% if field.errors %}
             <div class="container">
                 {% for error in field.errors %}

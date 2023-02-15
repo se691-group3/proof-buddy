@@ -155,6 +155,13 @@ def proof_create_view(request):
                     parent.save()
                     formset.save()
                     return HttpResponseRedirect(reverse('all_proofs'))
+                    
+            elif 'autosave' in request.POST:
+                    if len(formset.forms) > 0:
+                        parent.created_by = request.user
+                        parent.save()
+                        formset.save()
+            
 
     context = {
         "object": form,

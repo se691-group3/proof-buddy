@@ -225,11 +225,18 @@ def proof_update_view(request, pk=None):
                         parent.save()
                         formset.save()
 
+        ## Get instructor user object who created the problem
+        if hasattr(obj,'studentproblemsolution'):
+            created_by = obj.proofline_set.instance.studentproblemsolution.assignment.created_by
+        else:
+            created_by = obj.created_by
+
         context = {
             "object": obj,
             "form": form,
             "formset": formset,
-            "response": response
+            "response": response,
+            "createdby": created_by
         }
 
         return render(request, 'proofchecker/proof_add_edit.html', context)

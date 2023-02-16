@@ -185,6 +185,9 @@ function create_subproof(obj) {
 function check_if_max_indentation(currentRow, previousRow) {
     let previousRowInfoObj = getObjectsRowInfo(previousRow) //get the information object from the row
     let currentRowInfoObj = getObjectsRowInfo(currentRow)
+    if (currentRowInfoObj.line_number_of_row == 1){
+        return false
+    }
     let previousRowNumber = previousRowInfoObj.line_number_of_row //get the row number for a row from the row object
     let currentRowNumber = currentRowInfoObj.line_number_of_row
     let previousRowNumberOfPeriods = (previousRowNumber.match(/\./g) || []).length //count how many "." are in that row number

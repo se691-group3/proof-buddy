@@ -45,8 +45,8 @@ class ProofObj:
     #note that premises and conclusion are lineObjects not strings!  WAIT: maybe they are strs sometimes, since crashed line2Dict
     def __init__(self, rules='tfl_basic', premises=[], conclusion='', lines=[], created_by='', name="", complete=False):
         self.rules = rules 
-        self.ruleList = ["ds"] #TODO: for future, this will have to be a list of allowed rules, not a specific string, presently rules='fol_derived' etc
-        self.premises = premises
+        self.ruleList = [] #TODO: for future, this will have to be a list of allowed rules, not a specific string, presently rules='fol_derived' etc
+        self.premises = premises # this is a list of strings :-(
         self.conclusion = conclusion
         self.lines = lines
         self.created_by = created_by
@@ -63,7 +63,12 @@ class ProofObj:
     def __iter__(self):
         return (x for x in self.lines)
 
-    def getPremises(self):
+# Note: some changes were made here 01/31/23 by SteveE to insure that the output would always be a list
+    def getPremises(self) -> list:
+        if self.premises=="":
+            return [] #insure output is a list
+        if isinstance(self.premises,str): #o/w a single premise would just return a str
+            return [self.premises]
         return self.premises
 
     def getRuleList(self):  # can make a setter later, once the idea becomes more fleshed out

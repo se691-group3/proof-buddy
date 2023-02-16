@@ -36,7 +36,7 @@ from .rule import Rule
 
 TFL_BASIC_RULES = [Premise(), Assumption(), ConjunctionIntro(), ConjunctionElim(), DisjunctionIntro(), DisjunctionElim(), \
     ConditionalIntro(), ConditionalElim(), BiconditionalIntro(), BiconditionalElim(), NegationIntro(), NegationElim(), \
-    Explosion(), IndirectProof(),DubNegIntro(), NewRule()] #added these two last members!!
+    Explosion(), IndirectProof(), DubNegIntro()] #added these two last members!!
 
 TFL_DERIVED_RULES = [DisjunctiveSyllogism(), ModusTollens(), DoubleNegationElim(), Reiteration(), ExcludedMiddle(), DeMorgan()]
 

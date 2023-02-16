@@ -1,3 +1,7 @@
+import csv
+import re
+from io import TextIOWrapper
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -6,16 +10,18 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.views.generic import CreateView
+from django.views.generic import CreateView, FormView
 from django.views.generic import TemplateView
 
 # Create your views here.
-from accounts.forms import StudentSignUpForm, InstructorSignUpForm, StudentProfileForm, InstructorProfileForm, UserForm
+from accounts.forms import StudentSignUpForm, InstructorSignUpForm, StudentProfileForm, InstructorProfileForm, UserForm, \
+    CSVUploadForm
 from proofchecker.models import Student, Instructor
 from .tokens import account_activation_token
 
 User = get_user_model()
 
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
 class SignUpView(TemplateView):
     template_name = "accounts/signup.html"
@@ -177,3 +183,49 @@ class InstructorProfileUpdateView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
+
+
+class CustomCSVView(FormView):
+    model = User
+    template_name = "accounts/bulk_create_form.html"
+    form_class = CSVUploadForm
+    success_url = "success"
+
+    def form_valid(self, form):
+        csv_file = form.cleaned_data["file"]
+        file = TextIOWrapper(csv_file.file)
+        dict_reader = csv.DictReader(file)
+
+        required_columns = ["proof buddy email addresses"]
+
+        form.check_columns(required_columns, dict_reader)
+
+        for row, item in enumerate(dict_reader, start=1):
+            self.process_item(item, form)
+
+        return super().form_valid(form)
+
+    def process_item(self, item, form):
+        email_address = item["proof buddy email addresses"]
+        if re.fullmatch(regex, email_address):
+
+            user = form.save(email_address)
+
+            domain = get_current_site(self.request).domain
+            mail_subject = 'Activate Your Account'
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            link = reverse('activate', kwargs={
+                'uidb64': uidb64, 'token': account_activation_token.make_token(user)
+            })
+            activate_url = "http://" + domain + link
+            email_body = "Hi " + user.username + \
+                         ", Please click on the link to confirm your registration.\n" + activate_url
+
+            to_email = user.email
+            email = EmailMessage(
+                mail_subject, email_body, to=[to_email])
+            email.send()
+
+
+class BulkCreateFormComplete(TemplateView):
+    template_name = 'accounts/bulk_create_form_complete.html'

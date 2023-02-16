@@ -1,10 +1,10 @@
 
 #main {
-    transition: margin-right .5s;
+    transition: margin-right .5s ease-in-out;
     padding: 16px;
 }
 
-#right-menu-container{
+#right-menu-container {
     min-width: 250px;
     overflow: hidden;
 }
@@ -18,7 +18,7 @@
     top: 0;
     right: 0;
     overflow-x: hidden;
-    transition: 0.5s;
+    transition: 0.5s ease-in-out;
     padding-top: 90px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, .2);
 }
@@ -28,7 +28,7 @@
     font-size: 25px;
     color: #818181;
 
-    transition: .2s;
+    transition: .2s ease-in-out;
 }
 
 .sidebar a:hover {
@@ -181,10 +181,83 @@ body > footer {
     pointer-events: none;
 }
 
-.form-fields-CSS{
- height: 31px;
+.form-fields-CSS {
+    height: 31px;
     border-top-style: hidden;
-        border-right-style: hidden;
-        border-left-style: hidden;
-        border-bottom-style: hidden;
+    border-right-style: hidden;
+    border-left-style: hidden;
+    border-bottom-style: hidden;
+}
+
+.proof-button {
+    background-color: #0d6efd;
+    color: #ffffff;
+    text-decoration: none;
+
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    border-radius: 4px;
+    height: 50px;
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+    width: auto;
+    max-width: 32px;
+    -webkit-transition: max-width .5s ease-in-out;
+    transition: max-width .5s ease-in-out;
+}
+
+.proof-button:active{
+
+    background-color: #0057c9;
+
+}
+
+.proof-button:hover {
+    max-width: 300px;
+
+}
+
+.proof-button-icon {
+    font-weight: bolder;
+    font-size: 2.5em;
+    margin-right: 1px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+}
+
+.proof-button-text {
+    font-size: 18px;
+
+    white-space: nowrap;
+    padding-right: 7px;
+}
+
+* {
+    transition: all .2s ease;
+}
+  
+.extra-info {
+    line-height: 30px;
+    font-size: 1.5rem;
+    position: absolute;
+    top: 0;
+    left: 50px;
+    color: red;
+}
+
+.info {
+    font-size: 20px;
+    padding-left: 5px;
+    width: 20px;
+    border-radius: 15px;
+}
+
+.info:hover {
+    background-color: white;
+    padding: 0 0 0 5px;
+    width: 315px;
+    text-align: left !important;
 }

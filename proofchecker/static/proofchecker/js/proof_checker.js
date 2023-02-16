@@ -34,7 +34,6 @@ function reload_page() {
 }
 
 
-
 // Downlaod button
 window.onload = function () {
     document.getElementById("download")
@@ -43,14 +42,13 @@ window.onload = function () {
             var opt = {
                 margin: .25,
                 filename: `${this.document.getElementById("id_name").value.replace(" ", "_")}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 1 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                image: {type: 'jpeg', quality: 0.98},
+                html2canvas: {scale: 1},
+                jsPDF: {unit: 'in', format: 'letter', orientation: 'portrait'}
             };
             html2pdf().from(form).set(opt).save();
         })
 }
-
 
 // Displayed line count
 function updateLineCount() {
@@ -222,7 +220,7 @@ function check_if_max_indentation(currentRow, previousRow) {
     let currentRowNumber = currentRowInfoObj.line_number_of_row
     let previousRowNumberOfPeriods = (previousRowNumber.match(/\./g) || []).length //count how many "." are in that row number
     let currentRowNumberOfPeriods = (currentRowNumber.match(/\./g) || []).length
-    if(currentRowNumberOfPeriods == previousRowNumberOfPeriods+1 ){ //if the number of periods in current row is 1 more than the previous, cant indent anymore
+    if (currentRowNumberOfPeriods == previousRowNumberOfPeriods + 1) { //if the number of periods in current row is 1 more than the previous, cant indent anymore
         alert("Can't indent any further")
         return true
     }
@@ -326,7 +324,6 @@ function generate_parent_row(currentRow) {
 }
 
 
-
 /**
  * inserts a row at current level when INSERT ROW button is clicked
  */
@@ -348,7 +345,6 @@ function insert_row_current_level(index) {
     update_rule_line_references(updated_rows)
 
 }
-
 
 
 /**
@@ -1013,8 +1009,7 @@ function update_rule_line_references(updated_rows) {
                         if (new_value.length != 0) {
                             new_rule_text.push(new_value)
                         }
-                    }
-                    else {
+                    } else {
                         if (i > 0) {
                             new_rule_text.push(rule_text[i]);
                         }
@@ -1036,9 +1031,9 @@ function update_rule_line_references(updated_rows) {
 function clean_rule(old_rule) {
     rule_errors = ['∧ ', '∨ ', '¬ ', '→ ', '↔ ', '∀ ', '∃ '];
     new_rule = old_rule;
-    let rule_prefix = old_rule.substring(0,2);
+    let rule_prefix = old_rule.substring(0, 2);
     if (rule_errors.includes(rule_prefix)) {
-        new_rule = old_rule[0] + old_rule.substring(2,old_rule.length)
+        new_rule = old_rule[0] + old_rule.substring(2, old_rule.length)
     }
     return new_rule;
 }
@@ -1095,7 +1090,6 @@ function updateFormsetId(old_id, new_id) {
         })
     }
 }
-
 
 
 function hide_make_parent_button() {

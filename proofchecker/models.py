@@ -166,10 +166,11 @@ class Course(models.Model):
 class Assignment(models.Model):
     title = models.CharField(max_length=255, null=True)
     created_by = models.ForeignKey(
-        Instructor, on_delete=models.CASCADE, null=True)
+    Instructor, on_delete=models.CASCADE, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     start_date = models.DateTimeField(null=True)
     due_by = models.DateTimeField()
+    resubmissions = models.IntegerField(default=0, null=True, blank=True)
     problems = models.ManyToManyField(Problem)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     is_submitted = models.BooleanField(default=False)
@@ -212,3 +213,5 @@ class Feedback(models.Model):
     details = models.TextField(max_length=700)
     # attach = models.FileField(blank=True, null=True) , widget=forms.ClearableFileInput(       attrs={'multiple': True}))
     attach = models.FileField(blank=True, null=True)
+
+

@@ -129,7 +129,7 @@
                         {% if assignment.is_submitted %}
                             {% if submission and assignment.is_late_submitted == False and grading == False %}
                                 <a href="{% url 'problem_details' problem.id %}?assignment={{ assignment.id }}">
-                                    {{ problem.question }} 
+                                    {{ problem.question }}
                                 </a>
                             {% else %}
                                 {{ problem.question }}

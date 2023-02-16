@@ -27,5 +27,6 @@ urlpatterns = [
     # path("students/assignments", views.student_assignment, name='student_assignment'),
     path("tests/syntaxtest", views.SyntaxTestPage, name='syntax_test'),
     path("version_log", views.version_log, name='version_log'),
-    path("devs", views.devs, name='devs')
+    path("devs", views.devs, name='devs'),
+    path('get_latex_file/<pk>', views.get_latex_file, name='get-latex-file'),
 ]

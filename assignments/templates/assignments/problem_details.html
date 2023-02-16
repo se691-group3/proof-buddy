@@ -7,9 +7,10 @@
         {% else %}
             <h3>Create Problem</h3>
         {% endif %}
-        <hr> 
+        <hr>
         {% if request.user.is_student %}
-            <a class="btn btn-primary btn-sm" href="{% url 'problem_solution' object.pk %}?assignment={{ request.GET.assignment }}">
+            <a class="btn btn-primary btn-sm"
+               href="{% url 'problem_solution' object.pk %}?assignment={{ request.GET.assignment }}">
                 Solve this Problem!
             </a>
             <hr>
@@ -62,12 +63,14 @@
 
             <br>
             <br>
-            <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" style="font-size: 12px">
+            <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#collapseExample" role="button"
+               aria-expanded="false" aria-controls="collapseExample" style="font-size: 12px">
                 Table Button Info
             </a>
             <div class="collapse" id="collapseExample" style="max-width: 925px">
                 <div class="card card-body">
                     <div class="d-flex flex-row" style="font-size: 12px">
+
                         <div class="pr-2">
                             <button class="btn btn-primary btn-sm" type="button" style="pointer-events: none;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white"
@@ -76,6 +79,7 @@
                                 </svg>
                             </button>
                             Add a new line to the proof
+
                         </div>
                         <div class="pr-2">
                             <button class="btn btn-info btn-sm" type="button" style="pointer-events: none;">
@@ -86,6 +90,7 @@
                             </button>
                             Pull the current line out of the subproof
                         </div>
+
                         <div class="pr-2">
                             <button class="btn btn-info btn-sm" type="button" style="pointer-events: none;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white"
@@ -95,6 +100,8 @@
                             </button>
                             Push the current line into a subproof
                         </div>
+
+
                         <div class="pr-2">
                             <button class="delete-row btn btn-danger btn-sm" type="button"
                                     style="pointer-events: none;">
@@ -105,6 +112,7 @@
                             </button>
                             Delete line from the proof
                         </div>
+
                     </div>
                     <div class="d-flex flex-row pt-2" style="font-size: 12px">
                         <div class="pr-1">
@@ -157,11 +165,11 @@
                     <div id="valid-conclusion-div"></div>
                     <br>
                     <tbody id="proofline-list">
-                    {% for line in formset %} 
+                    {% for line in formset %}
                         {% if line.DELETE.value %}
-                        <tr id="proofline_set-{{ forloop.counter0 }}" class="proofline_set hidden">
-                        {% else %}
-                        <tr id="proofline_set-{{ forloop.counter0 }}" class="proofline_set">
+                            <tr id="proofline_set-{{ forloop.counter0 }}" class="proofline_set hidden">
+                                {% else %}
+                            <tr id="proofline_set-{{ forloop.counter0 }}" class="proofline_set">
                         {% endif %}
                             <td>{{ line.line_no|add_class:"line-no-CSS" }}</td>
                             <td>{{ line.formula|add_class:"form-fields-CSS" }}</td>
@@ -369,7 +377,6 @@
                     </a>
                 {% endif %}
             </div>
-
             <div class="row" hidden>
                 <div hidden id="line_counter">0</div>
             </div>
@@ -391,7 +398,7 @@
             {% endif %} {% endfor %} {% endfor %}
 
             <!-- Display response from Proof Checker-->
-            {% if response %} 
+            {% if response %}
                 {% if response.err_msg %}
                 <div class="alert alert-primary" role="alert">
                     Keep at it! Don't forget to save your work by clicking "Save"! This will allow you to return to
@@ -407,7 +414,21 @@
                 {% endif %}
                 <hr>
             {% endif %}
+
         </form>
+    <div class="dropdown mb-3">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"
+                    aria-expanded="false">
+                Download
+            </button>
+
+            <div class="dropdown-menu">
+                <!--<a class="dropdown-item" id="download" type="submit">Screenshot</a>-->
+                {% if object.pk %} {% if object.created_by == request.user %}
+                <a href="{% url 'get-latex-file-assignment' object.pk %}" class="dropdown-item">LaTeX.tex file</a>
+                {% endif %}{% endif %}
+            </div>
+        </div>
     </div>
     <script src="{% static 'js/proof_checker.js' %}"></script>
     <script type="text/javascript">
@@ -436,5 +457,4 @@
 
         update_row_indentations()
     </script>
-
 {% endblock %}

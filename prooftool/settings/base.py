@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'assignments',
     'courses',
     'widget_tweaks',
+    'pylatex',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +60,7 @@ INTERNAL_IPS = [
 ROOT_URLCONF = 'prooftool.urls'
 
 TEMPLATES = [
+
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join((BASE_DIR), 'templates/')],
@@ -70,8 +72,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+
         },
+
     },
+
 ]
 
 WSGI_APPLICATION = 'prooftool.wsgi.application'
@@ -147,7 +152,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'proofbuddy.drexel@gmail.com'
 # Email password is 'drexelproofs'
-EMAIL_HOST_PASSWORD = 'mlozjsxhmhfekned' #This is an app specific password. Cannot use email password due to Google security policy
+EMAIL_HOST_PASSWORD = 'mlozjsxhmhfekned'  # This is an app specific password. Cannot use email password due to Google security policy
 
 # Activate Django-Heroku.
 # django_heroku.settings(locals()) #this line was causing error

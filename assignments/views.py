@@ -542,7 +542,7 @@ def problem_solution_view(request, problem_id=None):
                 response = verify_proof(proof, parser)
 
             elif "submit" in request.POST:
-                assignmentPk.assignment.resubmissions -= 1
+                solution.assignment.resubmissions -= 1
                 proof.save()
                 formset.save()
                 messages.success(request, "Solution saved successfully")

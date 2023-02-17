@@ -14,7 +14,9 @@
                             <div class="col-sm-4 col-form-label">
                                 <label>{{ line.label }}</label>
                             </div>
-                            <div class="col-sm-8">{{ line }}</div>
+                            <div class="col-sm-8">
+                                {{ line|attr:"readonly:true" }}
+                            </div>
                         </div>
                     {% endif %}
                 {% endif %}
@@ -25,7 +27,7 @@
                         {{ line.label }}
                     </div>
                     <div class="col-sm-8">
-                        {{ line }}
+                        {{ line|attr:"readonly:true" }}
                     </div>
                 </div>
             {% endfor %}

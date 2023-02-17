@@ -27,10 +27,22 @@
                                 <div class="col-sm-4 col-form-label">
                                     <label>{{ line.label }}</label>
                                 </div>
-                                <div class="col-sm-8">{{ line }}</div>
+                                <div class="col-sm-8">
+                                    {{ line|attr:"readonly:true" }}
+                                </div>
                             </div>
                         {% endif %}
                     {% endif %}
+                {% endfor %}
+                {% for line in proof_form %}
+                    <div class="row">
+                        <div class="col-sm-4 col-form-label">
+                            <label>{{ line.label }}</label>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ line|attr:"readonly:true" }}
+                        </div>
+                    </div>
                 {% endfor %}
             {% endif %}
 
@@ -43,16 +55,14 @@
                         <div class="col-sm-8">{{ line }}</div>
                     </div>
                 {% endfor %}
-
-            {% for line in proof_form %}
-                <div class="row">
-                    <div class="col-sm-4 col-form-label">
-                        <label>{{ line.label }}</label>
+                {% for line in proof_form %}
+                    <div class="row">
+                        <div class="col-sm-4 col-form-label">
+                            <label>{{ line.label }}</label>
+                        </div>
+                        <div class="col-sm-8">{{ line }}</div>
                     </div>
-                    <div class="col-sm-8">{{ line }}</div>
-                </div>
-            {% endfor %}
-            
+                {% endfor %}
             <button id="btn_start_proof" class="btn btn-primary mt-3" type="button" onclick="start_proof(this)">
                 Start Proof
             </button>

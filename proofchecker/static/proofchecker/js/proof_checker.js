@@ -161,6 +161,66 @@ function restart_proof() {
 }
 
 
+function add_disprover() {
+    // Get the checkbox
+    var checkBox = document.getElementById("disprover");
+    // Get the disproof button
+    var disproofButton = document.getElementById("btn_start_disproof");
+
+    // If the checkbox is checked, display the output text
+    if (checkBox.checked == true){
+        disproofButton.style.display = "inline-block";
+    } else {
+        disproofButton.style.display = "none";
+    }
+}
+
+
+function start_disproof(element) {
+    document.getElementById('start_disproof_section').style.display = "block";
+    document.getElementById('btn_start_disproof').style.display = "none";
+
+    // Get variables in premise and conclusion
+    const variables = [];
+
+    const premises = document.getElementById('id_premises').value;
+    const premiseArray = premises.split(";").map(item => item.trim());
+
+    for (let i = 0; i < premiseArray.length; i++) {
+        for (let j = 0; j < premiseArray[i].length; j++) {
+            if (is_letter(premiseArray[i][j])) {
+                variables.push(premiseArray[i][j]);
+            }
+        }
+    }
+
+    const conclusion = document.getElementById('id_conclusion').value;
+    for (let k = 0; k < conclusion.length; k++) {
+        if (is_letter(conclusion[k])) {
+            variables.push(conclusion[k]);
+        }
+    }
+
+    let uniqueChars = [...new Set(variables)];
+
+    // For each variable create a switch for it
+    for (let v = 0; v < uniqueChars.length; v++) {
+        document.getElementById('disproof_switches').innerHTML += `
+        <div style="display: inline-block;">` + uniqueChars[v] + `</div>
+        <label class="switch">
+            <input type="checkbox">
+            <span class="slider round"></span>
+        </label>
+        <br>
+        `;
+    }
+}
+
+function is_letter(str) {
+    return str.length === 1 && str.match(/[a-z]/i);
+}
+
+
 /**
  * Inserts form below current line
  */

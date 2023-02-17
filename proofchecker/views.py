@@ -21,6 +21,7 @@ from proofchecker.models import Student, Course, StudentProblemSolution
 from proofchecker.proofs.proofchecker import verify_proof
 from proofchecker.proofs.proofobjects import ProofObj, ProofLineObj
 from proofchecker.proofs.proofutils import get_premises
+from proofchecker.proofs.disprover import makeDict, setVals, checkCntrEx 
 from proofchecker.utils import folparser
 from proofchecker.utils import tflparser
 from .forms import ProofForm, ProofLineForm, FeedbackForm
@@ -155,6 +156,19 @@ def proof_create_view(request):
                     parent.save()
                     formset.save()
                     return HttpResponseRedirect(reverse('all_proofs'))
+
+            elif 'check_disproof' in request.POST:
+                proof = ProofObj(lines=[])  #
+                proof.rules = str(parent.rules)
+                proof.premises = get_premises(parent.premises)
+                proof.conclusion = str(parent.conclusion)
+                
+                valDict = setVals(makeDict(proof))
+                response = checkCntrEx(proof,valDict)
+                if response.is_valid:
+                    print("That is a valid counterexample -- Good Job!")
+                else:
+                    print(response.err_msg)
                     
             elif 'autosave' in request.POST:
                     if len(formset.forms) > 0:
@@ -218,6 +232,19 @@ def proof_update_view(request, pk=None):
                         parent.save()
                         formset.save()
                         return HttpResponseRedirect(reverse('all_proofs'))
+
+                elif 'check_disproof' in request.POST:
+                    proof = ProofObj(lines=[])  #
+                    proof.rules = str(parent.rules)
+                    proof.premises = get_premises(parent.premises)
+                    proof.conclusion = str(parent.conclusion)
+                    
+                    valDict = setVals(makeDict(proof))
+                    response = checkCntrEx(proof,valDict)
+                    if response.is_valid:
+                        print("That is a valid counterexample -- Good Job!")
+                    else:
+                        print(response.err_msg)
 
                 elif 'autosave' in request.POST:
                     if len(formset.forms) > 0:

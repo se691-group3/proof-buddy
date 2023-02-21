@@ -452,7 +452,7 @@
     function autoSave(message_box) {
         $.post('', $('#proof_form').serialize() + '&autosave',
             function (response) {
-                    message_box.textContent = response
+                    message_box.textContent = response['response']
             });
     };
 

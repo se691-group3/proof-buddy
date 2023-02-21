@@ -15,7 +15,7 @@ from django.views.generic import ListView, DetailView, DeleteView
 from pylatex import Document, Section, Tabular
 from pylatex.position import FlushLeft
 from pylatex.utils import bold, NoEscape
-
+from django.core import serializers
 from accounts.decorators import instructor_required
 from proofchecker.models import Student, Course, StudentProblemSolution
 from proofchecker.proofs.proofchecker import verify_proof
@@ -155,8 +155,6 @@ def proof_create_view(request):
                     parent.save()
                     formset.save()
                     return HttpResponseRedirect(reverse('all_proofs'))
-                    
-            
 
     context = {
         "object": form,
@@ -170,7 +168,7 @@ def proof_create_view(request):
 @login_required
 def proof_update_view(request, pk=None):
     now = datetime.now()
-    
+
     obj = get_object_or_404(Proof, pk=pk)
     if obj.created_by == request.user or request.user.is_instructor:
         ProofLineFormset = inlineformset_factory(
@@ -180,7 +178,7 @@ def proof_update_view(request, pk=None):
             request.POST or None, instance=obj, queryset=obj.proofline_set.order_by("ORDER"))
         response = None
         validation_failure = False
-            
+
         if request.POST:
             if all([form.is_valid(), formset.is_valid()]):
                 parent = form.save(commit=False)
@@ -189,7 +187,7 @@ def proof_update_view(request, pk=None):
                     proof.rules = str(parent.rules)
                     proof.premises = get_premises(parent.premises)
                     proof.conclusion = str(parent.conclusion)
-                    
+
                     for line in formset.ordered_forms:
                         if len(line.cleaned_data) > 0 and not line.cleaned_data['DELETE']:
                             proofline = ProofLineObj()
@@ -198,8 +196,7 @@ def proof_update_view(request, pk=None):
                             proofline.line_no = str(child.line_no)
                             proofline.expression = str(child.formula)
                             proofline.rule = str(child.rule)
-                            
-                            
+
                             proof.lines.append(proofline)
 
                     # Determine which parser to user based on selected rules
@@ -222,8 +219,10 @@ def proof_update_view(request, pk=None):
                         parent.created_by = request.user
                         parent.save()
                         formset.save()
-                        response = 'Autosaved proofs at '+now.strftime("%H:%M:%S")
-                        return JsonResponse(response, safe=False)
+                        response = {
+                            'response': 'Autosaved proofs at '+now.strftime("%H:%M:%S")
+                        }
+                        return JsonResponse(response)
 
         context = {
             "object": obj,
@@ -268,21 +267,27 @@ def get_latex_file(request, pk=None):
                 while line_number_counter < form_count:
                     if obj.proofline_set.order_by('ORDER').values('line_no')[line_number_counter] in obj.proofline_set.order_by('ORDER').values('line_no'):
                         line_number_object = FlushLeft()
-                        dot_count = str(obj.proofline_set.order_by('ORDER').values('line_no')[line_number_counter]).count('.') / 2
-                        line_number_object.append(NoEscape(r'\hspace{' + str(dot_count) + 'cm}'))
+                        dot_count = str(obj.proofline_set.order_by('ORDER').values(
+                            'line_no')[line_number_counter]).count('.') / 2
+                        line_number_object.append(
+                            NoEscape(r'\hspace{' + str(dot_count) + 'cm}'))
                         line_number_object.append(
                             obj.proofline_set.order_by('ORDER').values('line_no')[line_number_counter]['line_no'])
                         table.add_row(
                             line_number_object,
-                            obj.proofline_set.order_by('ORDER').values('formula')[line_number_counter]['formula'],
-                            obj.proofline_set.order_by('ORDER').values('rule')[line_number_counter]['rule'],
+                            obj.proofline_set.order_by('ORDER').values(
+                                'formula')[line_number_counter]['formula'],
+                            obj.proofline_set.order_by('ORDER').values(
+                                'rule')[line_number_counter]['rule'],
                         )
                         table.add_hline()
                     line_number_counter = line_number_counter + 1
 
-    filename = obj.__dict__['name'] + '-' + now.strftime("%d_%m_%Y.%H-%M-%S")+'.tex'
+    filename = obj.__dict__['name'] + '-' + \
+        now.strftime("%d_%m_%Y.%H-%M-%S")+'.tex'
     response = HttpResponse(doc.dumps(), content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(filename)
+    response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(
+        filename)
 
     return response
 
@@ -348,7 +353,8 @@ def feedback_form(request):
             try:
                 attach = request.FILES['attach']
                 if attach != None and attach.content_type != None:
-                    email.attach(attach.name, attach.read(), attach.content_type)
+                    email.attach(attach.name, attach.read(),
+                                 attach.content_type)
             except:
                 print()
             email.send()

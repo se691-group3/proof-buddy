@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.datetime_safe import datetime
@@ -156,11 +156,6 @@ def proof_create_view(request):
                     formset.save()
                     return HttpResponseRedirect(reverse('all_proofs'))
                     
-            elif 'autosave' in request.POST:
-                    if len(formset.forms) > 0:
-                        parent.created_by = request.user
-                        parent.save()
-                        formset.save()
             
 
     context = {
@@ -175,6 +170,7 @@ def proof_create_view(request):
 @login_required
 def proof_update_view(request, pk=None):
     now = datetime.now()
+    
     obj = get_object_or_404(Proof, pk=pk)
     if obj.created_by == request.user or request.user.is_instructor:
         ProofLineFormset = inlineformset_factory(
@@ -184,7 +180,7 @@ def proof_update_view(request, pk=None):
             request.POST or None, instance=obj, queryset=obj.proofline_set.order_by("ORDER"))
         response = None
         validation_failure = False
-
+            
         if request.POST:
             if all([form.is_valid(), formset.is_valid()]):
                 parent = form.save(commit=False)
@@ -193,7 +189,7 @@ def proof_update_view(request, pk=None):
                     proof.rules = str(parent.rules)
                     proof.premises = get_premises(parent.premises)
                     proof.conclusion = str(parent.conclusion)
-
+                    
                     for line in formset.ordered_forms:
                         if len(line.cleaned_data) > 0 and not line.cleaned_data['DELETE']:
                             proofline = ProofLineObj()
@@ -202,6 +198,8 @@ def proof_update_view(request, pk=None):
                             proofline.line_no = str(child.line_no)
                             proofline.expression = str(child.formula)
                             proofline.rule = str(child.rule)
+                            
+                            
                             proof.lines.append(proofline)
 
                     # Determine which parser to user based on selected rules
@@ -224,6 +222,8 @@ def proof_update_view(request, pk=None):
                         parent.created_by = request.user
                         parent.save()
                         formset.save()
+                        response = 'Autosaved proofs at '+now.strftime("%H:%M:%S")
+                        return JsonResponse(response, safe=False)
 
         context = {
             "object": obj,

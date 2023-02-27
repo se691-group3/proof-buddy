@@ -53,6 +53,9 @@ class ProofObj:
         self.name = name
         self.complete = complete
     
+    def setCompleteFlag(self,complete):
+        self.complete = complete
+
     def __str__(self): #BUG: this could potentially be a problem if old version called this thinking it was getting only lines!
         #result = "Proof: "+self.name+"\n" #added name as a title, but commented out to prevent testing errors based on reading lines
         result=""
@@ -86,6 +89,8 @@ class ProofObj:
 
     def setLine(self,n, myLine: ProofLineObj):
         self.lines[n]=myLine
+
+        
 
     def getConclusion(self):       
         return self.conclusion

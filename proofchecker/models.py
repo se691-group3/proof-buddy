@@ -100,6 +100,7 @@ class Proof(models.Model):
     premises = models.CharField(max_length=255, blank=True, null=True)
     conclusion = models.CharField(max_length=255)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    
 
     class Meta:
         ordering = ['-id']

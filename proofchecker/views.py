@@ -160,6 +160,7 @@ def proof_create_view(request):
 
 @login_required
 def proof_update_view(request, pk=None):
+    
     obj = get_object_or_404(Proof, pk=pk)
 
     if obj.created_by == request.user or request.user.is_instructor:
@@ -170,7 +171,7 @@ def proof_update_view(request, pk=None):
             request.POST or None, instance=obj, queryset=obj.proofline_set.order_by("ORDER"))
         response = None
         validation_failure = False
-
+        
         if request.POST:
             if all([form.is_valid(), formset.is_valid()]):
                 parent = form.save(commit=False)
@@ -197,7 +198,15 @@ def proof_update_view(request, pk=None):
                         parser = tflparser.parser
 
                     response = verify_proof(proof, parser)
+                    
+                    proof.setCompleteFlag = response.is_valid
+                    
 
+                    print("views.py: "+str(proof.complete))
+                    
+                    
+
+                
                 elif 'submit' in request.POST:
                     if len(formset.forms) > 0:
                         parent.created_by = request.user

@@ -47,6 +47,7 @@ FOL_DERIVED_RULES = [ConversionOfQuantifiers()]
 class RuleChecker:
 
     def get_rule(self, rule: str, proof: ProofObj):
+        
         """
         Determine which rule is being applied
         """
@@ -73,5 +74,6 @@ class RuleChecker:
             if rule.casefold() == basic_rule.symbols.casefold():
                 return basic_rule
 
-                
+        
         return None
+    

@@ -1,6 +1,4 @@
 {% extends 'proofchecker/base.html' %} {% load static %} {% block content %} {% load widget_tweaks %}
-
-
     <div class="pt-3 mt-3 px-3 mx-3">
 
         <!-- {% if  request.user != createdby.user %}
@@ -36,12 +34,25 @@
                         {{ line }}
                     </div>
                 </div>
-            {% endfor %}
-                <button id="btn_start_proof" class="btn btn-primary mt-3 " type="button"
+                {% endfor %}
+                <div class="row">
+                    <div id="disprover_label" class="col-md-1 col-sm-6">
+                        Add disprover?
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <input type="checkbox" id="disprover" onclick="add_disprover()">
+                    </div>
+                </div>
+
+                <button id="btn_start_proof" style="margin-right: 5px;" class="btn btn-primary mt-3" type="button"
                         onclick="start_proof(this)">
                     Start Proof
                 </button>
-                <button id="btn_restart_proof" class="btn btn-primary mt-3  hidden" type="button"
+                <button id="btn_start_disproof" style="display: none;" class="btn btn-danger mt-3" type="button"
+                        onclick="start_disproof(this)">
+                    Start Counter Example
+                </button>
+                <button id="btn_restart_proof" class="btn btn-primary mt-3 hidden" type="button"
                         onclick="restart_proof()">Restart Proof
                 </button>
             </table>
@@ -128,6 +139,13 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div id="start_disproof_section" style="display: none; float: right;">
+                <div id="disproof_switches">
+                </div>
+                <br>
+                <button name="check_disproof" type="submit" class="btn btn-primary mb-3">Check Counter Example</button>
             </div>
 
             {% if formset %} {{ formset.management_form }}

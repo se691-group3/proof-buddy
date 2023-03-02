@@ -9,7 +9,7 @@
     {% endif %} {% else %}
 
     <h3 class="font-weight-bold mb-2">Create Proof</h3>
-    <span class="badge badge-info mb-4">To actvate auto-save and latex export, save the proof and then edit it</span>
+    
     {% endif %}
 
 
@@ -26,7 +26,8 @@
                 </div>
             </div>
             {% endfor %}
-            <button id="btn_start_proof" class="btn btn-primary mt-3 " type="button" onclick="start_proof(this)">
+            <button id="btn_start_proof" class="btn btn-primary mt-3 " 
+                onclick="start_proof(this);" type="submit" name="initalSubmit">
                 Start Proof
             </button>
             <button id="btn_restart_proof" class="btn btn-primary mt-3  hidden" type="button"
@@ -353,7 +354,7 @@
             <button name="submit" type="submit" class="btn btn-primary mb-3">Save</button>
 
             </button>
-            
+
             {% endif %}
         </div>
 
@@ -424,40 +425,43 @@
 </div>
 {% if object.pk %} {% if object.created_by == request.user %}
 <script type="text/javascript">
-    let typingTimer;
-    const doneTypingInterval = 2000;
-    const $input = $('#proof_form');
+        let typingTimer;
+        const doneTypingInterval = 2000;
+        const $input = $('#proof_form');
 
-    $input.on('keyup', function () {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(doneTyping, doneTypingInterval);
-    });
+        $input.on('keyup', function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        });
 
-    $input.on('keydown', function () {
-        clearTimeout(typingTimer);
-    });
+        $input.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
 
-    let timer;
+        let timer;
 
-    function doneTyping() {
-        const message_box = document.getElementById('alert-message');
-        autoSave(message_box);
-        clearTimeout(timer);
-        message_box.style.visibility = 'visible';
-        timer = setTimeout(() => {
-            message_box.style.visibility = 'hidden';
-        }, 6000);
-    }
+        function doneTyping() {
+            const message_box = document.getElementById('alert-message');
+            autoSave(message_box);
+            clearTimeout(timer);
+            message_box.style.visibility = 'visible';
+            timer = setTimeout(() => {
+                message_box.style.visibility = 'hidden';
+            }, 6000);
+        }
 
-    function autoSave(message_box) {
-        $.post('', $('#proof_form').serialize() + '&autosave',
-            function (response) {
+        function autoSave(message_box) {
+            $.post('', $('#proof_form').serialize() + '&autosave',
+                function (response) {
                     message_box.textContent = response['response']
-            });
-    };
+                });
+        };
 
 </script>
+
+
 {% endif %}{% endif %}
+
 <script src="{% static 'js/syntax.js' %}"></script>
 <script src="{% static 'js/valid_input.js' %}"></script>
 <script src="{% static 'js/proof_checker.js' %}"></script>

@@ -122,6 +122,7 @@ def proof_create_view(request):
     response = None
 
     if request.POST:
+        # print(request.POST.get('data'))
         if all([form.is_valid(), formset.is_valid()]):
             parent = form.save(commit=False)
 
@@ -155,6 +156,12 @@ def proof_create_view(request):
                     parent.save()
                     formset.save()
                     return HttpResponseRedirect(reverse('all_proofs'))
+
+            elif 'initalSubmit' in request.POST:
+                parent.created_by = request.user
+                parent.save()
+                formset.save()
+                return redirect('update_proof', pk=parent.pk)
 
     context = {
         "object": form,

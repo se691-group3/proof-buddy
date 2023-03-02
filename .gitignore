@@ -92,3 +92,8 @@ prooftool/__pycache__/wsgi.cpython-310.pyc
 prooftool/settings/__pycache__/__init__.cpython-310.pyc
 prooftool/settings/__pycache__/base.cpython-310.pyc
 prooftool/settings/__pycache__/local.cpython-310.pyc
+proofchecker/templates/proofchecker/proof_add_edit.html
+proofchecker/migrations/0004_auto_20230302_1312.py
+proofchecker/migrations/0003_proof_complete.py
+proofchecker/migrations/__pycache__/0003_proof_complete.cpython-310.pyc
+proofchecker/migrations/__pycache__/0004_auto_20230302_1312.cpython-310.pyc

@@ -223,24 +223,11 @@ function restart_proof() {
 }
 
 
-function add_disprover() {
-    // Get the checkbox
-    var checkBox = document.getElementById("disprover");
-    // Get the disproof button
-    var disproofButton = document.getElementById("btn_start_disproof");
-
-    // If the checkbox is checked, display the output text
-    if (checkBox.checked == true){
-        disproofButton.style.display = "inline-block";
-    } else {
-        disproofButton.style.display = "none";
-    }
-}
-
-
 function start_disproof(element) {
-    document.getElementById('start_disproof_section').style.display = "block";
+    document.getElementById('start_disproof_section').style.width = "250px";
+    document.getElementById("main").style.marginRight = "250px";
     document.getElementById('btn_start_disproof').style.display = "none";
+    document.getElementById('disproof_switches').innerHTML = "";
 
     // Get variables in premise and conclusion
     const variables = [];
@@ -280,6 +267,12 @@ function start_disproof(element) {
 
 function is_letter(str) {
     return str.length === 1 && str.match(/[a-z]/i);
+}
+
+function close_disproof() {
+    document.getElementById('start_disproof_section').style.width = "0";
+    document.getElementById("main").style.marginRight = "0";
+    document.getElementById('btn_start_disproof').style.display = "block";
 }
 
 

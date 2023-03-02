@@ -35,20 +35,12 @@
                     </div>
                 </div>
                 {% endfor %}
-                <div class="row">
-                    <div id="disprover_label" class="col-md-1 col-sm-6">
-                        Add disprover?
-                    </div>
-                    <div class="col-12 col-md-8">
-                        <input type="checkbox" id="disprover" onclick="add_disprover()">
-                    </div>
-                </div>
 
                 <button id="btn_start_proof" style="margin-right: 5px;" class="btn btn-primary mt-3" type="button"
                         onclick="start_proof(this)">
                     Start Proof
                 </button>
-                <button id="btn_start_disproof" style="display: none;" class="btn btn-danger mt-3" type="button"
+                <button id="btn_start_disproof" class="btn btn-danger mt-3" type="button"
                         onclick="start_disproof(this)">
                     Start Counter Example
                 </button>
@@ -460,7 +452,7 @@
                 <div class="alert alert-primary" role="alert">
                     Keep at it! Don't forget to save your work by clicking "Save"! This will allow you to return to your
                     work on this later!
-                </div>
+                </div><br>
                 <strong>Result:</strong> {{ response.err_msg }}
 
 
@@ -470,7 +462,7 @@
                     Great job! Don't forget to save your work by clicking "Save"! This will allow you to view this
                     correct
                     proof later!
-                </div>
+                </div><br>
                 <strong>Result:</strong> The proof is valid and complete!
             {% endif %} {% endif %}
             <hr>

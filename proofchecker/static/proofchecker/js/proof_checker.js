@@ -223,21 +223,6 @@ function restart_proof() {
 }
 
 
-function add_disprover() {
-    // Get the checkbox
-    var checkBox = document.getElementById("disprover");
-    // Get the disproof button
-    var disproofButton = document.getElementById("btn_start_disproof");
-
-    // If the checkbox is checked, display the output text
-    if (checkBox.checked == true){
-        disproofButton.style.display = "inline-block";
-    } else {
-        disproofButton.style.display = "none";
-    }
-}
-
-
 function start_disproof(element) {
     document.getElementById('start_disproof_section').style.display = "block";
     document.getElementById('btn_start_disproof').style.display = "none";

@@ -133,8 +133,11 @@
                 </div>
             </div>
 
-            <div id="start_disproof_section" style="display: none; float: right;">
-                <div id="disproof_switches">
+            <div id="start_disproof_section" class="sidebar">
+                <a href="javascript:void(0)" class="closebtn" onclick="close_disproof()">×</a>
+                <h4 class="font-weight-bold mb-2">Disproof</h4>
+                <br>
+                <div id="disproof_switches" style="margin-left: 15px;">
                 </div>
                 <br>
                 <button name="check_disproof" type="submit" class="btn btn-primary mb-3">Check Counter Example</button>
@@ -463,7 +466,12 @@
                     correct
                     proof later!
                 </div><br>
-                <strong>Result:</strong> The proof is valid and complete!
+                <strong>Result:</strong> 
+                {% if 'check_disproof' in request.POST %}
+                    That is a valid counterexample -- Good Job!
+                {% else %}
+                    The proof is valid and complete!
+                {% endif %}
             {% endif %} {% endif %}
             <hr>
         </form>

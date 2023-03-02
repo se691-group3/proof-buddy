@@ -456,22 +456,23 @@
             {% endif %} {% endfor %} {% endfor %}
 
             <!-- Display response from Proof Checker-->
-            {% if response %}
-                {% if response.err_msg %}
+            {% if response %} {% if response.err_msg %}
+                <p>
                 <div class="alert alert-primary" role="alert">
-                    Keep at it! Don't forget to save your work by clicking "Save"! This will allow you to return to
-                    your work on this later!
-                </div>
-                <p><strong>Result:</strong>{{ response.err_msg }}</p>
-                {% else %}
+                    Keep at it! Don't forget to save your work by clicking "Save"! This will allow you to return to your
+                    work on this later!
+                </div><br>
+                <strong>Result:</strong> {{ response.err_msg }} </p>
+
+
+            {% else %}
+                <p>
                 <div class="alert alert-success" role="alert">
-                    Great job! Don't forget to save your work by clicking "Save"! This will allow you to view this
-                    correct proof later!
-                </div>
-                <p><strong>Result:</strong>The proof is valid and complete!</p>
-                {% endif %}
-                <hr>
-            {% endif %}
+                    Great job! Don't forget to save your work by clicking "Save"! This will allow you to view this correct
+                    proof later!
+                </div><br>
+                <strong>Result:</strong> The proof is valid and complete!</p>
+            {% endif %} {% endif %}
 
         </form>
     <div class="dropdown mb-3">

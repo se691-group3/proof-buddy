@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 const FORMSET_PREFIX = "proofline_set";                         // for modelformset - "form-"
 const FORMSET_TOTALFORMS_ID = "id_proofline_set-TOTAL_FORMS";   // for modelformset - "id_form-TOTAL_FORMS"
+const FORMSET_INITIALLFORMS_ID = "id_proofline_set-INITIAL_FORMS";   // for modelformset - "id_form-INITIAL_FORMS"
 const FORMSET_TBODY_ID = "proofline-list";                      // for modelformset - "proofline-list"
 const FORMSET_TR_CLASS = "proofline_set";                       // for modelformset - "proofline-form"
 
@@ -24,6 +25,9 @@ function reload_page() {
     sort_table()
     //will decide which button to display between start and restart
     set_start_restart_at_beginning()
+
+    update_comment_response_button()
+
     //Decide if we should display the table
     set_table_visibility()
 
@@ -63,9 +67,11 @@ function updateLineCount() {
     document.getElementById("line_counter").innerText = counter;
 }
 
-//
-function update_comment_button() {
+
+function update_comment_response_button() {
     let comment_forms = document.querySelectorAll(`[id$="comment"]`);
+    let response_forms = document.querySelectorAll(`[id$="response"]`);
+
     comment_forms.forEach(function(form){
         const form_id = get_form_id(form)
         const form_add_comment_btn=document.getElementById(`id_${FORMSET_PREFIX}-${form_id}-comment-btn`)
@@ -73,8 +79,58 @@ function update_comment_button() {
             set_comment_btn_active(form_add_comment_btn)
         } else {
             set_comment_btn_inactive(form_add_comment_btn)
+            form.toggleAttribute("hidden")
         }
     })
+
+    response_forms.forEach(function(form){
+        const form_id = get_form_id(form)
+        const form_add_response_btn=document.getElementById(`id_${FORMSET_PREFIX}-${form_id}-response-btn`)
+        if (form.value.length > 0){
+            set_response_btn_active(form_add_response_btn)
+        } else {
+            set_response_btn_inactive(form_add_response_btn)
+            form.toggleAttribute("hidden")
+        }
+    })
+}
+
+function set_comment_btn_active(obj){
+    if (obj !== null){
+        obj.style.backgroundColor='#FDCA40'
+        obj.children[0].style.fill='white'
+    }
+}
+
+function set_comment_btn_inactive(obj){
+    if (obj !== null){
+        obj.style.backgroundColor=''
+        obj.children[0].style.fill='orange'
+    }
+}
+
+function set_response_btn_active(obj){
+    if (obj !== null){
+        obj.style.backgroundColor='#2e93a1'
+        obj.children[0].style.fill='white'
+    }
+}
+
+function set_response_btn_inactive(obj){
+    if (obj !== null){
+        obj.style.backgroundColor=''
+        obj.children[0].style.fill='blue'
+    }
+}
+
+function add_comment(obj){
+    const comment_form = document.getElementById(`id_${FORMSET_PREFIX}-${get_form_id(obj)}-comment`)
+    comment_form.toggleAttribute("hidden")
+}
+
+function add_response(obj){
+    const comment_form = document.getElementById(`id_${FORMSET_PREFIX}-${get_form_id(obj)}-response`)
+    comment_form.toggleAttribute("hidden")
 }
 
 /**
@@ -155,9 +211,15 @@ function start_proof(element) {
  * this function restarts proof by removing all rows and calling startProof method
  */
 function restart_proof() {
-    delete_all_prooflines()
-    start_proof(document.getElementById("btn_start_proof"))
-    updateLineCount()
+    const initial_form_total_line = document.getElementById(FORMSET_INITIALLFORMS_ID).value;
+    // if the initial form has value, then reload page
+    if (initial_form_total_line > 0){
+        location.reload();
+    } else {
+        delete_all_prooflines()
+        start_proof(document.getElementById("btn_start_proof"))
+        updateLineCount()
+    }
 }
 
 
@@ -816,6 +878,29 @@ function replaceCharacter(e) {
     txt = txt.replace("\\in", "∈");
     document.getElementById(e.id).value = txt;
 
+    //Change the comment button style accordingly depending on if comment form has data in it
+    if (e.id.includes("comment")){
+        const parentRowObj = e.parentNode.parentNode;
+        const rowId = get_form_id(parentRowObj);
+        const addCommentBtn = document.getElementById(`id_${FORMSET_PREFIX}-${rowId}-comment-btn`)
+        if (txt.length > 0){
+           set_comment_btn_active(addCommentBtn)
+
+        } else {
+           set_comment_btn_inactive(addCommentBtn)
+        }   
+    } else if (e.id.includes("response")) {
+        const parentRowObj = e.parentNode.parentNode;
+        const rowId = get_form_id(parentRowObj);
+        const addResponsetBtn = document.getElementById(`id_${FORMSET_PREFIX}-${rowId}-response-btn`)
+        if (txt.length > 0){
+           set_response_btn_active(addResponsetBtn)
+
+        } else {
+           set_response_btn_inactive(addResponsetBtn)
+        }   
+    }
+
 }
 
 
@@ -1143,7 +1228,7 @@ function updateFormsetId(old_id, new_id) {
     const targeted_element = document.getElementById(FORMSET_PREFIX + '-' + old_id)
     if (targeted_element !== null) {
         document.getElementById(FORMSET_PREFIX + '-' + old_id).setAttribute('id', `${FORMSET_PREFIX}-${new_id}`)
-        const fields = ['line_no', 'formula', 'rule', 'insert-btn', 'make_parent-btn', 'create_subproof-btn', 'move_up-btn', 'move_down-btn', 'delete-btn', 'id', 'DELETE', 'ORDER', 'comment','response']
+        const fields = ['line_no', 'formula', 'rule', 'insert-btn', 'make_parent-btn', 'create_subproof-btn', 'move_up-btn', 'move_down-btn', 'delete-btn', 'id', 'DELETE', 'ORDER', 'comment','response','comment-btn','response-btn']
         fields.forEach(function (field) {
             document.getElementById('id_' + FORMSET_PREFIX + '-' + old_id + '-' + field).setAttribute('name', `${FORMSET_PREFIX}-${new_id}-${field}`)
             document.getElementById('id_' + FORMSET_PREFIX + '-' + old_id + '-' + field).setAttribute('id', `id_${FORMSET_PREFIX}-${new_id}-${field}`)

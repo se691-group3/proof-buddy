@@ -57,25 +57,18 @@ class NewRule(Rule):
         # Current proof has the user listed in the created_by field
         
         current_user = proof.created_by
-        print("\n\n\n")
-        print("proof is = ", proof)
-        print("current_user = ", proof.created_by)
-        print("rule is =", rule_str)
+
         query_set_return = Proof.objects.filter(created_by = current_user, name = rule_symbols)
-        print("size of queryset =", len(query_set_return))
+       
 
         for element in query_set_return:
             userProofToBeUsedAsLemma = element
 
-        #print("Proof from database is \n ", userProofToBeUsedAsLemma)
 
         lemmaProof = ProofObj()
         lemmaProof.name = userProofToBeUsedAsLemma.name
         lemmaProof.premises = userProofToBeUsedAsLemma.premises
         lemmaProof.conclusion = userProofToBeUsedAsLemma.conclusion
-
-        #print("lemma name is = ",lemmaProof.name)
-        print("\n\n\n")
 
         #at this point, lemmaProof object should contain name, presmises and conclusion field, which shoudld allow below code to execute
 
@@ -92,23 +85,13 @@ class NewRule(Rule):
         target_line_nos = get_line_nos(rule_str) #this gets a list of strings of the cited lines for the rule
         #print("target line nos= ",target_line_nos)
         n, m  = len(target_line_nos), len(get_premises(myProof.premises)) #numPremises() function won't work since we aren't brining in the entire proof line by line. We are only brining in the premises comma or colon separated
-        
-        ##### for debugging ####
-        # print(" n= ",n )
-        print("myProof's premises: ",myProof.premises)
-
-        # if ";" in myProof.premises: # 
-        #     pass
-
-        print("myProof's premises split up: ",myProof.premises)
-        print(len(get_premises(myProof.premises)))
-
+    
         if n != m:
             response.err_msg = "Error on line {}: {} requires {} citation(s), but you provided {}"\
                     .format(str(current_line.line_no), myProof.name, str(m), str(n))
             return response
         target_lines = get_lines(rule_str, proof) #this gets their corresponding lineObjects
-        print("target lines =  ", target_lines)
+    
         # from this point on, we know # premises in myProof.premises = # citations in target_lines
 
         # Verify that line citations are valid
@@ -120,13 +103,9 @@ class NewRule(Rule):
             # Search for line m in the proof
         expressions = get_expressions(target_lines) # gets list of expressions of target lines  
         
-        print("expressions= ", expressions)     ## printing for testing
 
         trees_cited = [make_tree(x, parser) for x in expressions] # gets list of trees of those expressions, needed for instanceOf
         
-        print("trees cited list is ", trees_cited) ## printing for testing
-       
-        print("myProof's premises as a list: ", [myProof.premises])
         trees_orig = [make_tree(x,parser) for x in get_premises(myProof.premises)] # gets list of trees of representing premises of new rule
         env = {} # initializing the environment of checking instances
         for i in range(n): # this is the number of premises/citations (already verified to be equal) to check pattern matching of each
@@ -145,4 +124,4 @@ class NewRule(Rule):
             .format(str(current_line.line_no), myProof.name)
         return response
             
-            # TODO: still need to check if new rule is valid, AND if new rule is permitted in current proof, and if newrules.rules <= proof.rules
+            # TODO: still need to check if new rule is permitted in current proof through ruleList

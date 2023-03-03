@@ -102,7 +102,6 @@ def verify_rule(current_line: ProofLineObj, proof: ProofObj, parser):
     fixed_rule = fix_rule_whitespace_issues(rule_str)
     rule_symbols = fixed_rule.split()[0]
 
-    print("rule_symbols in verify_rule", rule_symbols)
 
 
     rule_checker = RuleChecker()

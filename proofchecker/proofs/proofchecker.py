@@ -6,6 +6,7 @@ from proofchecker.utils.constants import Constants
 from proofchecker.utils.tfllexer import IllegalCharacterError
 from proofchecker.proofs.exprMethods import myMakeTree, instanceOf #no longer needed for this file
 from proofchecker.rules.newrule import NewRule #purely for testing
+from proofchecker.models import Proof
 # testing git
 # print(loadJson("ds")) ; used for demo
 
@@ -100,6 +101,10 @@ def verify_rule(current_line: ProofLineObj, proof: ProofObj, parser):
     rule_str = clean_rule(current_line.rule)
     fixed_rule = fix_rule_whitespace_issues(rule_str)
     rule_symbols = fixed_rule.split()[0]
+
+    print("rule_symbols in verify_rule", rule_symbols)
+
+
     rule_checker = RuleChecker()
     rule = rule_checker.get_rule(rule_symbols, proof)
 
@@ -107,6 +112,30 @@ def verify_rule(current_line: ProofLineObj, proof: ProofObj, parser):
         response = ProofResponse()
         response.err_msg = 'Rule "{}" on line {} not found in ruleset "{}"'\
             .format(rule_symbols, str(current_line.line_no), Constants.RULES_CHOICES.get(proof.rules))
-        return response     
+        return response    
+   
+    elif isinstance(rule, NewRule): #only runs if the newRule is returned
+        #check to see if database has lemma saved for this user
+        try:
+            lemmaObjectFromDatabase = Proof.objects.get(created_by = proof.created_by, name = rule_symbols)
+            
+            if (not lemmaObjectFromDatabase.complete):
+                response = ProofResponse()
+                response.err_msg = 'Rule "{}" on line {} not valid since it has not yet been proven.'\
+                    .format(rule_symbols, str(current_line.line_no))
+                return response
+            else:
+                return rule.verify(current_line, proof, parser)
+        except Proof.DoesNotExist:
+            response = ProofResponse()
+            response.err_msg = 'Rule "{}" on line {} not valid since it has not yet been proven and/or saved.'\
+                .format(rule_symbols, str(current_line.line_no))
+            return response   
+        except Proof.MultipleObjectsReturned:
+            response = ProofResponse()
+            response.err_msg = 'There is more than 1 version of rule "{}" on line {} currenly saved in your profile. Please ensure there is only 1 valid and complete proof saved.'\
+                .format(rule_symbols, str(current_line.line_no))
+            return response  
+
     else:
         return rule.verify(current_line, proof, parser)

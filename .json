@@ -1,79 +1,49 @@
 {
   "Proofs": [
     {
+      "lemmas_allowed": true,
       "name": "",
-      "created_by": "",
+      "created_by": 2,
       "complete": true,
       "rules": "tfl_basic",
-      "ruleList": [
-        "ds"
+      "ruleList": [],
+      "premises": [
+        {
+          "lineNum": 1,
+          "expr": "P\u2227(Q\u2192R)\u2227T",
+          "rule": "Premise"
+        },
+        {
+          "lineNum": 2,
+          "expr": "Q",
+          "rule": "Premise"
+        }
       ],
-      "premises": [],
       "conclusion": {
-        "lineNum": "2",
-        "expr": "[(X\u2192Y)\u2227(\u00acX\u2192Y)]\u2192Y",
-        "rule": "\u2192I 1"
+        "lineNum": "4",
+        "expr": "R",
+        "rule": "\u2192E 3,2"
       },
       "lines": [
         {
-          "lineNum": "1.1",
-          "expr": "(X\u2192Y)\u2227(\u00acX\u2192Y)",
-          "rule": "Assumption"
-        },
-        {
-          "lineNum": "1.2",
-          "expr": "X\u2192Y",
-          "rule": "\u2227E 1.1"
-        },
-        {
-          "lineNum": "1.3",
-          "expr": "\u00acX\u2192Y",
-          "rule": "\u2227E 1.1"
-        },
-        {
-          "lineNum": "1.4.1",
-          "expr": "\u00acY",
-          "rule": "Assumption"
-        },
-        {
-          "lineNum": "1.4.2.1",
-          "expr": "X",
-          "rule": "Assumption"
-        },
-        {
-          "lineNum": "1.4.2.2",
-          "expr": "Y",
-          "rule": "\u2192E 1.2, 1.4.2.1"
-        },
-        {
-          "lineNum": "1.4.2.3",
-          "expr": "\u22a5",
-          "rule": "\u00acE 1.4.1, 1.4.2.2"
-        },
-        {
-          "lineNum": "1.4.3",
-          "expr": "\u00acX",
-          "rule": "\u00acI 1.4.2"
-        },
-        {
-          "lineNum": "1.4.4",
-          "expr": "Y",
-          "rule": "\u2192E 1.3, 1.4.3"
-        },
-        {
-          "lineNum": "1.4.5",
-          "expr": "\u22a5",
-          "rule": "\u00acE 1.4.1, 1.4.4"
-        },
-        {
-          "lineNum": "1.5",
-          "expr": "Y",
-          "rule": "IP 1.4"
+          "lineNum": "1",
+          "expr": "P\u2227(Q\u2192R)\u2227T",
+          "rule": "Premise"
         },
         {
           "lineNum": "2",
-          "expr": "[(X\u2192Y)\u2227(\u00acX\u2192Y)]\u2192Y",
-          "rule": "\u2192I 1"
+          "expr": "Q",
+          "rule": "Premise"
+        },
+        {
+          "lineNum": "3",
+          "expr": "Q\u2192R",
+          "rule": "cj3 1"
+        },
+        {
+          "lineNum": "4",
+          "expr": "R",
+          "rule": "\u2192E 3,2"
         }
       ]
     }

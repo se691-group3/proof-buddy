@@ -123,6 +123,7 @@ def proof_create_view(request):
                 proof.rules = str(parent.rules)
                 proof.premises = get_premises(parent.premises)
                 proof.conclusion = str(parent.conclusion)
+                proof.created_by = request.user.id
 
                 for line in formset.ordered_forms:
                     if len(line.cleaned_data) > 0 and not line.cleaned_data['DELETE']:
@@ -161,6 +162,10 @@ def proof_create_view(request):
 @login_required
 def proof_update_view(request, pk=None):
     obj = get_object_or_404(Proof, pk=pk)
+    all_proofs = Proof.objects.filter(complete = True) #need to switch to true once I figure out how to update the complete flag for proof in database
+    all_proofs_names = []
+    for item in all_proofs:
+        all_proofs_names.append(item.name)
 
     if obj.created_by == request.user or request.user.is_instructor:
         ProofLineFormset = inlineformset_factory(
@@ -173,12 +178,15 @@ def proof_update_view(request, pk=None):
 
         if request.POST:
             if all([form.is_valid(), formset.is_valid()]):
-                parent = form.save(commit=False)
+                parent = form.save(commit=False) 
                 if 'check_proof' in request.POST:
                     proof = ProofObj(lines=[])
                     proof.rules = str(parent.rules)
                     proof.premises = get_premises(parent.premises)
                     proof.conclusion = str(parent.conclusion)
+                    proof.created_by = request.user.id
+                    proof.lemmas_allowed = parent.lemmas_allowed
+                    
 
                     for line in formset.ordered_forms:
                         if len(line.cleaned_data) > 0 and not line.cleaned_data['DELETE']:
@@ -197,6 +205,10 @@ def proof_update_view(request, pk=None):
                         parser = tflparser.parser
 
                     response = verify_proof(proof, parser)
+                    
+                    obj.complete = response.is_valid
+                    obj.save()
+                    
 
                 elif 'submit' in request.POST:
                     if len(formset.forms) > 0:
@@ -206,6 +218,7 @@ def proof_update_view(request, pk=None):
                         return HttpResponseRedirect(reverse('all_proofs'))
 
         context = {
+            "proofs": all_proofs,
             "object": obj,
             "form": form,
             "formset": formset,
@@ -214,7 +227,6 @@ def proof_update_view(request, pk=None):
         return render(request, 'proofchecker/proof_add_edit.html', context)
     else:
         raise PermissionDenied()
-
 
 class ProofView(LoginRequiredMixin, ListView):
     model = Proof

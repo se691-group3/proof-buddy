@@ -100,6 +100,8 @@ class Proof(models.Model):
     premises = models.CharField(max_length=255, blank=True, null=True)
     conclusion = models.CharField(max_length=255)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    complete = models.BooleanField(default = False)
+    lemmas_allowed = models.BooleanField(default = False)
 
     class Meta:
         ordering = ['-id']
@@ -140,6 +142,7 @@ class Problem(models.Model):
     target_steps = models.PositiveIntegerField()
     lost_points = models.PositiveIntegerField()
     proof = models.OneToOneField(Proof, on_delete=models.CASCADE)
+    lemmas_allowed =models.BooleanField(default = False)
     # If the proof is deleted, the problem is deleted
 
 

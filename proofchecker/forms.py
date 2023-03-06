@@ -7,7 +7,7 @@ from .models import Proof, ProofLine, Feedback
 class ProofForm(forms.ModelForm):
     class Meta:
         model = Proof
-        fields = ['name', 'rules', 'premises', 'conclusion']
+        fields = ['name', 'rules', 'premises', 'conclusion','disproof_string']
 
     def __init__(self, *args, **kwargs):
         super(ProofForm, self).__init__(*args, **kwargs)

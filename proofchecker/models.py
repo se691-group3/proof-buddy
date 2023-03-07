@@ -102,18 +102,19 @@ class Proof(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     complete = models.BooleanField(default = False)
     lemmas_allowed = models.BooleanField(default = False)
+    disproof_string = models.CharField(max_length=255, null=True)
 
     class Meta:
         ordering = ['-id']
 
     def __str__(self):
-        return ("{}. Proof {}:\nPremises: {},\nConclusion: {}\nLine Count: {}").format(
+        return ('{}. Proof {}:\nPremises: {},\nConclusion: {}\nLine Count: {}'.format(
             self.pk,
             self.name,
             self.premises,
             self.conclusion,
             self.proofline_set.count()
-        )
+        ))
 
     def get_absolute_url(self):
         return "/proofs"
@@ -126,6 +127,8 @@ class ProofLine(models.Model):
     formula = models.CharField(max_length=255, null=True, blank=True)
     rule = models.CharField(max_length=255, null=True, blank=True)
     ORDER = models.IntegerField(null=True)
+    comment= models.TextField(blank=True)
+    response=models.TextField(blank=True)
 
     def __str__(self):
         return ('{}. Line {}: {}, {}'.format(
@@ -143,6 +146,7 @@ class Problem(models.Model):
     lost_points = models.PositiveIntegerField()
     proof = models.OneToOneField(Proof, on_delete=models.CASCADE)
     lemmas_allowed =models.BooleanField(default = False)
+    show_target_steps = models.BooleanField(default=True)
     # If the proof is deleted, the problem is deleted
 
 
@@ -166,10 +170,11 @@ class Course(models.Model):
 class Assignment(models.Model):
     title = models.CharField(max_length=255, null=True)
     created_by = models.ForeignKey(
-        Instructor, on_delete=models.CASCADE, null=True)
+    Instructor, on_delete=models.CASCADE, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     start_date = models.DateTimeField(null=True)
     due_by = models.DateTimeField()
+    resubmissions = models.IntegerField(default=0, null=True, blank=True)
     problems = models.ManyToManyField(Problem)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     is_submitted = models.BooleanField(default=False)
@@ -212,3 +217,5 @@ class Feedback(models.Model):
     details = models.TextField(max_length=700)
     # attach = models.FileField(blank=True, null=True) , widget=forms.ClearableFileInput(       attrs={'multiple': True}))
     attach = models.FileField(blank=True, null=True)
+
+

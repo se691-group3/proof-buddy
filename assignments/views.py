@@ -1,4 +1,7 @@
-import datetime
+from django.utils import timezone
+from django.utils.datetime_safe import datetime
+import os
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -8,7 +11,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import ListView, UpdateView, DeleteView
 import csv
-
+import pylatex
 from accounts.decorators import instructor_required
 from proofchecker.forms import ProofLineForm
 from proofchecker.models import (
@@ -21,6 +24,7 @@ from proofchecker.models import (
     Student,
     StudentProblemSolution,
     User,
+    RULES_CHOICES
 )
 from proofchecker.proofs.proofchecker import verify_proof
 from proofchecker.proofs.proofobjects import ProofObj, ProofLineObj
@@ -34,7 +38,9 @@ from .forms import (
     StudentProblemForm,
 )
 from .models import AssignmentDelay
-
+from pylatex import Document, Section, Tabular
+from pylatex.position import FlushLeft
+from pylatex.utils import bold, NoEscape
 
 @login_required
 def all_assignments_view(request):
@@ -66,7 +72,7 @@ def instructor_assignments_view(request):
 
 
 def student_assignments_view(request):
-    today_date = datetime.datetime.now()
+    today_date = datetime.now()
     today_date = today_date.strftime("%Y-%m-%d %H:%M:%S")
     print("today_date:", today_date)
     object_list = Assignment.objects.filter(
@@ -124,7 +130,7 @@ def assignment_details_view(request, pk=None):
 
     assignment = get_object_or_404(Assignment, pk=pk)
     start_date = assignment.start_date.strftime("%Y-%m-%d")
-    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    current_date = datetime.now().strftime("%Y-%m-%d")
 
     print("studentPk:", studentPk)
     print("start_date:", start_date)
@@ -176,8 +182,8 @@ def assignment_details_view(request, pk=None):
 
     if studentPk is not None:
         date = assignment.due_by
-        today = datetime.datetime.now()
-        diff = today.replace(tzinfo=datetime.timezone.utc) - date
+        today = datetime.now()
+        diff = today.replace(tzinfo=timezone.utc) - date
         if diff and diff.days > 0:
             assignment.is_submitted = True
             assignment.save()
@@ -272,6 +278,7 @@ def assignment_details_view(request, pk=None):
         'submission': submission_allowed,
         'grading': all_problem_grading_complete,
     }
+
     return render(request, "assignments/assignment_details.html", context)
 
 
@@ -298,7 +305,7 @@ class AssignmentDuplicateView(DeleteView):
         assignment.save()
         copy = self.find_copy(old_title)
         assignment.title = self.generate_title(copy, old_title)
-        self.duplicate_problems(assignment.pk, assignment)
+        self.duplicate_problems(assignment)
         return HttpResponseRedirect(success_url)
 
     def duplicate_problems(self, assignment):
@@ -407,6 +414,7 @@ def problem_details_view(request, pk=None):
         pass
 
     proof = Proof.objects.get(problem=problem)
+
     proof_form = ProblemProofForm(request.POST or None, instance=proof)
 
     ProofLineFormset = inlineformset_factory(
@@ -439,6 +447,7 @@ def problem_details_view(request, pk=None):
 
             return HttpResponseRedirect(reverse("all_assignments"))
 
+
     if request.user.is_student:
         problem_form.disabled_all()
         proof_form.disabled_all()
@@ -448,6 +457,7 @@ def problem_details_view(request, pk=None):
         "problem_form": problem_form,
         "proof_form": proof_form,
         "formset": formset,
+        "rules": proof.rules
     }
     return render(request, "assignments/problem_details.html", context)
 
@@ -537,7 +547,7 @@ def problem_solution_view(request, problem_id=None):
                 #problem.save()
 
             elif "submit" in request.POST:
-
+                solution.assignment.resubmissions -= 1
                 proof.save()
                 formset.save()
                 messages.success(request, "Solution saved successfully")
@@ -545,12 +555,9 @@ def problem_solution_view(request, problem_id=None):
                     reverse("assignment_details", kwargs={"pk": assignmentPk})
                 )
 
-            elif "auto_save" in request.POST:
-                import logging
-                logging.info("Auto-save function called")
+            elif 'autosave' in request.POST:
                 proof.save()
                 formset.save()
-                messages.success(request, "Solution saved successfully")
 
     if request.user.is_student:
         problem_form.disabled_all()
@@ -562,6 +569,7 @@ def problem_solution_view(request, problem_id=None):
         "proof_form": proof_form,
         "formset": formset,
         "response": response,
+        "rules": proof.rules
     }
     return render(request, "assignments/problem_solution.html", context)
 
@@ -583,7 +591,7 @@ class ProblemDeleteView(DeleteView):
         return "/assignment/" + str(Assignment.objects.get(problems=self.object).id) + "/details"
 
 
-def get_csv_file(request, id):
+def get_problem_anaylsis_csv_file(request, id):
     print("assignment_id:", id)
     all_student = StudentProblemSolution.objects.filter(assignment_id=id).values('student').distinct()
     response = HttpResponse('')
@@ -613,6 +621,37 @@ def get_csv_file(request, id):
             problem_total = obj.problem.point
             total = total_points
             writer.writerow([username, full_name, email, course, assignment, problem, grade, problem_total, total])
+
+    return response
+
+
+def get_grading_csv_file(request, id):
+    print("assignment_id:", id)
+    all_student = StudentProblemSolution.objects.filter(assignment_id=id).values('student').distinct()
+    response = HttpResponse('')
+    response['Content-Disposition'] = 'attachment; filename=student_grading.csv'
+    writer = csv.writer(response)
+    writer.writerow(['Username', 'Course', 'Assignment', 'Point Recieved', 'Total Points'])
+
+    problem_obj = Assignment.objects.filter(id=id).values('problems__point')
+    total_points = 0
+    for problem in problem_obj:
+        total_points += problem['problems__point']
+        # print("PID; ", Problem.objects.filter(id=problem['problems__id']))
+
+    for student_grading in all_student:
+        print("student_grading:", student_grading)
+        student_grading = StudentProblemSolution.objects.filter(assignment_id=id, student=student_grading['student'])
+        for obj in student_grading:
+            print("obj:", obj)
+            username = obj.student.user.username
+
+            course = obj.assignment.course.title
+            assignment = obj.assignment.title
+            grade = obj.grade
+
+            total = total_points
+            writer.writerow([username, course, assignment, grade, total])
 
     return response
 
@@ -648,7 +687,7 @@ def user_assignment_request(request, a_id):
             print("submission_date:", submission_date)
             print("status:", status)
 
-            current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+            current_date = datetime.now().strftime("%Y-%m-%d")
 
             if submission_date > current_date:
                 if status == "rejected":
@@ -663,3 +702,58 @@ def user_assignment_request(request, a_id):
         return HttpResponseRedirect('/assignments')
     else:
         return HttpResponse("not authorize to view")
+
+
+def get_latex_file_assignment(request, pk=None):
+    now = datetime.now()
+
+    problem = get_object_or_404(Problem, pk=pk)
+
+    obj = Proof.objects.get(problem=problem)
+
+
+    geometry_options = {"tmargin": "2cm", "lmargin": "2cm"}
+
+    doc = Document(geometry_options=geometry_options, inputenc='utf8x')
+
+    doc.preamble.append(pylatex.Command('title', obj.__dict__['name']))
+    doc.preamble.append(pylatex.Command('author', str(request.user)))
+
+    line_number_counter = 0
+    form_count = obj.proofline_set.count()
+
+    doc.append(pylatex.Command('fontsize', arguments=['15', '19']))
+    doc.append(pylatex.Command('selectfont'))
+    doc.append(NoEscape(r'\maketitle'))
+
+    with doc.create(Section('Proof Details')):
+        doc.append('Rules: ' + obj.__dict__['rules'] + "\n")
+        doc.append('Premises: ' + obj.__dict__['premises'] + "\n")
+        doc.append('Conclusion: ' + obj.__dict__['conclusion'] + "\n")
+
+        with doc.create(Section('Proof Table')):
+            with doc.create(Tabular('r|c|c')) as table:
+                table.add_row(bold('Line #'), bold('Expression'), bold('Rule'))
+                table.add_hline()
+
+                while line_number_counter < form_count:
+                    if obj.proofline_set.order_by('ORDER').values('line_no')[line_number_counter] in obj.proofline_set.order_by('ORDER').values('line_no'):
+                        line_number_object = FlushLeft()
+                        dot_count = str(obj.proofline_set.order_by('ORDER').values('line_no')[line_number_counter]).count('.') / 2
+                        line_number_object.append(NoEscape(r'\hspace{' + str(dot_count) + 'cm}'))
+                        line_number_object.append(
+                            obj.proofline_set.order_by('ORDER').values('line_no')[line_number_counter]['line_no'])
+                        table.add_row(
+                            line_number_object,
+                            obj.proofline_set.order_by('ORDER').values('formula')[line_number_counter]['formula'],
+                            obj.proofline_set.order_by('ORDER').values('rule')[line_number_counter]['rule'],
+                        )
+                        table.add_hline()
+                    line_number_counter = line_number_counter + 1
+
+    filename = obj.__dict__['name'] + '-' + now.strftime("%d_%m_%Y.%H-%M-%S")+'.tex'
+    response = HttpResponse(doc.dumps(), content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(filename)
+
+    return response
+

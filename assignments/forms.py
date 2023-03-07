@@ -10,7 +10,7 @@ class DateInput(forms.DateInput):
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
-        fields = ['title', 'course', 'start_date', 'due_by', 'is_submitted']
+        fields = ['title', 'course', 'start_date', 'due_by', 'resubmissions', 'is_submitted']
         widgets = {
             'start_date': DateInput(),
             'due_by': DateInput()
@@ -32,7 +32,7 @@ class AssignmentForm(forms.ModelForm):
 class ProblemForm(forms.ModelForm):
     class Meta:
         model = Problem
-        fields = ['question', 'point', 'target_steps', 'lost_points', 'lemmas_allowed']
+        fields = ['question', 'point', 'target_steps', 'show_target_steps', 'lost_points', 'lemmas_allowed']
 
     def __init__(self, *args, **kwargs):
         super(ProblemForm, self).__init__(*args, **kwargs)
@@ -44,6 +44,7 @@ class ProblemForm(forms.ModelForm):
         self.fields['point'].widget.attrs['read-only'] = True
         self.fields['target_steps'].widget.attrs['read-only'] = True
         self.fields['lost_points'].widget.attrs['read-only'] = True
+        self.fields['show_target_steps'].widget.attrs['read-only'] = True
 class StudentProblemForm(ProblemForm):
     def __init__(self, *args, **kwargs):
         super(StudentProblemForm, self).__init__(*args, **kwargs)

@@ -10,16 +10,14 @@
         <hr>
         <div class="row mt-3">
             {% for object in object_list %}
-                <div class="card mx-2 mb-3" style="max-width: 20rem;">
+                <div class="card mx-2 mb-3" style="max-width: 24rem;">
                     <div class="card-header">
                         <h5 style="text-align: center"><b> {{ object.title }}</b>
-                            
-                            <!-- <a href="{% url 'duplicate_assignment' object.id %}" class="card-link btn btn-primary btn-sm">
+                            <a href="{% url 'duplicate_assignment' object.id %}" class="card-link btn btn-primary btn-sm">
                                 <span>
                                     <i class="fa fa-copy"></i>
                                 </span>
                             </a> 
-                        COMMENTING OUT FOR STEVE'S VIDEO NEED TO FIX THIS -->
                         </h5>
                         
                     </div>
@@ -33,12 +31,20 @@
                             View / Edit</a>
                         <a href="{% url 'delete_assignment' object.id %}" class="card-link btn btn-secondary btn-sm">
                             Delete</a>
-                        <a href="{% url 'get_csv_file' object.id %}" class="card-link btn btn-warning btn-sm">
-                            Download</a>
+                            <button class="card-link btn btn-warning btn-sm dropdown-toggle" type="button"
+                                    data-toggle="dropdown"
+                                    aria-expanded="false">
+                                Download
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="{% url 'get_grading_csv_file' object.id %}" class="dropdown-item">Grading CSV</a>
+                                <a href="{% url 'get_problem_anaylsis_csv_file' object.id %}" class="dropdown-item">Problem Analysis CSV</a>
+                            </div>
 
                         {% if object.submission %}
                             <br><br>
-                            <a href="{% url 'user_assignment_request' object.id %}" class="card-link btn btn-success btn-sm">
+                            <a href="{% url 'user_assignment_request' object.id %}"
+                               class="card-link btn btn-success btn-sm">
                                 Student Delay Request</a>
                         {% endif %}
                     </div>

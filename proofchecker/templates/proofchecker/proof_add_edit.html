@@ -1,5 +1,18 @@
 {% extends 'proofchecker/base.html' %} {% load static %} {% block content %} {% load widget_tweaks %}
     <div class="pt-3 mt-3 px-3 mx-3">
+
+        <!-- {% if  request.user != createdby.user %}
+            <div class="col-md-12 info-banner">
+                <div class="info">
+                    <i class="icon-info-sign"></i>
+                    <span class="extra-info">
+                    Caution: This assignment was not created for your course!
+                    </span>
+                </div>
+            </div>
+            <br>
+        {% endif %} -->
+
         {% if object.pk %} {% if object.created_by == request.user %}
             <h3 class="font-weight-bold mb-2">Edit Proof </h3>
         {% else %}
@@ -13,20 +26,31 @@
 
             <table class="table table-hover table-large">
                 {% csrf_token %} {% for line in form %}
-                <div class="row">
-                    <div id="premise-conclusion" class="col-md-1 col-sm-6">
-                        {{ line.label }}
+                {% if line.label != 'Disproof string'%}
+                    <div class="row">
+                        <div id="premise-conclusion" class="col-md-1 col-sm-6">
+                            {{ line.label }}
+                        </div>
+                        <div class="col-12 col-md-8">
+                            {{ line }}
+                        </div>
                     </div>
-                    <div class="col-12 col-md-8">
+                {% else %}
+                    <div hidden class="disproof_string">
                         {{ line }}
                     </div>
-                </div>
-            {% endfor %}
-                <button id="btn_start_proof" class="btn btn-primary mt-3 " type="button"
+                {% endif %}
+                {% endfor %}
+
+                <button id="btn_start_proof" style="margin-right: 5px;" class="btn btn-primary mt-3" type="button"
                         onclick="start_proof(this)">
                     Start Proof
                 </button>
-                <button id="btn_restart_proof" class="btn btn-primary mt-3  hidden" type="button"
+                <button id="btn_start_disproof" class="btn btn-danger mt-3" type="button"
+                        onclick="start_disproof(this)">
+                    Start Counter Example
+                </button>
+                <button id="btn_restart_proof" class="btn btn-primary mt-3 hidden" type="button"
                         onclick="restart_proof()">Restart Proof
                 </button>
             </table>
@@ -92,8 +116,7 @@
 
                             <button class="move_up btn btn-sm btn-light" type="button" style="pointer-events: none;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                     class="bi bi-caret-up-fill" viewBox="0 0 16 16"
-                                     margin="0px">
+                                     class="bi bi-caret-up-fill" viewBox="0 0 16 16">
                                     <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"></path>
                                 </svg>
                             </button>
@@ -115,6 +138,17 @@
                     </div>
                 </div>
             </div>
+
+            <div id="start_disproof_section" class="sidebar">
+                <a href="javascript:void(0)" class="closebtn" onclick="close_disproof()">×</a>
+                <h4 class="font-weight-bold mb-2">Disproof</h4>
+                <br>
+                <div id="disproof_switches" style="margin-left: 15px;">
+                </div>
+                <br>
+                <button name="check_disproof" type="submit" class="btn btn-primary mb-3">Check Counter Example</button>
+            </div>
+
             {% if formset %} {{ formset.management_form }}
                 <!-- Display lines -->
                 <table class="table table-hover table-striped table-sm table-responsive"
@@ -124,6 +158,11 @@
                         <td>Line #</td>
                         <td>Expression</td>
                         <td>Rule</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -187,7 +226,6 @@
                                 name="proofline_set-{{ forloop.counter0 }}-move_up-btn"
                                 id="id_proofline_set-{{ forloop.counter0 }}-move_up-btn"
                                 value="Move Up"
-
                                 onclick="move_up(this)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                                  class="bi bi-caret-up-fill" viewBox="0 0 16 16">
@@ -196,12 +234,10 @@
                         </button>
                     </td>
                     <td>
-
                         <button class="move_down btn btn-sm btn-light" type="button"
                                 name="proofline_set-{{ forloop.counter0 }}-move_down-btn"
                                 id="id_proofline_set-{{ forloop.counter0 }}-move_down-btn"
                                 value="Move Down"
-
                                 onclick="move_down(this)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                                  class="bi bi-caret-down-fill" viewBox="0 0 16 16">
@@ -221,6 +257,42 @@
                             </svg>
                         </button>
 
+                    </td>
+
+                    <td>
+                        <button class="add_comment btn btn-light" type="button" 
+                                name="proofline_set-{{ forloop.counter0 }}-comment-btn" 
+                                id="id_proofline_set-{{ forloop.counter0 }}-comment-btn"
+                                value="Add Comment" onclick="add_comment(this)" data-toggle="tooltip" data-placement="right" title="Toggle instructor comment on this line">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="orange" class="bi bi-x-square-fill" viewBox="0 0 24 24">
+                                <path d="M21 15l-6 5.996L4.002 21A.998.998 0 0 1 3 20.007V3.993C3 3.445 3.445 3 3.993 3h16.014c.548 0 .993.456.993 1.002V15zM19 5H5v14h8v-5a1 1 0 0 1 .883-.993L14 13l5-.001V5zm-.829 9.999L15 15v3.169l3.171-3.17z"/>
+                            </svg>
+                        </button>    
+                    </td>
+
+                    <td>
+                        <button class="add_response btn btn-light" type="button" 
+                                name="proofline_set-{{ forloop.counter0 }}-response-btn" 
+                                id="id_proofline_set-{{ forloop.counter0 }}-response-btn"
+                                value="Add Response" onclick="add_response(this)" data-toggle="tooltip" data-placement="right" title="Toggle student comment on this line">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="blue" class="bi bi-x-square-fill" viewBox="0 0 24 24">
+                                <path d="M21 15l-6 5.996L4.002 21A.998.998 0 0 1 3 20.007V3.993C3 3.445 3.445 3 3.993 3h16.014c.548 0 .993.456.993 1.002V15zM19 5H5v14h8v-5a1 1 0 0 1 .883-.993L14 13l5-.001V5zm-.829 9.999L15 15v3.169l3.171-3.17z"/>
+                            </svg>
+                        </button>    
+                    </td>
+
+                    {% if request.user.is_student%}
+                    <td>
+                        {{ line.comment|attr:"readonly:True"  }}
+                    </td>
+                    {% endif %}
+                    {% if request.user.is_instructor%}
+                    <td>
+                        {{ line.comment }}
+                    </td>
+                    {% endif %}
+                    <td>
+                        {{ line.response }}
                     </td>
 
                     <td hidden>{{ line.id }}{{ line.DELETE }}{{ line.ORDER }}</td>
@@ -275,8 +347,7 @@
                                     id="id_proofline_set-__prefix__-move_up-btn"
                                     value="Move Up" onclick="move_up(this)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                     class="bi bi-caret-up-fill" viewBox="0 0 16 16"
-                                     margin="0px">
+                                     class="bi bi-caret-up-fill" viewBox="0 0 16 16">
                                     <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"></path>
                                 </svg>
                             </button>
@@ -305,13 +376,41 @@
                                 </svg>
                             </button>
                         </td>
+                        <td>
+                            <button class="add_comment btn btn-light" type="button" 
+                                    name="proofline_set-__prefix__-comment-btn" 
+                                    id="id_proofline_set-__prefix__-comment-btn"
+                                    value="Add Comment" onclick="add_comment(this)" data-toggle="tooltip" data-placement="right" title="Toggle instructor comment on this line">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="orange" class="bi bi-x-square-fill" viewBox="0 0 24 24">
+                                    <path d="M21 15l-6 5.996L4.002 21A.998.998 0 0 1 3 20.007V3.993C3 3.445 3.445 3 3.993 3h16.014c.548 0 .993.456.993 1.002V15zM19 5H5v14h8v-5a1 1 0 0 1 .883-.993L14 13l5-.001V5zm-.829 9.999L15 15v3.169l3.171-3.17z"/>
+                                </svg>
+                            </button>   
+                        </td>
+
+                        <td>
+                            <button class="add_response btn btn-light" type="button" 
+                                    name="proofline_set-__prefix__-response-btn" 
+                                    id="id_proofline_set-__prefix__-response-btn"
+                                    value="Add Response" onclick="add_response(this)" data-toggle="tooltip" data-placement="right" title="Toggle student comment on this line">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="blue" class="bi bi-x-square-fill" viewBox="0 0 24 24">
+                                    <path d="M21 15l-6 5.996L4.002 21A.998.998 0 0 1 3 20.007V3.993C3 3.445 3.445 3 3.993 3h16.014c.548 0 .993.456.993 1.002V15zM19 5H5v14h8v-5a1 1 0 0 1 .883-.993L14 13l5-.001V5zm-.829 9.999L15 15v3.169l3.171-3.17z"/>
+                                </svg>
+                            </button>    
+                        </td>
+
+                        <td>
+                            {{ formset.empty_form.comment }}
+                        </td>
+                        <td>
+                            {{ formset.empty_form.response }}
+                        </td>
 
                         <td hidden>
-                            {{ formset.empty_form.id }}{{ formset.empty_form.DELETE }}{{ formset.empty_form.ORDER }}</td>
+                            {{ formset.empty_form.id }}{{ formset.empty_form.DELETE }}{{ formset.empty_form.ORDER }}
+                        </td>
                     </tr>
                 </table>
             {% endif %}
-
 
             <div style="clear: left">
 
@@ -320,8 +419,14 @@
                 {% if object.pk %} {% if object.created_by == request.user %}
                     <button name="submit" type="submit" class="btn btn-primary mb-3">Save</button>
 
+                    </button>
+
+
                 {% endif %} {% else %}
                     <button name="submit" type="submit" class="btn btn-primary mb-3">Save</button>
+
+                    </button>
+
                 {% endif %}
             </div>
 
@@ -356,7 +461,7 @@
                 <div class="alert alert-primary" role="alert">
                     Keep at it! Don't forget to save your work by clicking "Save"! This will allow you to return to your
                     work on this later!
-                </div>
+                </div><br>
                 <strong>Result:</strong> {{ response.err_msg }}
 
 
@@ -366,8 +471,13 @@
                     Great job! Don't forget to save your work by clicking "Save"! This will allow you to view this
                     correct
                     proof later!
-                </div>
-                <strong>Result:</strong> The proof is valid and complete!
+                </div><br>
+                <strong>Result:</strong> 
+                {% if 'check_disproof' in request.POST %}
+                    That is a valid counterexample -- Good Job!
+                {% else %}
+                    The proof is valid and complete!
+                {% endif %}
             {% endif %} {% endif %}
             <hr>
         </form>
@@ -377,47 +487,51 @@
                     aria-expanded="false">
                 Download
             </button>
+
             <div class="dropdown-menu">
                 <a class="dropdown-item" id="download" type="submit">Screenshot</a>
-                <a class="dropdown-item disabled" id="download_latex" type="submit">Latex file</a>
-                <a class="dropdown-item disabled" id="download_jupyter" type="submit">Jupyter file</a>
+                {% if object.pk %} {% if object.created_by == request.user %}
+                <a href="{% url 'get-latex-file' object.pk %}" class="dropdown-item">LaTeX.tex file</a>
+                {% endif %}{% endif %} 
+                 
             </div>
         </div>
-    <!--<button name="auto_save" type="submit" class="btn btn-primary">Auto save test</button>-->
-        <!--<button id="download" name="download" type="submit" class="btn btn-primary mb-3">Download</button>-->
-    </div>
-<!--
-    <script type="text/javascript">
-        let typingTimer;                //timer identifier
-        const doneTypingInterval = 2000;  //time in ms, 5 seconds for example
-        const $input = $('#proof-table');
 
-        //on keyup, start the countdown
+    </div>
+    <script type="text/javascript">
+        let typingTimer;
+        const doneTypingInterval = 2000;
+        const $input = $('#proof_form');
+
         $input.on('keyup', function () {
             clearTimeout(typingTimer);
             typingTimer = setTimeout(doneTyping, doneTypingInterval);
         });
 
-        //on keydown, clear the countdown
         $input.on('keydown', function () {
             clearTimeout(typingTimer);
         });
 
-        //user is "finished typing," do something
         let timer;
+
         function doneTyping() {
             const box = document.getElementById('auto-save-message');
             const datetime = new Date().toLocaleTimeString();
             document.getElementById("time").textContent = datetime;
             box.style.visibility = 'visible';
+            autoSave()
             clearTimeout(timer);
             timer = setTimeout(() => {
                 box.style.visibility = 'hidden';
             }, 6000);
-
-
         }
-    </script>-->
+
+        function autoSave() {
+            $.post('', $('#proof_form').serialize() + '&autosave');
+
+        };
+    </script>
     <script src="{% static 'js/syntax.js' %}"></script>
     <script src="{% static 'js/valid_input.js' %}"></script>
-    <script src="{% static 'js/proof_checker.js' %}"></script> {% endblock %}
+    <script src="{% static 'js/proof_checker.js' %}"></script>
+{% endblock %}

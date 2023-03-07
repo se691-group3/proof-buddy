@@ -1,20 +1,27 @@
+import os
+
+import pylatex
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.utils.datetime_safe import datetime
 from django.views.generic import ListView, DetailView, DeleteView
+from pylatex import Document, Section, Tabular
+from pylatex.position import FlushLeft
+from pylatex.utils import bold, NoEscape
 
 from accounts.decorators import instructor_required
 from proofchecker.models import Student, Course, StudentProblemSolution
 from proofchecker.proofs.proofchecker import verify_proof
 from proofchecker.proofs.proofobjects import ProofObj, ProofLineObj
 from proofchecker.proofs.proofutils import get_premises
+from proofchecker.proofs.disprover import makeDict, setVals, checkCntrEx 
 from proofchecker.utils import folparser
 from proofchecker.utils import tflparser
 from .forms import ProofForm, ProofLineForm, FeedbackForm
@@ -29,6 +36,7 @@ def home(request):
 
 def version_log(request):
     return render(request, 'proofchecker/version_log.html')
+
 
 def devs(request):
     return render(request, 'proofchecker/devs.html')
@@ -150,6 +158,26 @@ def proof_create_view(request):
                     formset.save()
                     return HttpResponseRedirect(reverse('all_proofs'))
 
+            elif 'check_disproof' in request.POST:
+                proof = ProofObj(lines=[])  #
+                proof.rules = str(parent.rules)
+                proof.premises = get_premises(parent.premises)
+                proof.conclusion = str(parent.conclusion)
+                
+                valDict = setVals(makeDict(proof))
+                response = checkCntrEx(proof,valDict)
+                if response.is_valid:
+                    print("That is a valid counterexample -- Good Job!")
+                else:
+                    print(response.err_msg)
+                    
+            elif 'autosave' in request.POST:
+                    if len(formset.forms) > 0:
+                        parent.created_by = request.user
+                        parent.save()
+                        formset.save()
+            
+
     context = {
         "object": form,
         "form": form,
@@ -161,6 +189,7 @@ def proof_create_view(request):
 
 @login_required
 def proof_update_view(request, pk=None):
+    now = datetime.now()
     obj = get_object_or_404(Proof, pk=pk)
     all_proofs = Proof.objects.filter(complete = True) #need to switch to true once I figure out how to update the complete flag for proof in database
     all_proofs_names = []
@@ -199,7 +228,7 @@ def proof_update_view(request, pk=None):
                             proof.lines.append(proofline)
 
                     # Determine which parser to user based on selected rules
-                    if ((proof.rules == 'fol_basic') or (proof.rules == 'fol_derived')):
+                    if (proof.rules == 'fol_basic') or (proof.rules == 'fol_derived'):
                         parser = folparser.parser
                     else:
                         parser = tflparser.parser
@@ -217,16 +246,94 @@ def proof_update_view(request, pk=None):
                         formset.save()
                         return HttpResponseRedirect(reverse('all_proofs'))
 
+                elif 'check_disproof' in request.POST:
+                    proof = ProofObj(lines=[])  #
+                    proof.rules = str(parent.rules)
+                    proof.premises = get_premises(parent.premises)
+                    proof.conclusion = str(parent.conclusion)
+                    
+                    valDict = setVals(makeDict(proof))
+                    response = checkCntrEx(proof,valDict)
+                    if response.is_valid:
+                        print("That is a valid counterexample -- Good Job!")
+                    else:
+                        print(response.err_msg)
+
+                elif 'autosave' in request.POST:
+                    if len(formset.forms) > 0:
+                        parent.created_by = request.user
+                        parent.save()
+                        formset.save()
+
+        ## Get instructor user object who created the problem
+        if hasattr(obj,'studentproblemsolution'):
+            created_by = obj.proofline_set.instance.studentproblemsolution.assignment.created_by
+        else:
+            created_by = obj.created_by
+
         context = {
             "proofs": all_proofs,
             "object": obj,
             "form": form,
             "formset": formset,
-            "response": response
+            "response": response,
+            "createdby": created_by
         }
+
         return render(request, 'proofchecker/proof_add_edit.html', context)
     else:
         raise PermissionDenied()
+
+
+def get_latex_file(request, pk=None):
+    now = datetime.now()
+    obj = get_object_or_404(Proof, pk=pk)
+
+    geometry_options = {"tmargin": "2cm", "lmargin": "2cm"}
+
+    doc = Document(geometry_options=geometry_options, inputenc='utf8x')
+
+    doc.preamble.append(pylatex.Command('title', obj.__dict__['name']))
+    doc.preamble.append(pylatex.Command('author', str(request.user)))
+
+    line_number_counter = 0
+    form_count = obj.proofline_set.count()
+
+    doc.append(pylatex.Command('fontsize', arguments=['15', '19']))
+    doc.append(pylatex.Command('selectfont'))
+    doc.append(NoEscape(r'\maketitle'))
+
+    with doc.create(Section('Proof Details')):
+        doc.append('Rules: ' + obj.__dict__['rules'] + "\n")
+        doc.append('Premises: ' + obj.__dict__['premises'] + "\n")
+        doc.append('Conclusion: ' + obj.__dict__['conclusion'] + "\n")
+
+        with doc.create(Section('Proof Table')):
+            with doc.create(Tabular('r|c|c')) as table:
+                table.add_row(bold('Line #'), bold('Expression'), bold('Rule'))
+                table.add_hline()
+
+                while line_number_counter < form_count:
+                    if obj.proofline_set.order_by('ORDER').values('line_no')[line_number_counter] in obj.proofline_set.order_by('ORDER').values('line_no'):
+                        line_number_object = FlushLeft()
+                        dot_count = str(obj.proofline_set.order_by('ORDER').values('line_no')[line_number_counter]).count('.') / 2
+                        line_number_object.append(NoEscape(r'\hspace{' + str(dot_count) + 'cm}'))
+                        line_number_object.append(
+                            obj.proofline_set.order_by('ORDER').values('line_no')[line_number_counter]['line_no'])
+                        table.add_row(
+                            line_number_object,
+                            obj.proofline_set.order_by('ORDER').values('formula')[line_number_counter]['formula'],
+                            obj.proofline_set.order_by('ORDER').values('rule')[line_number_counter]['rule'],
+                        )
+                        table.add_hline()
+                    line_number_counter = line_number_counter + 1
+
+    filename = obj.__dict__['name'] + '-' + now.strftime("%d_%m_%Y.%H-%M-%S")+'.tex'
+    response = HttpResponse(doc.dumps(), content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(filename)
+
+    return response
+
 
 class ProofView(LoginRequiredMixin, ListView):
     model = Proof
@@ -288,7 +395,7 @@ def feedback_form(request):
                 mail_subject, email_body, to=[to_email])
             try:
                 attach = request.FILES['attach']
-                if  attach != None and attach.content_type != None:
+                if attach != None and attach.content_type != None:
                     email.attach(attach.name, attach.read(), attach.content_type)
             except:
                 print()
@@ -309,8 +416,8 @@ def student_proofs_view(request, pk=None):
     for course in courses:
         for student in course.students.all():
             student.selected = False
-            if student.pk==pk :
-                 student.selected = True
+            if student.pk == pk:
+                student.selected = True
             students.append(student)
 
     students = list(set(students))
@@ -349,7 +456,7 @@ def student_grades_view(request, course_id=None):
 
     context = {
         "students": students,
-        "courses":   courses.all(),
+        "courses": courses.all(),
         "course_id": course_id
     }
     return render(request, 'proofchecker/student_grades.html', context)

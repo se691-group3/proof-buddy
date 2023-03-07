@@ -10,40 +10,25 @@
       "premises": [
         {
           "lineNum": 1,
-          "expr": "P\u2227(Q\u2192R)\u2227T",
-          "rule": "Premise"
-        },
-        {
-          "lineNum": 2,
-          "expr": "Q",
+          "expr": "A\u2227B",
           "rule": "Premise"
         }
       ],
       "conclusion": {
-        "lineNum": "4",
-        "expr": "R",
-        "rule": "\u2192E 3,2"
+        "lineNum": "2",
+        "expr": "A",
+        "rule": "\u2227E 1"
       },
       "lines": [
         {
           "lineNum": "1",
-          "expr": "P\u2227(Q\u2192R)\u2227T",
+          "expr": "A\u2227B",
           "rule": "Premise"
         },
         {
           "lineNum": "2",
-          "expr": "Q",
-          "rule": "Premise"
-        },
-        {
-          "lineNum": "3",
-          "expr": "Q\u2192R",
-          "rule": "cj3 1"
-        },
-        {
-          "lineNum": "4",
-          "expr": "R",
-          "rule": "\u2192E 3,2"
+          "expr": "A",
+          "rule": "\u2227E 1"
         }
       ]
     }

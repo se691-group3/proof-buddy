@@ -5,84 +5,60 @@
 
         <br/>
 
-        <h5><u>Version 2.1.2 - 11/22/2022</u></h5>
+        <h5><u>Version 2.1.2 - 2/25/2023</u></h5>
         <ul>
-            <li>Created settings for multiple environments to keep database separate
-            </li>
+            <li>Feature added: export grades to upload to BBLearn.</li>
+            <li>Feature added: a button which inserts a comment line (i.e. the user can type any text they wish: this line is fully ignored by the parser and does not affect the step count for the proof).</li>
+            <li>Feature added: let the instructor import a csv of userids, email_address and then that creates en masse a bunch of student accounts registered for that course.</li>
+            <li>Feature added: “disprove" mode – the user enters in T/F for each variable, and ProofBuddy checks that all the premises evaluate to True, but the conclusion is False.</li>
+            <li>Feature added: exportation into LaTex, Jupyter.</li>
+            <li>Feature added: export to csv – students and assignment scores to upload to BBLearn.</li>
         </ul>
 
-        <h5><u>Version 2.1.1 - 11/16/2022</u></h5>
+        <h5><u>Version 2.1.1 - 2/11/2023</u></h5>
         <ul>
-            <li>Adding case for proofs with no premise
-            </li>
+            <li>Bug for cannot indent the first line of a proof resolved.</li>
         </ul>
 
-        <h5><u>Version 2.1.0 - 11/13/2022</u></h5>
+        <h5><u>Version 2.1.0 - 1/28/2023</u></h5>
         <ul>
-            <li>Fixed button order to be more consistent across different pages
-            </li>
+            <li>Bug in cannot indent the first line of a proof resolved.</li>
+            <li>Bug in The Proof Rules button sometimes covers up the result message resolved.</li>
+            <li>Bug in create assignment resolved.</li>
+            <li>Bug in indentation disappears in student initial view of assignments, not the actual assignment page resolved.</li>
+            <li>Feature added: instructor should be able to toggle the visibility of the number of target lines.</li>
         </ul>
 
-        <h5><u>Version 2.0.8 - 11/11/2022</u></h5>
+        <h5><u>Version 2.0.2 - 11/23/2022</u></h5>
         <ul>
-            <li>Bug in code for start date on assignments. Made start date a required field
-            </li>
-        </ul>
-
-        <h5><u>Version 2.0.7 - 11/9/2022</u></h5>
-        <ul>
-            <li>Fixed Line Indentation bug that previously allowed user to indent further than they should
-            </li>
-        </ul>
-
-        <h5><u>Version 2.0.6 - 11/7/2022</u></h5>
-        <ul>
-            <li>Fixed not being able to create course in instructor account
-            </li>
-        </ul>
-
-        <h5><u>Version 2.0.5 - 11/5/2022</u></h5>
-        <ul>
-            <li>Fixed Comma bug + Rule Parsing Bug
-            </li>
-        </ul>
-
-        <h5><u>Version 2.0.4 - 11/4/2022</u></h5>
-        <ul>
-            <li>Fixed comma being added to rule when new row is added.
-            </li>
+            <li>Bug in student scoring computation resolved.</li>
+            <li>Bug in line indentation constraint resolved.</li>
+            <li>Bug when you put your cursor in the middle of a rule, and then hit either the + or x button, it will insert a comma there resolved.</li>
+            <li>Line numbers in proofs made not editable.</li>
+            <li>Bug in course creation sends instructor back to login resolved.</li>
+            <li>Position of the Check Proof and Save buttons in the assignment page and the proof edit page made consistent.</li>
+            <li>Bug saveJson function causes crash if there were no premises resolved.</li>
+            <li>Bug in start date on assignments resolved. Made start date a required field.</li>
+            <li>Created settings for multiple environments to keep databases in development and production environtments separate.</li>
         </ul>
 
 
-        <h5><u>Version 2.0.3 - 11/2/2022</u></h5>
+        <h5><u>Version 2.0.1 - 11/5/2022</u></h5>
         <ul>
-            <li>Merging bug fix for creating an account. Users can now create an account using valid email. Email will
-                be sent and user must click link in email to activate.
-            </li>
+            <li>Bug in creating accounts resolved. Users can create an account using valid email. Email will
+                be sent and user must click link in email to activate.</li>
         </ul>
 
-        <h5><u>Version 2.0.2 - 10/28/2022</u></h5>
+        <h5><u>Version 2.0.0 - 10/29/2022</u></h5>
         <ul>
-            <li>Commentated out a line in home.html regarded old proofchecker
-            </li>
-        </ul>
-
-
-        <h5><u>Version 2.0.1 - 10/28/2022</u></h5>
-        <ul>
-            <li>Removed left sidebar in favor of putting menu on top navbar</li>
-            <li>Restructured right sidebar to allow more space when it is hidden</li>
-            <li>Changed sidebar to allow content to push right when opened</li>
-            <li>Centered most pages notably except proof buddy engine, version log, developers</li>
-            <li>Added Drexel’s logo to homepage</li>
-            <li>Put a footer on each page stating app developed by Drexel University</li>
-            <li>Added ability to show and hide subrules for proofs</li>
-        </ul>
-
-        <h5><u>Version 2.0.0 - 10/26/2022</u></h5>
-        <ul>
-            <li>Disabled email activation requirement for bug fixes
-            </li>
+            <li>Project deployment to Drexel tux servers.</li>
+            <li>Removed left sidebar in favor of putting menu on top navbar.</li>
+            <li>Restructured right sidebar to allow more space when it is hidden.</li>
+            <li>Changed sidebar to allow content to push right when opened.</li>
+            <li>Centered most pages notably except Proof Buddy engine, Version Log, and Developers.</li>
+            <li>Added Drexel’s logo to homepage.</li>
+            <li>Put a footer on each page stating app developed by Drexel University.</li>
+            <li>Added ability to show and hide subrules for proofs.</li>
         </ul>
 
         <h5><u>Version 1.0.7 - 4/7/2022</u></h5>
@@ -218,5 +194,5 @@
             </li>
         </ul>
     </div>
-
+<hr style="height:30pt; visibility:hidden;"/>
 {% endblock %}

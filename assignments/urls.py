@@ -19,8 +19,12 @@ urlpatterns = [
     path('problems/<int:pk>/delete', views.ProblemDeleteView.as_view(), name="delete_problem"),
 
     path('problems/<int:problem_id>/solution', views.problem_solution_view, name="problem_solution"),
-    
-    path('get_csv_file/<int:id>/', views.get_csv_file, name='get_csv_file'),
+
+
+    path('get_grading_csv_file/<int:id>/', views.get_grading_csv_file, name='get_grading_csv_file'),
+    path('get_problem_anaylsis_csv_file/<int:id>/', views.get_problem_anaylsis_csv_file, name='get_problem_anaylsis_csv_file'),
+
     path('user_assignment_request/<int:a_id>/', views.user_assignment_request, name='user_assignment_request'),
     path('request_for_assignment_delay/<int:a_id>/', views.request_for_assignment_delay, name='request_for_assignment_delay'),
+    path('get_latex_file_assignment/<pk>', views.get_latex_file_assignment, name='get-latex-file-assignment'),
 ]

@@ -199,12 +199,12 @@
                         <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"></path>
                     </svg>
                 </button>
-                <br>
+            </td>
+            <td>
                 <button class="move_down btn btn-sm btn-light" type="button"
                         name="proofline_set-{{ forloop.counter0 }}-move_down-btn"
                         id="id_proofline_set-{{ forloop.counter0 }}-move_down-btn"
                         value="Move Down"
-
                         onclick="move_down(this)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                          class="bi bi-caret-down-fill" viewBox="0 0 16 16">
@@ -215,7 +215,7 @@
 
 
             <td>
-                <button class="delete-row btn btn-light" type="button"
+                <button class="delete-row btn btn-danger btn-sm" type="button"
                         name="proofline_set-{{ forloop.counter0 }}-delete-btn"
                         id="id_proofline_set-{{ forloop.counter0 }}-delete-btn"
                         value="Delete Row" onclick="delete_form(this)" data-toggle="tooltip" data-placement="right"
@@ -285,12 +285,12 @@
 
                             onclick="move_up(this)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                             class="bi bi-caret-up-fill" viewBox="0 0 16 16"
-                             margin="0px">
+                             class="bi bi-caret-up-fill" viewBox="0 0 16 16">
                             <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"></path>
                         </svg>
                     </button>
-                    <br>
+                </td>
+                <td>
                     <button class="move_down btn btn-sm btn-light" type="button"
                             name="proofline_set-__prefix__-move_down-btn" id="id_proofline_set-__prefix__-move_down-btn"
                             value="Move Down"
@@ -328,6 +328,9 @@
         {% endif %}
         <hr>
         <!-- Display validation errors from form fields-->
+        {% if object.pk %} {% if object.created_by == request.user %}
+        <a href="{% url 'get-latex-file-assignment' object.pk %}" class="dropdown-item">LaTeX.tex file</a>
+        {% endif %}{% endif %}
         {% for line in formset %} {% for field in line %} {% if field.errors %}
             <div class="container">
                 {% for error in field.errors %}
@@ -354,7 +357,7 @@
             <div class="alert alert-primary" role="alert">
                 Keep at it! Don't forget to save your work by clicking "Save"! This will allow you to return to your
                 work on this later!
-            </div>
+            </div><br>
             <strong>Result:</strong> {{ response.err_msg }} </p>
 
 
@@ -363,7 +366,7 @@
             <div class="alert alert-success" role="alert">
                 Great job! Don't forget to save your work by clicking "Save"! This will allow you to view this correct
                 proof later!
-            </div>
+            </div><br>
             <strong>Result:</strong> The proof is valid and complete!</p>
         {% endif %} {% endif %}
         <hr>

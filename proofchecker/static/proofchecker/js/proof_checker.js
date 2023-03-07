@@ -257,19 +257,51 @@ function start_disproof(element) {
         document.getElementById('disproof_switches').innerHTML += `
         <div style="display: inline-block;">` + uniqueChars[v] + `</div>
         <label class="switch">
-            <input type="checkbox">
+            <input type="checkbox" class="disproof_checkbox" onchange="save_disproof()">
             <span class="slider round"></span>
         </label>
         <br>
         `;
     }
+
+    restore_disproof()
 }
 
 function is_letter(str) {
     return str.length === 1 && str.match(/[a-z]/i);
 }
 
-function close_disproof() {
+function save_disproof(){
+     // Save disproof of each switch button before closing
+     let switches = document.getElementsByClassName('disproof_checkbox')
+     let disproof_string_input = document.getElementsByName('disproof_string')
+     let disproof_string = ''
+ 
+     const switches_arr = Array.from(switches);
+     switches_arr.forEach(s => {
+         if (s.checked) {
+             disproof_string += '1'
+         } else {
+             disproof_string += '0'
+         }
+     })
+ 
+     disproof_string_input[0].value = disproof_string
+}
+
+function restore_disproof(){
+    let switches = document.getElementsByClassName('disproof_checkbox')
+    let disproof_string = document.getElementsByName('disproof_string')[0].value
+    for (let index=0 ; index < disproof_string.length; index++){
+        if (disproof_string[index] == '1'){
+            switches[index].checked = true
+        } else {
+            switches[index].checked = false
+        }
+    }
+}
+
+function close_disproof(self) {
     document.getElementById('start_disproof_section').style.width = "0";
     document.getElementById("main").style.marginRight = "0";
     document.getElementById('btn_start_disproof').style.display = "block";

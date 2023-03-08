@@ -43,7 +43,8 @@ class ProofLineObj:
 class ProofObj:
     # added name attribute as part of object (rather than part of gui)
     #note that premises and conclusion are lineObjects not strings!  WAIT: maybe they are strs sometimes, since crashed line2Dict
-    def __init__(self, rules='tfl_basic', premises=[], conclusion='', lines=[], created_by='', name="", complete=False, lemmas_allowed = False):
+    # def __init__(self, rules='tfl_basic', premises=[], conclusion='', lines=[], created_by='', name="", complete=False, lemmas_allowed = False):
+    def __init__(self, rules='tfl_basic', premises=[], conclusion='', lines=[], created_by='', name="", complete=False):
         self.rules = rules 
         self.ruleList = [] #TODO: for future, this will have to be a list of allowed rules, not a specific string, presently rules='fol_derived' etc
         self.premises = premises # this is a list of strings :-(
@@ -52,7 +53,7 @@ class ProofObj:
         self.created_by = created_by
         self.name = name
         self.complete = complete
-        self.lemmas_allowed = lemmas_allowed
+        # self.lemmas_allowed = lemmas_allowed
     
     def __str__(self): #BUG: this could potentially be a problem if old version called this thinking it was getting only lines!
         #result = "Proof: "+self.name+"\n" #added name as a title, but commented out to prevent testing errors based on reading lines
@@ -97,7 +98,7 @@ class ProofObj:
     # creates string of a json representation of a proof (later will save it into a filename)
     def saveJson(self): #nothing returned here, it just creates a jsonfile at outfile
         myDict={}
-        myDict ["lemmas_allowed"] = self.lemmas_allowed
+        # myDict ["lemmas_allowed"] = self.lemmas_allowed
         myDict["name"]=self.name # didn't bother with getters since just strings/bools for these
         myDict["created_by"]=self.created_by
         myDict["complete"]=self.complete

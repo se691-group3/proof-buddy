@@ -525,7 +525,7 @@ def problem_solution_view(request, problem_id=None):
                 proof.premises = get_premises(parent.premises)
                 proof.conclusion = str(parent.conclusion)
                 proof.created_by = request.user.id #populate proof created by field with user ID
-                proof.lemmas_allowed = problem.lemmas_allowed #field in proof object which stores if lemmas are allowed for that proof
+                # proof.lemmas_allowed = problem.lemmas_allowed #field in proof object which stores if lemmas are allowed for that proof
 
                 for line in formset.ordered_forms:
                     if len(line.cleaned_data) > 0 and not line.cleaned_data["DELETE"]:

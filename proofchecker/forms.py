@@ -11,6 +11,7 @@ class ProofForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProofForm, self).__init__(*args, **kwargs)
+        self.fields['disproof_string'].required = False
         for visible in self.visible_fields():
             visible.field.widget.attrs['onkeyup'] = 'replaceCharacter(this)'
 

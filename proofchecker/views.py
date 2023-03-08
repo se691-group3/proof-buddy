@@ -214,7 +214,7 @@ def proof_update_view(request, pk=None):
                     proof.premises = get_premises(parent.premises)
                     proof.conclusion = str(parent.conclusion)
                     proof.created_by = request.user.id
-                    proof.lemmas_allowed = parent.lemmas_allowed
+                    # proof.lemmas_allowed = parent.lemmas_allowed
                     
 
                     for line in formset.ordered_forms:

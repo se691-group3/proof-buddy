@@ -1,9 +1,9 @@
 {
   "Proofs": [
     {
-      "lemmas_allowed": true,
+      "lemmas_allowed": false,
       "name": "",
-      "created_by": 2,
+      "created_by": 1,
       "complete": true,
       "rules": "tfl_basic",
       "ruleList": [],

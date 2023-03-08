@@ -1,7 +1,6 @@
 {
   "Proofs": [
     {
-      "lemmas_allowed": true,
       "name": "",
       "created_by": 2,
       "complete": true,
@@ -12,12 +11,17 @@
           "lineNum": 1,
           "expr": "A\u2227B",
           "rule": "Premise"
+        },
+        {
+          "lineNum": 2,
+          "expr": "B\u2227C",
+          "rule": "Premise"
         }
       ],
       "conclusion": {
-        "lineNum": "2",
-        "expr": "A",
-        "rule": "\u2227E 1"
+        "lineNum": "4",
+        "expr": "A\u2227C",
+        "rule": "\u2227I 3, 4"
       },
       "lines": [
         {
@@ -27,8 +31,23 @@
         },
         {
           "lineNum": "2",
+          "expr": "B\u2227C",
+          "rule": "Premise"
+        },
+        {
+          "lineNum": "3",
           "expr": "A",
           "rule": "\u2227E 1"
+        },
+        {
+          "lineNum": "4",
+          "expr": "C",
+          "rule": "\u2227E 2"
+        },
+        {
+          "lineNum": "4",
+          "expr": "A\u2227C",
+          "rule": "\u2227I 3, 4"
         }
       ]
     }

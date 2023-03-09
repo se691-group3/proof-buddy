@@ -1,10 +1,12 @@
+import copy
 from proofchecker.proofs.proofobjects import ProofObj, ProofLineObj, ProofResponse, loadJson #yellow=static method, blue is class
 from proofchecker.proofs.exprMethods import instanceOf #no longer need myMakeTree
-from proofchecker.proofs.proofutils import clean_rule, get_lines, verify_line_citation, make_tree, get_expressions, get_line_nos
+from proofchecker.proofs.proofutils import clean_rule, fix_rule_whitespace_issues, get_lines, get_premises, verify_line_citation, make_tree, get_expressions, get_line_nos
 from proofchecker.utils.binarytree import Node #no longer need tree2Str
 # from proofchecker.proofs.proofchecker import verify_proof #CIRCULAR = verifying a rule requires verifying a proof but verifying a proof must verify rules
 # from proofchecker.utils import tflparser # no longer need parser?
 from .rule import Rule
+from proofchecker.models import Proof
 
  # in next version, this will look for a file in the student or teacher directory named "new rule" (or with the given name),
  # but instead of loading it from the database and/or a parsed JSON file, for this version we will hardcode in the rule
@@ -43,24 +45,53 @@ class NewRule(Rule):
         Verify proper implementation of the new rule
         (assumes it has read in a name of "new rule") 
         """
-        rule = clean_rule(current_line.rule)
+        rule_str = clean_rule(current_line.rule)
+        fixed_rule = fix_rule_whitespace_issues(rule_str)
+        rule_symbols = fixed_rule.split()[0]
+        
+
         response = ProofResponse() #default .isvalid=False
         proof.complete = False # since they must have made a change, resetting to the default (also done in old proofchecker.py/verify_rule)
-        myProof = loadJson(rule[:rule.find(" ")].casefold())
+
+        #retrives proof refernced by user as lemma from user's saved proofs in the database, by querying based on the "created_by" and "name" field. 
+        # Current proof has the user listed in the created_by field
+        
+        current_user = proof.created_by
+
+        query_set_return = Proof.objects.filter(created_by = current_user, name = rule_symbols)
+       
+
+        for element in query_set_return:
+            userProofToBeUsedAsLemma = element
+
+
+        lemmaProof = ProofObj()
+        lemmaProof.name = userProofToBeUsedAsLemma.name
+        lemmaProof.premises = userProofToBeUsedAsLemma.premises
+        lemmaProof.conclusion = userProofToBeUsedAsLemma.conclusion
+
+        #at this point, lemmaProof object should contain name, presmises and conclusion field, which shoudld allow below code to execute
+
+        
+        #myProof = loadJson(rule[:rule.find(" ")].casefold()) #commenting out local referene and replacing below with proof obj created from database info
+        
+        
+        myProof = copy.copy(lemmaProof)
 
         # testing print(current_line.line_no, current_line.expression,current_line.rule, response.err_msg, response.is_valid)   
         #cannot do: result = verify_proof(proof, tflparser.parser) because of dependency issues
 
         # Attempt to find line m
-        
-        target_line_nos = get_line_nos(rule) #this gets a list of strings of the cited lines for the rule
-        n, m  = len(target_line_nos), myProof.numPremises()
+        target_line_nos = get_line_nos(rule_str) #this gets a list of strings of the cited lines for the rule
+        #print("target line nos= ",target_line_nos)
+        n, m  = len(target_line_nos), len(get_premises(myProof.premises)) #numPremises() function won't work since we aren't brining in the entire proof line by line. We are only brining in the premises comma or colon separated
+    
         if n != m:
             response.err_msg = "Error on line {}: {} requires {} citation(s), but you provided {}"\
                     .format(str(current_line.line_no), myProof.name, str(m), str(n))
             return response
-        target_lines = get_lines(rule, proof) #this gets their corresponding lineObjects
-
+        target_lines = get_lines(rule_str, proof) #this gets their corresponding lineObjects
+    
         # from this point on, we know # premises in myProof.premises = # citations in target_lines
 
         # Verify that line citations are valid
@@ -70,9 +101,12 @@ class NewRule(Rule):
                 return result
 
             # Search for line m in the proof
-        expressions = get_expressions(target_lines) # gets list of expressions of target lines       
+        expressions = get_expressions(target_lines) # gets list of expressions of target lines  
+        
+
         trees_cited = [make_tree(x, parser) for x in expressions] # gets list of trees of those expressions, needed for instanceOf
-        trees_orig = [make_tree(x,parser) for x in [y.expression for y in myProof.premises]] # gets list of trees of representing premises of new rule
+        
+        trees_orig = [make_tree(x,parser) for x in get_premises(myProof.premises)] # gets list of trees of representing premises of new rule
         env = {} # initializing the environment of checking instances
         for i in range(n): # this is the number of premises/citations (already verified to be equal) to check pattern matching of each
             result = instanceOf(trees_orig[i], trees_cited[i], env)
@@ -82,7 +116,7 @@ class NewRule(Rule):
                 response.err_msg = "Error on line {}: citation of line {} does not match premise #{} for rule {}"\
                 .format(str(current_line.line_no), target_line_nos[i], str(n+1), myProof.name)
                 return response
-        result = instanceOf(make_tree(myProof.conclusion.expression, parser), make_tree(current_line.expression, parser), env) # checking application of rule
+        result = instanceOf(make_tree(myProof.conclusion, parser), make_tree(current_line.expression, parser), env) # checking application of rule
         if result[0]: 
             response.is_valid = True 
         else:
@@ -90,4 +124,4 @@ class NewRule(Rule):
             .format(str(current_line.line_no), myProof.name)
         return response
             
-            # TODO: still need to check if new rule is valid, AND if new rule is permitted in current proof, and if newrules.rules <= proof.rules
+            # TODO: still need to check if new rule is permitted in current proof through ruleList

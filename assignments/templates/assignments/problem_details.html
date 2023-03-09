@@ -268,8 +268,8 @@
                                 </button>
                             </td>
 
-                            <td>
-                                <button class="add_comment btn btn-light" type="button" 
+                            <!-- <td>
+                                <button class="add_comment btn btn-light btn-sm" type="button" 
                                         name="proofline_set-{{ forloop.counter0 }}-comment-btn" 
                                         id="id_proofline_set-{{ forloop.counter0 }}-comment-btn"
                                         value="Add Comment" onclick="add_comment(this)" data-toggle="tooltip" data-placement="right" title="Toggle instructor comment on this line">
@@ -280,7 +280,7 @@
                             </td>
                             {% if request.user.is_student %}
                             <td>
-                                <button class="add_response btn btn-light" type="button" 
+                                <button class="add_response btn btn-light btn-sm" type="button" 
                                         name="proofline_set-{{ forloop.counter0 }}-response-btn" 
                                         id="id_proofline_set-{{ forloop.counter0 }}-response-btn"
                                         value="Add Response" onclick="add_response(this)" data-toggle="tooltip" data-placement="right" title="Toggle student comment on this line">
@@ -289,7 +289,7 @@
                                     </svg>
                                 </button>    
                             </td>
-                            {% endif %}
+                            {% endif %} -->
 
                             <td>
                                 {{ line.comment }}
@@ -388,8 +388,8 @@
                                     </svg>
                                 </button>
                             </td>
-                            <td>
-                                <button class="add_comment btn btn-light" type="button" 
+                            <!-- <td>
+                                <button class="add_comment btn btn-light btn-sm" type="button" 
                                         name="proofline_set-__prefix__-comment-btn" 
                                         id="id_proofline_set-__prefix__-comment-btn"
                                         value="Add Comment" onclick="add_comment(this)" data-toggle="tooltip" data-placement="right" title="Toggle instructor comment on this line">
@@ -400,7 +400,7 @@
                             </td>
                             {% if request.user.is_student %}
                             <td>
-                                <button class="add_response btn btn-light" type="button" 
+                                <button class="add_response btn btn-light btn-sm" type="button" 
                                         name="proofline_set-__prefix__-response-btn" 
                                         id="id_proofline_set-__prefix__-response-btn"
                                         value="Add Response" onclick="add_response(this)" data-toggle="tooltip" data-placement="right" title="Toggle student comment field on this line">
@@ -409,7 +409,7 @@
                                     </svg>
                                 </button>    
                             </td>
-                            {% endif %}
+                            {% endif %} -->
                             <td>
                                 {{ formset.empty_form.comment }}
                             </td>

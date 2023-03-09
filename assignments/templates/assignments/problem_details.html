@@ -282,7 +282,7 @@
                             </td>
                             {% if request.user.is_student %}
                             <td>
-                                <button class="add_response btn btn-light" type="button" 
+                                <button class="add_response btn btn-light btn-sm" type="button" 
                                         name="proofline_set-{{ forloop.counter0 }}-response-btn" 
                                         id="id_proofline_set-{{ forloop.counter0 }}-response-btn"
                                         value="Add Response" onclick="add_response(this)" data-toggle="tooltip" data-placement="right" title="Toggle student comment on this line">
@@ -402,7 +402,7 @@
                             </td>
                             {% if request.user.is_student %}
                             <td>
-                                <button class="add_response btn btn-light" type="button" 
+                                <button class="add_response btn btn-light btn-sm" type="button" 
                                         name="proofline_set-__prefix__-response-btn" 
                                         id="id_proofline_set-__prefix__-response-btn"
                                         value="Add Response" onclick="add_response(this)" data-toggle="tooltip" data-placement="right" title="Toggle student comment field on this line">

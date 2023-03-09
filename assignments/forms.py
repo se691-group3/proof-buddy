@@ -45,7 +45,7 @@ class ProblemForm(forms.ModelForm):
         self.fields['target_steps'].widget.attrs['read-only'] = True
         self.fields['lost_points'].widget.attrs['read-only'] = True
         self.fields['show_target_steps'].widget.attrs['read-only'] = True
-        self.fields['lemmas_allowed'].widget.attrs['read-only'] = True
+        self.fields['lemmas_allowed'].widget.attrs['disabled'] = True
         
 class StudentProblemForm(ProblemForm):
     def __init__(self, *args, **kwargs):

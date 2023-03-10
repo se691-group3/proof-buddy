@@ -114,6 +114,11 @@
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         {% if user.is_student %}
+                           <span class="badge badge-info mr-4 mb-2" style="height: max-content; margin-top: 10px; max-width:max-content;" data-toggle="tooltip" data-placement="left" title="{{ user.email }}">
+                            {{ user.username }} :: Student
+                          </span>
+                          
+                        <!--
                             <li class="nav-item pr-4">
                                 <a href="{% url 'student_profile' %}" class="nav-link" data-toggle="tooltip"
                                    data-placement="left" title="{{ user.username }}'s profile">
@@ -121,14 +126,19 @@
                                        style="font-size:35px;vertical-align: middle; line-height: 0;">account_box</i>
                                 </a>
                             </li>
+                            -->
                         {% elif user.is_instructor %}
+                            <span class="badge badge-info mr-4 mb-2" style="height: max-content; margin-top: 10px; max-width:max-content;" data-toggle="tooltip" data-placement="left" title="{{ user.email }}">
+                            {{ user.username }} :: Instructor
+                          </span>
+                        <!--
                             <li class="nav-item pr-4">
                                 <a href="{% url 'instructor_profile' %}" class="nav-link" data-toggle="tooltip"
                                    data-placement="left" title="{{ user.username }}'s profile">
                                     <i class="material-icons"
                                        style=" font-size:35px;vertical-align: middle; line-height: 0;">account_box</i>
                                 </a>
-                            </li>
+                            </li>-->
                         {% endif %}
                         <li class="nav-item pr-5">
                             <a class="btn btn-primary my-2 my-sm-0 btn-danger" type="submit"

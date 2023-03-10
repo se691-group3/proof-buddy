@@ -36,14 +36,12 @@ def makeDict(proof: ProofObj):
         valDict[v]=False
     return valDict
 
-# dummy function which represents the user setting values for the variables
-def setVals(myDict):
-    # in reality, there would be a GUI that lets the user set values
-    # until the team implements this, it will be hardcoded below
-    myDict["A"]=True 
-    myDict["B"]=True 
-    myDict["C"]=True 
-    myDict["D"]=False 
+#the user setting values for the variables. 
+#front-end sends only the true variables; so only need to set given variables to true
+def setVals(myDict, trueVals):    
+    for val in trueVals:
+        myDict[val] = True
+
     return myDict
 
 #takes expression tree and dictionary of values and evaluates the expression

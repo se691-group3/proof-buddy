@@ -41,6 +41,7 @@ from .models import AssignmentDelay
 from pylatex import Document, Section, Tabular
 from pylatex.position import FlushLeft
 from pylatex.utils import bold, NoEscape
+from collections import defaultdict
 
 @login_required
 def all_assignments_view(request):
@@ -655,6 +656,8 @@ def get_problem_anaylsis_csv_file(request, id):
     return response
 
 
+
+
 def get_grading_csv_file(request, id):
     all_student = StudentProblemSolution.objects.filter(assignment_id=id).values('student').distinct()
     assignment_name = Assignment.objects.filter(id=id)[0]
@@ -664,12 +667,18 @@ def get_grading_csv_file(request, id):
 
     writer.writerow(['Username', assignment_name])
 
+    student_total_grade = defaultdict(int)
     for student_grading in all_student:
         student_grading = StudentProblemSolution.objects.filter(assignment_id=id, student=student_grading['student'])
+        
         for obj in student_grading:
+            
             username = obj.student.user.username
             grade = obj.grade
-            writer.writerow([username, grade])
+            student_total_grade[username] += grade
+            
+    for key, value in student_total_grade.items():
+        writer.writerow([key,value])
 
     return response
 

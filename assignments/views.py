@@ -626,32 +626,20 @@ def get_problem_anaylsis_csv_file(request, id):
 
 
 def get_grading_csv_file(request, id):
-    print("assignment_id:", id)
     all_student = StudentProblemSolution.objects.filter(assignment_id=id).values('student').distinct()
+    assignment_name = Assignment.objects.filter(id=id)[0]
     response = HttpResponse('')
-    response['Content-Disposition'] = 'attachment; filename=student_grading.csv'
+    response['Content-Disposition'] = 'attachment; filename=student_grading_for_'+str(assignment_name)+'.csv'
     writer = csv.writer(response)
-    writer.writerow(['Username', 'Course', 'Assignment', 'Point Recieved', 'Total Points'])
 
-    problem_obj = Assignment.objects.filter(id=id).values('problems__point')
-    total_points = 0
-    for problem in problem_obj:
-        total_points += problem['problems__point']
-        # print("PID; ", Problem.objects.filter(id=problem['problems__id']))
+    writer.writerow(['Username', assignment_name])
 
     for student_grading in all_student:
-        print("student_grading:", student_grading)
         student_grading = StudentProblemSolution.objects.filter(assignment_id=id, student=student_grading['student'])
         for obj in student_grading:
-            print("obj:", obj)
             username = obj.student.user.username
-
-            course = obj.assignment.course.title
-            assignment = obj.assignment.title
             grade = obj.grade
-
-            total = total_points
-            writer.writerow([username, course, assignment, grade, total])
+            writer.writerow([username, grade])
 
     return response
 

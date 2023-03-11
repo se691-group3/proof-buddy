@@ -11,6 +11,15 @@ const FORMSET_TR_CLASS = "proofline_set";                       // for modelform
 
 document.addEventListener('DOMContentLoaded', reload_page, false);
 
+document.addEventListener("DOMContentLoaded", function (event) {
+    var scrollpos = localStorage.getItem("scrollpos");
+    if (scrollpos) window.scrollTo(0, scrollpos);
+  });
+
+  window.onscroll = function (e) {
+    localStorage.setItem("scrollpos", window.scrollY);
+  };
+
 // ---------------------------------------------------------------------------------------------------------------------
 // functions
 // ---------------------------------------------------------------------------------------------------------------------

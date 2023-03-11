@@ -2,6 +2,7 @@ from proofchecker.proofs.proofobjects import ProofObj, ProofResponse
 from proofchecker.proofs.proofutils import make_tree
 from proofchecker.utils import tflparser
 from proofchecker.utils.binarytree import Node#, tree2Str #for testing
+#from proofchecker.utils.tfllexer import IllegalCharacterError #NEW
 
 '''
 to work, the GUI driver needs to have parts that do this:
@@ -68,7 +69,14 @@ def evalPrems(proof:ProofObj, valDict:dict):
 #returns a proofResponse for the counterexample
 def checkCntrEx(proof:ProofObj, valDict:dict):
     ans = ProofResponse(True,"")
-    if evalExpr(make_tree(proof.getConclusion(), tflparser.parser), valDict):
+    try:
+        concTree = make_tree(proof.getConclusion(), tflparser.parser)
+    except:
+        ans.is_valid=False
+        ans.err_msg = "illformed conclusion"
+        return ans 
+
+    if evalExpr(concTree, valDict):
         ans.is_valid = False
         ans.err_msg="Conclusion is satisfied, so not a counterexample\n"
     sats = evalPrems(proof, valDict)

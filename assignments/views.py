@@ -113,8 +113,9 @@ def create_assignment_view(request):
             return HttpResponseRedirect(
                 reverse("assignment_details", kwargs={"pk": assignment.pk})
             )
-        else:
-            messages.error(request, form.errors)
+        else: #Handle errors
+            if (form.errors.__contains__('title')):
+                messages.error(request, 'The title ' + str(form.data['title']) + ' has already exist. Please choose a different title for this assignment.')
 
     context = {
         "form": form,
@@ -355,8 +356,8 @@ def create_problem(request):
     )
 
     assignmentPk = request.GET.get("assignment")
+    assignment = Assignment.objects.get(id=assignmentPk)
     problem = None
-
 
     response = None
     if request.POST:
@@ -392,6 +393,13 @@ def create_problem(request):
                 proof = proof_form.save(commit=False)
 
                 proof.created_by = request.user
+            
+                if (assignment is not None):
+                    proof.name = str(assignment.title) + " - " + str(problem.question)
+                else: #this happens when user create proofs outside of the assignment
+                    pass
+                
+                # Save again to save the new name
                 proof.save()
                 formset.save()
 

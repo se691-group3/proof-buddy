@@ -164,7 +164,9 @@
                         <td></td>
                         <td></td>
                         <td></td>
+                        {% if request.user.is_instructor%}
                         <td></td>
+                        {% endif %}
                         <td></td>
                         <td></td>
                         <td></td>
@@ -258,7 +260,7 @@
                         </button>
 
                     </td>
-
+                    {% if request.user.is_instructor%}
                     <td>
                         <button class="add_comment btn btn-light btn-sm" type="button" 
                                 name="proofline_set-{{ forloop.counter0 }}-comment-btn" 
@@ -269,6 +271,7 @@
                             </svg>
                         </button>    
                     </td>
+                    {% endif %}
 
                     <td>
                         <button class="add_response btn btn-light btn-sm" type="button" 
@@ -283,7 +286,7 @@
 
                     {% if request.user.is_student%}
                     <td>
-                        {{ line.comment|attr:"readonly:True"  }}
+                    {{  line.comment |attr:"readonly:true"  }}
                     </td>
                     {% endif %}
                     {% if request.user.is_instructor%}
@@ -376,6 +379,8 @@
                                 </svg>
                             </button>
                         </td>
+
+                        {% if request.user.is_instructor%}
                         <td>
                             <button class="add_comment btn btn-light btn-sm" type="button" 
                                     name="proofline_set-__prefix__-comment-btn" 
@@ -386,6 +391,8 @@
                                 </svg>
                             </button>   
                         </td>
+
+                        {% endif %}
 
                         <td>
                             <button class="add_response btn btn-light btn-sm" type="button" 
@@ -398,9 +405,17 @@
                             </button>    
                         </td>
 
+
+                        {% if request.user.is_student%}
+                        <td>
+                        {{  formset.empty_form.comment |attr:"readonly:true"  }}
+                        </td>
+                        {% endif %}
+                        {% if request.user.is_instructor%}
                         <td>
                             {{ formset.empty_form.comment }}
                         </td>
+                        {% endif %}
                         <td>
                             {{ formset.empty_form.response }}
                         </td>

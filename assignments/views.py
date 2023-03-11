@@ -426,27 +426,53 @@ def problem_details_view(request, pk=None):
         queryset=proof.proofline_set.order_by("ORDER"),
     )
 
+    response = None
     if request.POST:
         if all([problem_form.is_valid(), proof_form.is_valid(), formset.is_valid()]):
-            problem = problem_form.save(commit=False)
-            proof = proof_form.save(commit=False)
+            parent = proof_form.save(commit=False)
+            if "check_proof" in request.POST:
+                proof = ProofObj(lines=[])  #
+                proof.rules = str(parent.rules)
+                proof.premises = get_premises(parent.premises)
+                proof.conclusion = str(parent.conclusion)
+                proof.created_by = request.user.id #populate proof created by field with user ID
+                proof.lemmas_allowed = problem.lemmas_allowed #field in proof object which stores if lemmas are allowed for that proof
 
-            proof.created_by = request.user
-            proof.save()
-            formset.save()
+                for line in formset.ordered_forms:
+                    if len(line.cleaned_data) > 0 and not line.cleaned_data["DELETE"]:
+                        proofline = ProofLineObj()
+                        child = line.save(commit=False)
+                        child.proof = parent
+                        proofline.line_no = str(child.line_no)
+                        proofline.expression = str(child.formula)
+                        proofline.rule = str(child.rule)
+                        proof.lines.append(proofline)
+                # Determine which parser to user based on selected rules
+                if (proof.rules == "fol_basic") or (proof.rules == "fol_derived"):
+                    parser = folparser.parser
+                else:
+                    parser = tflparser.parser
+                response = verify_proof(proof, parser)
 
-            problem.proof = proof
-            problem.save()
-            messages.success(request, "Problem saved successfully")
+                proof.complete = response.is_valid #switch the complete flag to true
+            elif "submit" in request.POST:
+                problem = problem_form.save(commit=False)
 
-            if assignmentPk is not None:
-                # problem page loaded from assignment page
-                return HttpResponseRedirect(
-                    reverse("assignment_details", kwargs={"pk": assignmentPk})
-                )
+                parent.created_by = request.user
+                parent.save()
+                formset.save()
 
-            return HttpResponseRedirect(reverse("all_assignments"))
+                problem.proof = parent
+                problem.save()
+                messages.success(request, "Problem saved successfully")
 
+                if assignmentPk is not None:
+                    # problem page loaded from assignment page
+                    return HttpResponseRedirect(
+                        reverse("assignment_details", kwargs={"pk": assignmentPk})
+                    )
+
+                return HttpResponseRedirect(reverse("all_assignments"))
 
     if request.user.is_student:
         problem_form.disabled_all()
@@ -457,7 +483,8 @@ def problem_details_view(request, pk=None):
         "problem_form": problem_form,
         "proof_form": proof_form,
         "formset": formset,
-        "rules": proof.rules
+        "rules": proof.rules,
+        "response": response
     }
     return render(request, "assignments/problem_details.html", context)
 
@@ -626,32 +653,20 @@ def get_problem_anaylsis_csv_file(request, id):
 
 
 def get_grading_csv_file(request, id):
-    print("assignment_id:", id)
     all_student = StudentProblemSolution.objects.filter(assignment_id=id).values('student').distinct()
+    assignment_name = Assignment.objects.filter(id=id)[0]
     response = HttpResponse('')
-    response['Content-Disposition'] = 'attachment; filename=student_grading.csv'
+    response['Content-Disposition'] = 'attachment; filename=student_grading_for_'+str(assignment_name)+'.csv'
     writer = csv.writer(response)
-    writer.writerow(['Username', 'Course', 'Assignment', 'Point Recieved', 'Total Points'])
 
-    problem_obj = Assignment.objects.filter(id=id).values('problems__point')
-    total_points = 0
-    for problem in problem_obj:
-        total_points += problem['problems__point']
-        # print("PID; ", Problem.objects.filter(id=problem['problems__id']))
+    writer.writerow(['Username', assignment_name])
 
     for student_grading in all_student:
-        print("student_grading:", student_grading)
         student_grading = StudentProblemSolution.objects.filter(assignment_id=id, student=student_grading['student'])
         for obj in student_grading:
-            print("obj:", obj)
             username = obj.student.user.username
-
-            course = obj.assignment.course.title
-            assignment = obj.assignment.title
             grade = obj.grade
-
-            total = total_points
-            writer.writerow([username, course, assignment, grade, total])
+            writer.writerow([username, grade])
 
     return response
 

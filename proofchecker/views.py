@@ -235,7 +235,10 @@ def proof_update_view(request, pk=None):
 
                     response = verify_proof(proof, parser)
                     
-                    obj.complete = response.is_valid
+                    if (response.err_msg == None) and (response.is_valid): #confirms that proof is both valid and complete before updating complete flag to true
+                        obj.complete = response.is_valid
+                    else:
+                        obj.complete = False
                     obj.save()
                     
 

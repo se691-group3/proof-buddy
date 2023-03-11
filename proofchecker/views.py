@@ -171,7 +171,6 @@ def proof_create_view(request):
                 else:
                     valDict = makeDict(proof)
                 
-                print(valDict)
                 response = checkCntrEx(proof,valDict)
                 if response.is_valid:
                     print("That is a valid counterexample -- Good Job!")
@@ -257,12 +256,18 @@ def proof_update_view(request, pk=None):
                         return HttpResponseRedirect(reverse('all_proofs'))
 
                 elif 'check_disproof' in request.POST:
-                    proof = ProofObj(lines=[])  #
+                    proof = ProofObj(lines=[])
                     proof.rules = str(parent.rules)
                     proof.premises = get_premises(parent.premises)
                     proof.conclusion = str(parent.conclusion)
                     
-                    valDict = setVals(makeDict(proof))
+                    valDict = []
+                    vals = request.POST.getlist('disproof_checkbox') # This brings back the variables that are true
+                    if vals != None:
+                        valDict = setVals(makeDict(proof), vals)
+                    else:
+                        valDict = makeDict(proof)
+                    
                     response = checkCntrEx(proof,valDict)
                     if response.is_valid:
                         print("That is a valid counterexample -- Good Job!")

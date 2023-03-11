@@ -2,7 +2,6 @@ from proofchecker.proofs.proofobjects import ProofObj, ProofResponse
 from proofchecker.proofs.proofutils import make_tree
 from proofchecker.utils import tflparser
 from proofchecker.utils.binarytree import Node#, tree2Str #for testing
-#from proofchecker.utils.tfllexer import IllegalCharacterError #NEW
 
 '''
 to work, the GUI driver needs to have parts that do this:

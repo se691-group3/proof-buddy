@@ -114,7 +114,7 @@ class NewRule(Rule):
                 env = result[1] #updating the environment between premises
             else:
                 response.err_msg = "Error on line {}: citation of line {} does not match premise #{} for rule {}"\
-                .format(str(current_line.line_no), target_line_nos[i], str(n+1), myProof.name)
+                .format(str(current_line.line_no), target_line_nos[i], str(n), myProof.name)
                 return response
         result = instanceOf(make_tree(myProof.conclusion, parser), make_tree(current_line.expression, parser), env) # checking application of rule
         if result[0]: 

@@ -570,7 +570,10 @@ def problem_solution_view(request, problem_id=None):
                     parser = tflparser.parser
                 response = verify_proof(proof, parser)
 
-                proof.complete = response.is_valid #switch the complete flag to true
+                if (response.err_msg == None) and (response.is_valid): #confirms that proof is both valid and complete before updating complete flag to true
+                    proof.complete = response.is_valid
+                else:
+                    proof.complete = False
                 #problem.save()
 
             elif "submit" in request.POST:

@@ -59,7 +59,13 @@ def evalExpr(eTree:Node, valDict:dict):
 # returns list of indices of premises which aren't valid in the given assignment
 def evalPrems(proof:ProofObj, valDict:dict):
     ans=[]
-    prems = [make_tree(x,tflparser.parser) for x in proof.getPremises()]
+    prems = []
+    for x in proof.getPremises():
+        try:
+            premTree = make_tree(x,tflparser.parser)
+        except:
+            return -1
+        prems.append(premTree)
     for i in range(len(prems)):
         if not(evalExpr(prems[i], valDict)): 
             ans.append(i+1)  # could be done with list comprehension, but less clear
@@ -79,7 +85,10 @@ def checkCntrEx(proof:ProofObj, valDict:dict):
         ans.is_valid = False
         ans.err_msg="Conclusion is satisfied, so not a counterexample\n"
     sats = evalPrems(proof, valDict)
-    if sats != []:
+    if sats == -1: #this is an error flag for an ill formed premise
+        ans.is_valid = False
+        ans.err_msg = "ERROR: all premises must be well-formed expressions"
+    elif sats != []:
         ans.is_valid = False
         ans.err_msg+="Invalid counterexample. the following premises were not satisfied: "
         for x in sats:

@@ -93,7 +93,7 @@ RULES_CHOICES = (
 
 
 class Proof(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, null=True, unique=True)
     rules = models.CharField(
         max_length=255, choices=RULES_CHOICES, default='tfl_basic')
     premises = models.CharField(max_length=255, blank=True, null=True)

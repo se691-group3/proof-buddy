@@ -239,34 +239,21 @@ function start_disproof(element) {
     document.getElementById('disproof_switches').innerHTML = "";
 
     // Get variables in premise and conclusion
-    const variables = [];
+    const notVariables = ['∧', '∨', '→', '↔', '¬', '⊥', "(", ")", " ", ";"];
+    var variables = [];
 
     const premises = document.getElementById('id_premises').value;
-    const premiseArray = premises.split(";").map(item => item.trim());
-
-    for (let i = 0; i < premiseArray.length; i++) {
-        for (let j = 0; j < premiseArray[i].length; j++) {
-            if (is_letter(premiseArray[i][j])) {
-                variables.push(premiseArray[i][j]);
-            }
-        }
-    }
-
     const conclusion = document.getElementById('id_conclusion').value;
-    for (let k = 0; k < conclusion.length; k++) {
-        if (is_letter(conclusion[k])) {
-            variables.push(conclusion[k]);
-        }
-    }
 
-    let uniqueChars = [...new Set(variables)];
+    variables = get_variables(variables, premises, conclusion);
+    variables = variables.filter(x => !notVariables.includes(x));
 
     // For each variable create a switch for it
-    for (let v = 0; v < uniqueChars.length; v++) {
+    for (let v = 0; v < variables.length; v++) {
         document.getElementById('disproof_switches').innerHTML += `
-        <div style="display: inline-block;">` + uniqueChars[v] + `</div>
+        <div style="display: inline-block;">` + variables[v] + `</div>
         <label class="switch">
-            <input type="checkbox" class="disproof_checkbox" onchange="save_disproof()">
+            <input value="` + variables[v]+ `" type="checkbox" name="disproof_checkbox" onchange="save_disproof()">
             <span class="slider round"></span>
         </label>
         <br>
@@ -276,13 +263,22 @@ function start_disproof(element) {
     restore_disproof()
 }
 
-function is_letter(str) {
-    return str.length === 1 && str.match(/[a-z]/i);
+function get_variables(variables, premises, conclusion) {
+    const premiseArray = premises.split("");
+    const conclusionArray = conclusion.split("");
+
+    premiseArray.forEach(x => variables.push(x));
+    conclusionArray.forEach(x => variables.push(x));
+
+    // Remove duplicates
+    variables = variables.filter((x, index) => variables.indexOf(x) === index);
+
+    return variables;
 }
 
 function save_disproof(){
      // Save disproof of each switch button before closing
-     let switches = document.getElementsByClassName('disproof_checkbox')
+     let switches = document.getElementsByName('disproof_checkbox')
      let disproof_string_input = document.getElementsByName('disproof_string')
      let disproof_string = ''
  
@@ -299,7 +295,7 @@ function save_disproof(){
 }
 
 function restore_disproof(){
-    let switches = document.getElementsByClassName('disproof_checkbox')
+    let switches = document.getElementsByName('disproof_checkbox')
     let disproof_string = document.getElementsByName('disproof_string')[0].value
     for (let index=0 ; index < disproof_string.length; index++){
         if (disproof_string[index] == '1'){

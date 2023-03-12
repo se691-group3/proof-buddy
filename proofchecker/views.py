@@ -176,9 +176,7 @@ def proof_create_view(request):
                         parent.created_by = request.user
                         parent.save()
                         formset.save()
-        else: #Handle errors
-            if (form.errors.__contains__('name')):
-                messages.error(request, 'The name ' + str(form.data['name']) + ' has already exist. Please choose a different name for this proof.')
+            
 
     context = {
         "object": form,
@@ -245,10 +243,11 @@ def proof_update_view(request, pk=None):
                     
 
                 elif 'submit' in request.POST:
-                    parent.created_by = request.user
-                    parent.save()
-                    formset.save()
-                    return HttpResponseRedirect(reverse('all_proofs'))
+                    if len(formset.forms) > 0:
+                        parent.created_by = request.user
+                        parent.save()
+                        formset.save()
+                        return HttpResponseRedirect(reverse('all_proofs'))
 
                 elif 'check_disproof' in request.POST:
                     proof = ProofObj(lines=[])  #
@@ -268,9 +267,7 @@ def proof_update_view(request, pk=None):
                         parent.created_by = request.user
                         parent.save()
                         formset.save()
-            else: #Handle errors
-                if (form.errors.__contains__('name')):
-                    messages.error(request, 'The name ' + str(form.data['name']) + ' has already exist. Please choose a different name for this proof.')
+
         ## Get instructor user object who created the problem
         if hasattr(obj,'studentproblemsolution'):
             created_by = obj.proofline_set.instance.studentproblemsolution.assignment.created_by

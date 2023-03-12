@@ -113,8 +113,9 @@ def create_assignment_view(request):
             return HttpResponseRedirect(
                 reverse("assignment_details", kwargs={"pk": assignment.pk})
             )
-        else:
-            messages.error(request, form.errors)
+        else: #Handle errors
+            if (form.errors.__contains__('title')):
+                messages.error(request, 'The title ' + str(form.data['title']) + ' has already exist. Please choose a different title for this assignment.')
 
     context = {
         "form": form,
@@ -355,29 +356,65 @@ def create_problem(request):
     )
 
     assignmentPk = request.GET.get("assignment")
+    assignment = Assignment.objects.get(id=assignmentPk)
     problem = None
 
+    response = None
     if request.POST:
         if all([problem_form.is_valid(), proof_form.is_valid(), formset.is_valid()]):
-            problem = problem_form.save(commit=False)
-            proof = proof_form.save(commit=False)
+            parent = proof_form.save(commit=False)
+            if "check_proof" in request.POST:
+                proof = ProofObj(lines=[])  #
+                proof.rules = str(parent.rules)
+                proof.premises = get_premises(parent.premises)
+                proof.conclusion = str(parent.conclusion)
+                proof.created_by = request.user.id #populate proof created by field with user ID
+                proof.lemmas_allowed = problem_form.cleaned_data['lemmas_allowed'] #field in proof object which stores if lemmas are allowed for that proof
 
-            proof.created_by = request.user
-            proof.save()
-            formset.save()
+                for line in formset.ordered_forms:
+                    if len(line.cleaned_data) > 0 and not line.cleaned_data["DELETE"]:
+                        proofline = ProofLineObj()
+                        child = line.save(commit=False)
+                        child.proof = parent
+                        proofline.line_no = str(child.line_no)
+                        proofline.expression = str(child.formula)
+                        proofline.rule = str(child.rule)
+                        proof.lines.append(proofline)
+                # Determine which parser to user based on selected rules
+                if (proof.rules == "fol_basic") or (proof.rules == "fol_derived"):
+                    parser = folparser.parser
+                else:
+                    parser = tflparser.parser
+                response = verify_proof(proof, parser)
 
-            problem.proof = proof
-            problem.save()
+                proof.complete = response.is_valid #switch the complete flag to true
+            else:
+                problem = problem_form.save(commit=False)
+                proof = proof_form.save(commit=False)
 
-            if assignmentPk is not None:
-                # problem page loaded from assignment page
-                assignment = Assignment.objects.get(id=assignmentPk)
-                assignment.problems.add(problem)
-                assignment.save()
+                proof.created_by = request.user
+            
+                if (assignment is not None):
+                    proof.name = str(assignment.title) + " - " + str(problem.question)
+                else: #this happens when user create proofs outside of the assignment
+                    pass
+                
+                # Save again to save the new name
+                proof.save()
+                formset.save()
 
-                return redirect("/assignment/" + assignmentPk + "/details")
+                problem.proof = proof
+                problem.save()
 
-            return HttpResponseRedirect(reverse("all_assignments"))
+                if assignmentPk is not None:
+                    # problem page loaded from assignment page
+                    assignment = Assignment.objects.get(id=assignmentPk)
+                    assignment.problems.add(problem)
+                    assignment.save()
+
+                    return redirect("/assignment/" + assignmentPk + "/details")
+
+                return HttpResponseRedirect(reverse("all_assignments"))
 
     if request.user.is_student:
         problem_form.disabled_all()
@@ -387,6 +424,7 @@ def create_problem(request):
         "problem_form": problem_form,
         "proof_form": proof_form,
         "formset": formset,
+        "response": response
     }
     return render(request, "assignments/problem_details.html", context)
 

@@ -36,6 +36,7 @@ class ProblemForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProblemForm, self).__init__(*args, **kwargs)
+        self.fields['target_steps'].required = False
         for visible in self.visible_fields():
             visible.field.widget.attrs['onkeydown'] = 'replaceCharacter(this)'
 

@@ -52,7 +52,7 @@ def all_assignments_view(request):
 
 
 def instructor_assignments_view(request):
-    cols = ['id', 'title', 'course__title', 'due_by']
+    cols = ['id', 'title', 'course__title', 'start_date', 'due_by']
     object_list = Assignment.objects.filter(created_by__user=request.user).values(*cols)
     for obj in object_list:
         obj['course'] = obj['course__title']
@@ -66,8 +66,12 @@ def instructor_assignments_view(request):
             obj.update({'submission': False})
 
     print("object_list:", object_list)
+
+    courses = Course.objects.filter(instructor__user=request.user)
+
     context = {
         "object_list": object_list,
+        "course_total": courses.count()
     }
     return render(request, "assignments/instructor_assignments.html", context)
 

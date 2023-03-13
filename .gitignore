@@ -10,6 +10,7 @@ proofchecker/__pycache__
 proofchecker/proofs/__pycache__
 proofchecker/utils/__pycache__
 proofchecker/utils/ply/__pycache__
+proofchecker/rules/__pycache__/
 
 prooftool/__pycache__
 prooftool/settings/__pycache__

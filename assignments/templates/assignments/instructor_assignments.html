@@ -6,8 +6,18 @@
         <br>
         <h4><b>Assignments</b></h4>
         <hr>
+
+        {% if course_total == 0 %}
+
+        <div class="alert alert-primary" role="alert">
+            You don't have any active courses. Please create a course before adding new assignment.
+        </div>
+
+        {% else %}
         <a href="{% url 'add_assignment' %}" class="btn btn-primary btn-sm">Add a new assignment</a>
         <hr>
+
+        {% endif %}
         <div class="row mt-3">
             {% for object in object_list %}
                 <div class="card mx-2 mb-3" style="max-width: 24rem;">
@@ -24,6 +34,7 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><b>Title:</b> {{ object.title }}</li>
                         <li class="list-group-item"><b>Course:</b> {{ object.course }}</li>
+                        <li class="list-group-item"><b>Start Date:</b> {{ object.start_date }}</li>
                         <li class="list-group-item"><b>Due By:</b> {{ object.due_by }}</li>
                     </ul>
                     <div class="card-body">

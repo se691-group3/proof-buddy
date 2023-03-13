@@ -239,7 +239,7 @@ def assignment_details_view(request, pk=None):
                     prooff.rules = str(get_proof.rules)
                     prooff.premises = get_premises(get_proof.premises)
                     prooff.conclusion = str(get_proof.conclusion)
-                    get_lines = ProofLine.objects.filter(proof=get_proof)
+                    get_lines = ProofLine.objects.filter(proof=get_proof).order_by('line_no')
                     for line in get_lines:
                         print(line)
                         proofline = ProofLineObj()
@@ -262,8 +262,8 @@ def assignment_details_view(request, pk=None):
                             i.save()
                         else:
                             more_line = get_lines.count() - i.problem.target_steps
-                            scroe_lost = more_line * i.problem.lost_points
-                            i.grade = i.problem.point - scroe_lost
+                            score_lost = more_line * i.problem.lost_points
+                            i.grade = i.problem.point - score_lost if score_lost <= i.problem.point else 0
                             i.save()
             assignment.save()
 

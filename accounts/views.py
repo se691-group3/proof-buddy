@@ -219,7 +219,7 @@ class CustomCSVView(FormView):
             })
             activate_url = "https://" + domain + link
             email_body = "Hi " + user.username + \
-              ", Please click on the link to confirm your registration.\n IMPORTANT! Remember to change your password once the account is activated" + activate_url
+              ", Please click on the link to confirm your registration.\nIMPORTANT! Remember to change your password once the account is activated\n" + activate_url
 
 
             to_email = user.email

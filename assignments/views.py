@@ -399,7 +399,7 @@ def create_problem(request):
                 proof.created_by = request.user
             
                 if (assignment is not None):
-                    proof.name = str(assignment.title) + " - " + str(problem.question)
+                    proof.name = str(assignment.title).replace(" ", "") + "_" + str(problem.question).replace(" ","")
                 else: #this happens when user create proofs outside of the assignment
                     pass
                 

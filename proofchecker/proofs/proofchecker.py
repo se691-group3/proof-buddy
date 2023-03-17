@@ -124,7 +124,7 @@ def verify_rule(current_line: ProofLineObj, proof: ProofObj, parser):
                 return response
             if ('derived' in lemmaObjectFromDatabase.rules) and ('derived' not in proof.rules):
                 response = ProofResponse()
-                response.err_msg = 'Rule "{}" on line {} not valid since since it was proven using derived rules. Derived are not allowed in current proof.'\
+                response.err_msg = 'Rule "{}" on line {} not valid since it was proven using derived rules. Derived are not allowed in current proof.'\
                     .format(rule_symbols, str(current_line.line_no))
                 return response
             else:

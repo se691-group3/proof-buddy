@@ -46,7 +46,7 @@ class StudentSignUpView(CreateView):
         link = reverse('activate', kwargs={
             'uidb64': uidb64, 'token': account_activation_token.make_token(user)
         })
-        activate_url = "http://" + domain + link
+        activate_url = "https://" + domain + link
         email_body = "Hi " + user.username + \
                      ", Please click on the link to confirm your registration.\n" + activate_url
         to_email = form.cleaned_data.get('email')
@@ -95,7 +95,7 @@ class InstructorSignUpView(CreateView):
         link = reverse('activate', kwargs={
             'uidb64': uidb64, 'token': account_activation_token.make_token(user)
         })
-        activate_url = "http://" + domain + link
+        activate_url = "https://" + domain + link
         email_body = "Hi " + user.username + \
                      ", Please click on the link to confirm your registration.\n" + activate_url
         to_email = form.cleaned_data.get('email')
@@ -217,9 +217,10 @@ class CustomCSVView(FormView):
             link = reverse('activate', kwargs={
                 'uidb64': uidb64, 'token': account_activation_token.make_token(user)
             })
-            activate_url = "http://" + domain + link
+            activate_url = "https://" + domain + link
             email_body = "Hi " + user.username + \
-                         ", Please click on the link to confirm your registration.\n" + activate_url
+              ", Please click on the link to confirm your registration.\nIMPORTANT! Remember to change your password once the account is activated\n" + activate_url
+
 
             to_email = user.email
             email = EmailMessage(

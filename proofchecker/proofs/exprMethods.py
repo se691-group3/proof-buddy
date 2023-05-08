@@ -22,7 +22,6 @@ def myMakeTree(expr:str, n:int)->binarytree.Node:
 # returns [boolean err flag, updated env], env meaningless if flag=False
 def instanceOf(genTree:binarytree.Node, specTree:binarytree.Node, env:dict): #env["A"]=exprTree
     # in final version: number of parameters will be determined as an attribute to the operator, not by adhoc lists above
-    #TODO still need to append to the environment!  maybe generate separate err msg if doesn't check out
     if genTree==None: #just doing some error catching (hopefully this case shouldn't happen)
         return [specTree==None, env]
     if specTree==None:

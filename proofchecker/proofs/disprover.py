@@ -36,14 +36,12 @@ def makeDict(proof: ProofObj):
         valDict[v]=False
     return valDict
 
-# dummy function which represents the user setting values for the variables
-def setVals(myDict):
-    # in reality, there would be a GUI that lets the user set values
-    # until the team implements this, it will be hardcoded below
-    myDict["A"]=True 
-    myDict["B"]=True 
-    myDict["C"]=True 
-    myDict["D"]=False 
+#the user setting values for the variables. 
+#front-end sends only the true variables; so only need to set given variables to true
+def setVals(myDict, trueVals):    
+    for val in trueVals:
+        myDict[val] = True
+
     return myDict
 
 #takes expression tree and dictionary of values and evaluates the expression
@@ -61,7 +59,13 @@ def evalExpr(eTree:Node, valDict:dict):
 # returns list of indices of premises which aren't valid in the given assignment
 def evalPrems(proof:ProofObj, valDict:dict):
     ans=[]
-    prems = [make_tree(x,tflparser.parser) for x in proof.getPremises()]
+    prems = []
+    for x in proof.getPremises():
+        try:
+            premTree = make_tree(x,tflparser.parser)
+        except:
+            return -1
+        prems.append(premTree)
     for i in range(len(prems)):
         if not(evalExpr(prems[i], valDict)): 
             ans.append(i+1)  # could be done with list comprehension, but less clear
@@ -70,11 +74,21 @@ def evalPrems(proof:ProofObj, valDict:dict):
 #returns a proofResponse for the counterexample
 def checkCntrEx(proof:ProofObj, valDict:dict):
     ans = ProofResponse(True,"")
-    if evalExpr(make_tree(proof.getConclusion(), tflparser.parser), valDict):
+    try:
+        concTree = make_tree(proof.getConclusion(), tflparser.parser)
+    except:
+        ans.is_valid=False
+        ans.err_msg = "illformed conclusion"
+        return ans 
+
+    if evalExpr(concTree, valDict):
         ans.is_valid = False
         ans.err_msg="Conclusion is satisfied, so not a counterexample\n"
     sats = evalPrems(proof, valDict)
-    if sats != []:
+    if sats == -1: #this is an error flag for an ill formed premise
+        ans.is_valid = False
+        ans.err_msg = "ERROR: all premises must be well-formed expressions"
+    elif sats != []:
         ans.is_valid = False
         ans.err_msg+="Invalid counterexample. the following premises were not satisfied: "
         for x in sats:

@@ -100,3 +100,16 @@ prooftool/settings/__pycache__/__init__.cpython-310.pyc
 prooftool/settings/__pycache__/base.cpython-310.pyc
 prooftool/settings/__pycache__/local.cpython-310.pyc
 prooftool/settings/__pycache__/production.cpython-310.pyc
+
+accounts/__pycache__
+assignments/__pycache__
+courses/__pycache__
+proofchecker/__pycache__
+
+proofchecker/proofs/__pycache__
+proofchecker/utils/__pycache__
+proofchecker/utils/ply/__pycache__
+proofchecker/rules/__pycache__/
+
+prooftool/__pycache__
+prooftool/settings/__pycache__

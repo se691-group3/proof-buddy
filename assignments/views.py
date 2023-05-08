@@ -41,6 +41,7 @@ from .models import AssignmentDelay
 from pylatex import Document, Section, Tabular
 from pylatex.position import FlushLeft
 from pylatex.utils import bold, NoEscape
+from collections import defaultdict
 
 @login_required
 def all_assignments_view(request):
@@ -51,7 +52,7 @@ def all_assignments_view(request):
 
 
 def instructor_assignments_view(request):
-    cols = ['id', 'title', 'course__title', 'due_by']
+    cols = ['id', 'title', 'course__title', 'start_date', 'due_by']
     object_list = Assignment.objects.filter(created_by__user=request.user).values(*cols)
     for obj in object_list:
         obj['course'] = obj['course__title']
@@ -65,8 +66,12 @@ def instructor_assignments_view(request):
             obj.update({'submission': False})
 
     print("object_list:", object_list)
+
+    courses = Course.objects.filter(instructor__user=request.user)
+
     context = {
         "object_list": object_list,
+        "course_total": courses.count()
     }
     return render(request, "assignments/instructor_assignments.html", context)
 
@@ -112,8 +117,9 @@ def create_assignment_view(request):
             return HttpResponseRedirect(
                 reverse("assignment_details", kwargs={"pk": assignment.pk})
             )
-        else:
-            messages.error(request, form.errors)
+        else: #Handle errors
+            if (form.errors.__contains__('title')):
+                messages.error(request, 'The title ' + str(form.data['title']) + ' has already exist. Please choose a different title for this assignment.')
 
     context = {
         "form": form,
@@ -233,7 +239,7 @@ def assignment_details_view(request, pk=None):
                     prooff.rules = str(get_proof.rules)
                     prooff.premises = get_premises(get_proof.premises)
                     prooff.conclusion = str(get_proof.conclusion)
-                    get_lines = ProofLine.objects.filter(proof=get_proof)
+                    get_lines = ProofLine.objects.filter(proof=get_proof).order_by('line_no')
                     for line in get_lines:
                         print(line)
                         proofline = ProofLineObj()
@@ -256,8 +262,8 @@ def assignment_details_view(request, pk=None):
                             i.save()
                         else:
                             more_line = get_lines.count() - i.problem.target_steps
-                            scroe_lost = more_line * i.problem.lost_points
-                            i.grade = i.problem.point - scroe_lost
+                            score_lost = more_line * i.problem.lost_points
+                            i.grade = i.problem.point - score_lost if score_lost <= i.problem.point else 0
                             i.save()
             assignment.save()
 
@@ -354,29 +360,65 @@ def create_problem(request):
     )
 
     assignmentPk = request.GET.get("assignment")
+    assignment = Assignment.objects.get(id=assignmentPk)
     problem = None
 
+    response = None
     if request.POST:
         if all([problem_form.is_valid(), proof_form.is_valid(), formset.is_valid()]):
-            problem = problem_form.save(commit=False)
-            proof = proof_form.save(commit=False)
+            parent = proof_form.save(commit=False)
+            if "check_proof" in request.POST:
+                proof = ProofObj(lines=[])  #
+                proof.rules = str(parent.rules)
+                proof.premises = get_premises(parent.premises)
+                proof.conclusion = str(parent.conclusion)
+                proof.created_by = request.user.id #populate proof created by field with user ID
+                proof.lemmas_allowed = problem_form.cleaned_data['lemmas_allowed'] #field in proof object which stores if lemmas are allowed for that proof
 
-            proof.created_by = request.user
-            proof.save()
-            formset.save()
+                for line in formset.ordered_forms:
+                    if len(line.cleaned_data) > 0 and not line.cleaned_data["DELETE"]:
+                        proofline = ProofLineObj()
+                        child = line.save(commit=False)
+                        child.proof = parent
+                        proofline.line_no = str(child.line_no)
+                        proofline.expression = str(child.formula)
+                        proofline.rule = str(child.rule)
+                        proof.lines.append(proofline)
+                # Determine which parser to user based on selected rules
+                if (proof.rules == "fol_basic") or (proof.rules == "fol_derived"):
+                    parser = folparser.parser
+                else:
+                    parser = tflparser.parser
+                response = verify_proof(proof, parser)
 
-            problem.proof = proof
-            problem.save()
+                proof.complete = response.is_valid #switch the complete flag to true
+            else:
+                problem = problem_form.save(commit=False)
+                proof = proof_form.save(commit=False)
 
-            if assignmentPk is not None:
-                # problem page loaded from assignment page
-                assignment = Assignment.objects.get(id=assignmentPk)
-                assignment.problems.add(problem)
-                assignment.save()
+                proof.created_by = request.user
+            
+                if (assignment is not None):
+                    proof.name = str(assignment.title).replace(" ", "") + "." + str(problem.question).replace(" ","")
+                else: #this happens when user create proofs outside of the assignment
+                    pass
+                
+                # Save again to save the new name
+                proof.save()
+                formset.save()
 
-                return redirect("/assignment/" + assignmentPk + "/details")
+                problem.proof = proof
+                problem.save()
 
-            return HttpResponseRedirect(reverse("all_assignments"))
+                if assignmentPk is not None:
+                    # problem page loaded from assignment page
+                    assignment = Assignment.objects.get(id=assignmentPk)
+                    assignment.problems.add(problem)
+                    assignment.save()
+
+                    return redirect("/assignment/" + assignmentPk + "/details")
+
+                return HttpResponseRedirect(reverse("all_assignments"))
 
     if request.user.is_student:
         problem_form.disabled_all()
@@ -386,6 +428,7 @@ def create_problem(request):
         "problem_form": problem_form,
         "proof_form": proof_form,
         "formset": formset,
+        "response": response
     }
     return render(request, "assignments/problem_details.html", context)
 
@@ -426,27 +469,53 @@ def problem_details_view(request, pk=None):
         queryset=proof.proofline_set.order_by("ORDER"),
     )
 
+    response = None
     if request.POST:
         if all([problem_form.is_valid(), proof_form.is_valid(), formset.is_valid()]):
-            problem = problem_form.save(commit=False)
-            proof = proof_form.save(commit=False)
+            parent = proof_form.save(commit=False)
+            if "check_proof" in request.POST:
+                proof = ProofObj(lines=[])  #
+                proof.rules = str(parent.rules)
+                proof.premises = get_premises(parent.premises)
+                proof.conclusion = str(parent.conclusion)
+                proof.created_by = request.user.id #populate proof created by field with user ID
+                proof.lemmas_allowed = problem.lemmas_allowed #field in proof object which stores if lemmas are allowed for that proof
 
-            proof.created_by = request.user
-            proof.save()
-            formset.save()
+                for line in formset.ordered_forms:
+                    if len(line.cleaned_data) > 0 and not line.cleaned_data["DELETE"]:
+                        proofline = ProofLineObj()
+                        child = line.save(commit=False)
+                        child.proof = parent
+                        proofline.line_no = str(child.line_no)
+                        proofline.expression = str(child.formula)
+                        proofline.rule = str(child.rule)
+                        proof.lines.append(proofline)
+                # Determine which parser to user based on selected rules
+                if (proof.rules == "fol_basic") or (proof.rules == "fol_derived"):
+                    parser = folparser.parser
+                else:
+                    parser = tflparser.parser
+                response = verify_proof(proof, parser)
 
-            problem.proof = proof
-            problem.save()
-            messages.success(request, "Problem saved successfully")
+                proof.complete = response.is_valid #switch the complete flag to true
+            elif "submit" in request.POST:
+                problem = problem_form.save(commit=False)
 
-            if assignmentPk is not None:
-                # problem page loaded from assignment page
-                return HttpResponseRedirect(
-                    reverse("assignment_details", kwargs={"pk": assignmentPk})
-                )
+                parent.created_by = request.user
+                parent.save()
+                formset.save()
 
-            return HttpResponseRedirect(reverse("all_assignments"))
+                problem.proof = parent
+                problem.save()
+                messages.success(request, "Problem saved successfully")
 
+                if assignmentPk is not None:
+                    # problem page loaded from assignment page
+                    return HttpResponseRedirect(
+                        reverse("assignment_details", kwargs={"pk": assignmentPk})
+                    )
+
+                return HttpResponseRedirect(reverse("all_assignments"))
 
     if request.user.is_student:
         problem_form.disabled_all()
@@ -457,7 +526,8 @@ def problem_details_view(request, pk=None):
         "problem_form": problem_form,
         "proof_form": proof_form,
         "formset": formset,
-        "rules": proof.rules
+        "rules": proof.rules,
+        "response": response
     }
     return render(request, "assignments/problem_details.html", context)
 
@@ -524,6 +594,8 @@ def problem_solution_view(request, problem_id=None):
                 proof.rules = str(parent.rules)
                 proof.premises = get_premises(parent.premises)
                 proof.conclusion = str(parent.conclusion)
+                proof.created_by = request.user.id #populate proof created by field with user ID
+                proof.lemmas_allowed = problem.lemmas_allowed #field in proof object which stores if lemmas are allowed for that proof
 
                 for line in formset.ordered_forms:
                     if len(line.cleaned_data) > 0 and not line.cleaned_data["DELETE"]:
@@ -540,6 +612,12 @@ def problem_solution_view(request, problem_id=None):
                 else:
                     parser = tflparser.parser
                 response = verify_proof(proof, parser)
+
+                if (response.err_msg == None) and (response.is_valid): #confirms that proof is both valid and complete before updating complete flag to true
+                    proof.complete = response.is_valid
+                else:
+                    proof.complete = False
+                #problem.save()
 
             elif "submit" in request.POST:
                 solution.assignment.resubmissions -= 1
@@ -620,33 +698,29 @@ def get_problem_anaylsis_csv_file(request, id):
     return response
 
 
+
+
 def get_grading_csv_file(request, id):
-    print("assignment_id:", id)
     all_student = StudentProblemSolution.objects.filter(assignment_id=id).values('student').distinct()
+    assignment_name = Assignment.objects.filter(id=id)[0]
     response = HttpResponse('')
-    response['Content-Disposition'] = 'attachment; filename=student_grading.csv'
+    response['Content-Disposition'] = 'attachment; filename=student_grading_for_'+str(assignment_name)+'.csv'
     writer = csv.writer(response)
-    writer.writerow(['Username', 'Course', 'Assignment', 'Point Recieved', 'Total Points'])
 
-    problem_obj = Assignment.objects.filter(id=id).values('problems__point')
-    total_points = 0
-    for problem in problem_obj:
-        total_points += problem['problems__point']
-        # print("PID; ", Problem.objects.filter(id=problem['problems__id']))
+    writer.writerow(['Username', assignment_name])
 
+    student_total_grade = defaultdict(int)
     for student_grading in all_student:
-        print("student_grading:", student_grading)
         student_grading = StudentProblemSolution.objects.filter(assignment_id=id, student=student_grading['student'])
+        
         for obj in student_grading:
-            print("obj:", obj)
+            
             username = obj.student.user.username
-
-            course = obj.assignment.course.title
-            assignment = obj.assignment.title
             grade = obj.grade
-
-            total = total_points
-            writer.writerow([username, course, assignment, grade, total])
+            student_total_grade[username] += grade
+            
+    for key, value in student_total_grade.items():
+        writer.writerow([key,value])
 
     return response
 

@@ -70,8 +70,12 @@ class RuleChecker:
                     return derived_rule
 
         for basic_rule in TFL_BASIC_RULES:
+            #print("Basic rule for-loop output - ",basic_rule.symbols.casefold())
             if rule.casefold() == basic_rule.symbols.casefold():
                 return basic_rule
+        # at this point-  the rule is not in any of the above lists so it may be a lemma so will need newRule (further logic to be added)
+        if (proof.lemmas_allowed):
+            return NewRule()
 
                 
         return None

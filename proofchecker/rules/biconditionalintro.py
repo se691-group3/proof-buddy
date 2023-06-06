@@ -41,7 +41,7 @@ class BiconditionalIntro(Rule):
 
                 # make sure it has proper connective (this was missing originally!)
                 if root_current==None or root_current.value==None or root_current.value=="" or root_current.value[0]!="↔":
-                      response.err_msg = "Error on line {}: the given expression was not an implication"\
+                      response.err_msg = "Error on line {}: the given expression was not a biconditional"\
                     .format(str(current_line.line_no))
                       return response
                 

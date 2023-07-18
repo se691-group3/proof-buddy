@@ -145,6 +145,7 @@ def verify_line_citation(current_line_no: str, cited_line_no: str):
         if cited_depth > current_depth:
             response.err_msg = "Error on line {}: Invalid citation: Line {} exists within in a subproof at a lower depth than line {}"\
                 .format(current_line_no, cited_line_no, current_line_no)
+            response.type = 11
             return response
 
         # Create an array of nested line numbers
@@ -157,21 +158,25 @@ def verify_line_citation(current_line_no: str, cited_line_no: str):
             if int(current_nums[x]) < int(cited_nums[x]):
                 response.err_msg = "Error on line {}: Invalid citation: Line {} occurs after line {}"\
                     .format(current_line_no, cited_line_no, current_line_no)
+                response.type = 12
                 return response
             elif cited_nums[x] < current_nums[x]:
                 if x != (cited_depth-1):
                     response.err_msg = "Error on line {}: Invalid citation: Line {} occurs in a previous subproof"\
                         .format(current_line_no, cited_line_no)
+                    response.type = 13
                     return response
             x += 1
         
         # If all the other checks pass, line citation is valid
         response.is_valid = True
+        response.type = 0
         return response
 
     except:
         response.err_msg = "Error on line {}: Invalid line citations are provided on line {}.  Perhaps you're referencing the wrong rule?"\
             .format(current_line_no, current_line_no)
+        response.type = 14
         return response
 
 

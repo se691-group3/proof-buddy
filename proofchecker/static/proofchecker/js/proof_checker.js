@@ -348,10 +348,10 @@ function create_subproof(obj) {
     const previousRow = getPreviousValidRow(currentRow)
     // Check if previousRow is null - this happens when we try to create sub proof for the first line
     // RECOMMENDATION: instead of having a check here, we can disable "create sub proof" button for the first line
-    if (previousRow === null){
+    /*if (previousRow === null){
         alert("Can't create sub-proof for the first line")
         return
-    }
+    }*/
     var maxIndent = check_if_max_indentation(currentRow,previousRow)
     if (maxIndent) {
         return

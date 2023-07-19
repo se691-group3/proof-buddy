@@ -1,0 +1,92 @@
+
+.full-menu{
+  height:100%;
+  margin-left: 15px;
+  overflow: hidden;
+  overflow-y : scroll;
+}
+
+
+
+#menu{
+  height:inherit;
+  width: 100%;
+  flex-direction: column;
+}
+
+#main-header{
+  font-weight:bold;
+  font-size: 22px;
+  text-decoration: underline;
+}
+
+#sub-header{
+  font-weight:bold;
+  font-size: 18px;
+  text-decoration: underline;
+  padding-top:6px;
+}
+
+
+#item-name{
+  font-weight:bold;
+  font-size: 16px;
+  padding-top:6px;
+  padding-left:2px;
+  padding-bottom: 0;
+}
+
+#instruction{
+  padding-left: 3px;
+  padding-bottom: 3px;
+  color: #072a4d;
+}
+
+table{
+  table-layout: fixed;
+  width:100%;
+  background-color: #bdd4ebbe;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+#rules-information {
+  text-align:left;
+
+}
+
+#help-information {
+  text-align: left;
+  display: none;
+}
+
+#left{
+  color: #072a4d;
+  width: 55%;
+  /* text-align: left; */
+}
+
+#center{
+  width: 35%;
+  font-weight:bold;
+  text-decoration: underline;
+  /* text-align: left; */
+}
+
+#right{
+  text-align: right;
+  width: 10%;
+}
+
+#left-proof{
+  text-align: left;
+  width:30%;
+}
+
+
+#help-table{
+  width:90%;
+}
+
+

@@ -31,6 +31,7 @@ def verify_proof(proof: ProofObj, parser):
 
     if len(proof.lines) == 0:
         response.err_msg = "Cannot validate a proof with no lines"
+        response.type = 1
         return response
 
     for line in proof.lines:
@@ -38,12 +39,14 @@ def verify_proof(proof: ProofObj, parser):
         # Verify the line has a line number
         if not line.line_no:
             response.err_msg = "One or more lines is missing a line number"
+            response.type = 2
             return response
 
         # Verify the line has an expression
         if (not line.expression) or (line.expression == ''):
             response.err_msg = "No expression on line {}"\
                 .format(str(line.line_no))
+            response.type = 3
             return response
 
         # Verify the expression is valid
@@ -52,10 +55,12 @@ def verify_proof(proof: ProofObj, parser):
         except IllegalCharacterError as char_err:
             response.err_msg = "{} on line {}"\
                 .format(char_err.message, str(line.line_no))
+            response.type = 4
             return response 
         except:
             response.err_msg = 'Syntax error on line {}.  Expression "{}" does not conform to ruleset "{}"'\
                 .format(str(line.line_no), line.expression, Constants.RULES_CHOICES.get(proof.rules))
+            response.type = 5
             return response
 
         # Verify the rule is valid
@@ -74,12 +79,15 @@ def verify_proof(proof: ProofObj, parser):
     if conclusion:
         if (last_line.rule.casefold() == 'assumption') or (last_line.rule.casefold() == 'assumpt'):
             response.err_msg = "Proof cannot be concluded with an assumption"
+            response.type = 32
             return response            
         elif depth(last_line.line_no) > 1:
             response.err_msg = "Proof cannot be concluded within a subproof"
+            response.type = 33
             return response
         else: # DO THIS NEXT BLOCK ONLY WHEN PROOF IS FULLY COMPLETE
             response.is_valid = True
+            response.type = 0
             proof.complete = True      # new attrib to save time of rechecking (hopefully this is the only case of a completed proof!)
             proof.saveJson()
             return response
@@ -88,6 +96,7 @@ def verify_proof(proof: ProofObj, parser):
     else:
         response.is_valid = True
         response.err_msg = "All lines are valid, but the proof is incomplete"
+        response.type = -1
         return response
 
 
@@ -110,22 +119,25 @@ def verify_rule(current_line: ProofLineObj, proof: ProofObj, parser):
         response = ProofResponse()
         response.err_msg = 'Rule "{}" on line {} not found in ruleset "{}"'\
             .format(rule_symbols, str(current_line.line_no), Constants.RULES_CHOICES.get(proof.rules))
-        return response    
-   
+        response.type = 6
+        return response
+
     elif isinstance(rule, NewRule): #only runs if the newRule is returned
         #check to see if database has lemma saved for this user
         try:
             lemmaObjectFromDatabase = Proof.objects.get(created_by = proof.created_by, name = rule_symbols)
-            
+
             if (not lemmaObjectFromDatabase.complete):
                 response = ProofResponse()
                 response.err_msg = 'Rule "{}" on line {} not valid since it has not yet been proven.'\
                     .format(rule_symbols, str(current_line.line_no))
+                response.type = 7
                 return response
             if ('derived' in lemmaObjectFromDatabase.rules) and ('derived' not in proof.rules):
                 response = ProofResponse()
                 response.err_msg = 'Rule "{}" on line {} not valid since it was proven using derived rules. Derived are not allowed in current proof.'\
                     .format(rule_symbols, str(current_line.line_no))
+                response.type = 8
                 return response
             else:
                 return rule.verify(current_line, proof, parser)
@@ -133,11 +145,13 @@ def verify_rule(current_line: ProofLineObj, proof: ProofObj, parser):
             response = ProofResponse()
             response.err_msg = 'Rule "{}" on line {} not valid since it has not yet been proven and/or saved.'\
                 .format(rule_symbols, str(current_line.line_no))
+            response.type = 9
             return response   
         except Proof.MultipleObjectsReturned:
             response = ProofResponse()
             response.err_msg = 'There is more than 1 version of rule "{}" on line {} currenly saved in your profile. Please ensure there is only 1 valid and complete proof saved.'\
                 .format(rule_symbols, str(current_line.line_no))
+            response.type = 10
             return response  
 
     else:

@@ -148,6 +148,7 @@ class ProofRule(ProofObj):
 
 class ProofResponse:
 
-    def __init__(self, is_valid=False, err_msg=None):
+    def __init__(self, is_valid=False, err_msg=None, type=None):
         self.is_valid = is_valid
         self.err_msg = err_msg
+        self.type = type

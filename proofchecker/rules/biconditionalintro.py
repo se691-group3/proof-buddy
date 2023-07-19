@@ -39,6 +39,13 @@ class BiconditionalIntro(Rule):
                 root_j_x = make_tree(expressions[3], parser)
                 root_current = make_tree(current_line.expression, parser)
 
+                # make sure it has proper connective (this was missing originally!)
+                if root_current==None or root_current.value==None or root_current.value=="" or root_current.value[0]!="↔":
+                      response.err_msg = "Error on line {}: the given expression was not a biconditional"\
+                    .format(str(current_line.line_no))
+                      return response
+                
+                # this True check is premature! needed to check connective first (inserted above)
                 # Verify lines i.1 and j.x are equivalent
                 if root_i_1 == root_j_x:
                     # Verify that lines i.x and j.1 are equivalent

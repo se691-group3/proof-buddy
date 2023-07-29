@@ -150,6 +150,11 @@ def proof_create_view(request):
                 else:
                     parser = tflparser.parser
 
+                if len(formset.forms) > 0:
+                    parent.created_by = request.user
+                    parent.save()
+                    formset.save()
+
                 response = verify_proof(proof, parser)
 
             elif 'submit' in request.POST:
@@ -248,6 +253,9 @@ def proof_update_view(request, pk=None):
                     else:
                         obj.complete = False
                     obj.save()
+                    parent.created_by = request.user
+                    parent.save()
+                    formset.save()
                     tracker = ResponseTracker(
                         proof = obj,
                         response_type=response.type,

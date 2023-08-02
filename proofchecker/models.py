@@ -1,4 +1,3 @@
-from pickle import TRUE
 from PIL import Image
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
@@ -219,7 +218,3 @@ class Feedback(models.Model):
     attach = models.FileField(blank=True, null=True)
 
 
-class ResponseTracker(models.Model):
-    proof = models.ForeignKey(Proof, on_delete=models.CASCADE)
-    response_type = models.IntegerField(blank=True, null=True)
-    response_msg = models.CharField(max_length=500, default='')

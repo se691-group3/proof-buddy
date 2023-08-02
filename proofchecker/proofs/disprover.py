@@ -67,8 +67,10 @@ def evalPrems(proof:ProofObj, valDict:dict):
             return -1
         prems.append(premTree)
     for i in range(len(prems)):
+        print(i, prems[i], evalExpr(prems[i], valDict),ans)
         if not(evalExpr(prems[i], valDict)): 
             ans.append(i+1)  # could be done with list comprehension, but less clear
+            print("new ans", ans)
     return ans
 
 #returns a proofResponse for the counterexample

@@ -4,6 +4,7 @@ from proofchecker.utils.binarytree import Node, tree_to_string
 from proofchecker.utils.constants import Constants
 from proofchecker.utils.numlexer import lexer as numlexer
 from proofchecker.utils.tfllexer import IllegalCharacterError
+from proofchecker.proofs.exprMethods import OBJS, VARS, PREDS, UNASYMBOLS, BINSYMBOLS
 
 # Parsing methods
 def depth(line_no):
@@ -137,15 +138,21 @@ def verify_line_citation(current_line_no: str, cited_line_no: str):
     
     try:
         # Calculate the depth of each line number
+        #note: depth is an integer representing the number of ints. e.g. "3.4.1" has depth 3
         current_depth = depth(current_line_no)
         cited_depth = depth(cited_line_no)
 
+        # this wasn't always being caught, so put it in as a first check
+        if current_line_no == cited_line_no:
+            response.err_msg = "Error on line {}: Invalid citation: a line cannot justify itself"\
+                .format(current_line_no)
+            return response
+        
         # Check if the cited line occurs within a subproof that has not been closed
         # before the line where the rule is applied (this is a violation)
         if cited_depth > current_depth:
             response.err_msg = "Error on line {}: Invalid citation: Line {} exists within in a subproof at a lower depth than line {}"\
                 .format(current_line_no, cited_line_no, current_line_no)
-            response.type = 11
             return response
 
         # Create an array of nested line numbers
@@ -158,25 +165,21 @@ def verify_line_citation(current_line_no: str, cited_line_no: str):
             if int(current_nums[x]) < int(cited_nums[x]):
                 response.err_msg = "Error on line {}: Invalid citation: Line {} occurs after line {}"\
                     .format(current_line_no, cited_line_no, current_line_no)
-                response.type = 12
                 return response
             elif cited_nums[x] < current_nums[x]:
                 if x != (cited_depth-1):
                     response.err_msg = "Error on line {}: Invalid citation: Line {} occurs in a previous subproof"\
                         .format(current_line_no, cited_line_no)
-                    response.type = 13
                     return response
             x += 1
         
         # If all the other checks pass, line citation is valid
         response.is_valid = True
-        response.type = 0
         return response
 
     except:
         response.err_msg = "Error on line {}: Invalid line citations are provided on line {}.  Perhaps you're referencing the wrong rule?"\
             .format(current_line_no, current_line_no)
-        response.type = 14
         return response
 
 
@@ -501,13 +504,133 @@ def verify_same_structure_FOL(tree_1: Node, tree_2: Node, line_no_1: str, line_n
     response.is_valid = True
     return response
 
+# returns T or F if a non "x" is found as a key in a given dictionary (used in instanceOf)
+# writing as a function so we can use returns instead of breaks
+def nonVarFound(mydict:dict,var:str)->bool:
+    for key in mydict: #note that iterating through a dictionary only goes through the keys by default
+        if key != var:
+            return True
+    return False
 
+# this was done as a separate function to avoid importing OBJS into universalelim.py
+# this checks to make sure that if an x is getting replaced, then it's by a free var
+def freeSubst(mydict:dict,var:str)->bool:
+    return not (var in mydict.keys() and mydict[var] not in OBJS)
+
+
+# finds the parent of myNode in MyTree (returns None if Root)
+# note: in the future, the parent attribute should have been created at construction
+def findParent(myTree:Node, targetNode:Node, parent=None)->Node:
+    if myTree==None or targetNode==None:
+        return None #technically a violation of the output type, so warning
+    if myTree==targetNode:
+        return parent #note, this will be None if target was root
+    rightSearch = findParent(myTree.right, targetNode, myTree)
+    leftSearch = findParent(myTree.left, targetNode, myTree)
+    return leftSearch if leftSearch is not None else rightSearch
+
+#returns T/F if var is bound in the scope of startNode
+# e.g.  (∀x∈V (Px ∧ Qx)) ∧ Rx. the x in Qx is bound, but not the x in Rx
+def varInScope(expr:Node, startNode:Node, var:str)->bool:
+    if startNode == None:
+        return False #wasn't found
+    if (startNode.value[0]=='∀' or startNode.value[0]=='∃') and startNode.value[1]==var:
+        return True
+    return varInScope(expr, findParent(expr, startNode),var)
+
+# the following new functions by Steve, checks via trees rather than strings
+def noBadVars(myTree: Node, currNode=None) -> ProofResponse:
+    if currNode==None:
+        currNode = myTree # starting at root
+    response = ProofResponse(is_valid=True) #default is True (i.e. no errs)
+    leftResp = ProofResponse(is_valid=True) 
+    rightResp = ProofResponse(is_valid=True) 
+    if myTree==None or myTree.value=="": 
+        return response
+    if ((currNode.value[0]=='∀' or currNode.value[0]=='∃')  and (currNode.value[1] in OBJS)):
+        response.is_valid=False
+        response.err_msg = currNode.value[1]+" should not be quantified"
+        return response
+    if currNode.value[0] in PREDS and currNode.value[1] in VARS \
+        and not varInScope(myTree, currNode, currNode.value[1]):
+        response.is_valid=False
+        response.err_msg = currNode.value[1]+" cannot be a free variable"
+        return response
+    if currNode.right !=None: #need to say this to prevent resetting to root
+        rightResp = noBadVars(myTree,currNode.right)
+    if currNode.left != None:
+        leftResp = noBadVars(myTree, currNode.left )
+    return rightResp if not rightResp.is_valid else leftResp
+
+# this had flaws due to be string based, so much of it was cut
+'''1
+this section is INTENDED to prevent ∀x∈V(Px∧Qx) from becoming Pa∧Qx by ∀E.
+HOWEVER, it is actually stopping ∀x∈V ∀x∈V Px from becoming ∀x∈V Px 
+    # Make sure the bound variable does not appear in the expression with names
+    for ch in expression_with_names:
+        if ch == var:
+            response = ProofResponse()
+            response.err_msg = 'Variable "{}" on line {} should not appear on line {}'\
+                .format(var, var_line_no, name_line_no)
+            return response
+2
+    # Make sure the bound variable does not appear in the expression with names
+    for ch in expression_with_names:
+        if ch == var:
+            response = ProofResponse()
+            response.err_msg = 'Variable "{}" on line {} should not appear on line {}'\
+                .format(var, var_line_no, name_line_no)
+            return response
+
+3
+                # Make sure they all use the same name
+    if len(names) > 1:
+        for ch in names:
+            if not ch == names[0]:
+                response = ProofResponse()
+                response.err_msg = 'All instances of variable "{}" on line {} should replace the same name on line {}'\
+                    .format(var, var_line_no, name_line_no)
+                return response
+4
+                    for ch in names:
+        if not is_name(ch):
+            response = ProofResponse()
+            response.err_msg = 'Instances of variable "{}" on line {} should replace a name on line {}'\
+                .format(var, var_line_no, name_line_no)
+            return response
+
+5-6
+ for ch in names:
+        if not is_name(ch):
+            response = ProofResponse()
+            response.err_msg = 'Instances of variable "{}" on line {} should replace a name on line {}'\
+                .format(var, var_line_no, name_line_no)
+            return response
+    
+    # Make sure they all use the same name
+    if len(names) > 1:
+        for ch in names:
+            if not ch == names[0]:
+                response = ProofResponse()
+                response.err_msg = 'All instances of variable "{}" on line {} should replace the same name on line {}'\
+                    .format(var, var_line_no, name_line_no)
+                return response
+
+7
+                    for ch in vars:
+        if not (ch == var):
+            response = ProofResponse()
+            response.err_msg = 'All instances of name "{}" on line {} should be replaced with the bound variable "{}" on line {}'\
+                .format(name, name_line_no, var, var_line_no)
+            return response
+            '''
 def verify_var_replaces_every_name(var_tree: Node, name_tree: Node, var: str, var_line_no: str, name_line_no: str):
     """
     Verify all instances of var in var_tree are replaced by a single name in name_tree AND
     that all instances of name in name_tree are replaced by var in var_tree
     """
     # If either node is empty, return valid
+
     if (var_tree == None or name_tree == None):
         response = ProofResponse
         response.is_valid = True
@@ -532,15 +655,9 @@ def verify_var_replaces_every_name(var_tree: Node, name_tree: Node, var: str, va
     expression_with_vars = var_tree.value.replace(' ', '')
     expression_with_names = name_tree.value.replace(' ', '')
 
-    # Make sure the bound variable does not appear in the expression with names
-    for ch in expression_with_names:
-        if ch == var:
-            response = ProofResponse()
-            response.err_msg = 'Variable "{}" on line {} should not appear on line {}'\
-                .format(var, var_line_no, name_line_no)
-            return response
+    # cut part goes here
 
-    # Keep track of the locations (indexes) of the bound variable on current line
+     # Keep track of the locations (indexes) of the bound variable on current line
     for ch in expression_with_vars:
         if ch == var:
             var_indexes.append(index)
@@ -558,21 +675,12 @@ def verify_var_replaces_every_name(var_tree: Node, name_tree: Node, var: str, va
     for i in var_indexes:
         names.append(expression_with_names[i])
     
-    for ch in names:
-        if not is_name(ch):
-            response = ProofResponse()
-            response.err_msg = 'Instances of variable "{}" on line {} should replace a name on line {}'\
-                .format(var, var_line_no, name_line_no)
-            return response
+    # fourth cut goes here
+
     
-    # Make sure they all use the same name
-    if len(names) > 1:
-        for ch in names:
-            if not ch == names[0]:
-                response = ProofResponse()
-                response.err_msg = 'All instances of variable "{}" on line {} should replace the same name on line {}'\
-                    .format(var, var_line_no, name_line_no)
-                return response
+    #third cut goes here
+
+
     
     # If there are no names, stop here
     if len(names) == 0:
@@ -597,20 +705,15 @@ def verify_var_replaces_every_name(var_tree: Node, name_tree: Node, var: str, va
     for i in name_indexes:
         vars.append(expression_with_vars[i])
 
-    for ch in vars:
-        if not (ch == var):
-            response = ProofResponse()
-            response.err_msg = 'All instances of name "{}" on line {} should be replaced with the bound variable "{}" on line {}'\
-                .format(name, name_line_no, var, var_line_no)
-            return response
+#cut 7
 
-    # If we reach this point, return valid
-    response = ProofResponse()
-    response.is_valid = True
+    # TODO: use these instead of all those cuts which were based on Strings
+    response = noBadVars(name_tree)
     return response
 
-
-def verify_var_replaces_some_name(var_tree: Node, name_tree: Node, var: str, var_line_no: str, name_line_no: str):
+def verify_var_replaces_some_name(var_tree: Node, name_tree: Node, var: str, var_line_no: str, name_line_no: str, big=None):
+    if big==None:
+        big=name_tree
     """
     Verify that all instances of var in var_tree are replaced by a single name in name_tree
     """
@@ -622,13 +725,13 @@ def verify_var_replaces_some_name(var_tree: Node, name_tree: Node, var: str, var
 
     # If both trees have a left node, check the left nodes (recursive)
     if (var_tree.left != None) and (name_tree.left != None):
-        response = verify_var_replaces_some_name(var_tree.left, name_tree.left, var, var_line_no, name_line_no)
+        response = verify_var_replaces_some_name(var_tree.left, name_tree.left, var, var_line_no, name_line_no, big)
         if response.is_valid == False:
             return response
 
     # If both trees have a right node, check the right nodes (recursive)
     if (var_tree.right != None) and (name_tree.right != None):
-        response = verify_var_replaces_some_name(var_tree.right, name_tree.right, var, var_line_no, name_line_no)
+        response = verify_var_replaces_some_name(var_tree.right, name_tree.right, var, var_line_no, name_line_no,big)
         if response.is_valid == False:
             return response
 
@@ -639,13 +742,8 @@ def verify_var_replaces_some_name(var_tree: Node, name_tree: Node, var: str, var
     expression_with_vars = var_tree.value.replace(' ', '')
     expression_with_names = name_tree.value.replace(' ', '')
 
-    # Make sure the bound variable does not appear in the expression with names
-    for ch in expression_with_names:
-        if ch == var:
-            response = ProofResponse()
-            response.err_msg = 'Variable "{}" on line {} should not appear on line {}'\
-                .format(var, var_line_no, name_line_no)
-            return response
+#2nd cut put goes here
+
 
     # Keep track of the locations (indexes) of the bound variable on current line
     for ch in expression_with_vars:
@@ -665,23 +763,8 @@ def verify_var_replaces_some_name(var_tree: Node, name_tree: Node, var: str, var
     for i in var_indexes:
         names.append(expression_with_names[i])
     
-    for ch in names:
-        if not is_name(ch):
-            response = ProofResponse()
-            response.err_msg = 'Instances of variable "{}" on line {} should replace a name on line {}'\
-                .format(var, var_line_no, name_line_no)
-            return response
-    
-    # Make sure they all use the same name
-    if len(names) > 1:
-        for ch in names:
-            if not ch == names[0]:
-                response = ProofResponse()
-                response.err_msg = 'All instances of variable "{}" on line {} should replace the same name on line {}'\
-                    .format(var, var_line_no, name_line_no)
-                return response
+   # fifth/sixth cut here
 
-    # If we reach this point, return valid
-    response = ProofResponse()
-    response.is_valid = True
+    # If we reach this point, do Steve's new check
+    response = noBadVars(big)
     return response

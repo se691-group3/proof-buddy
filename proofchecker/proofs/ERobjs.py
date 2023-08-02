@@ -1,5 +1,5 @@
-ERtypes = ["int", "bool", "list", "any", "None", "function"] #any is used for function arguments, None is used for output of thunks
-
+ERtypes = ["int", "bool", "list", "any", "None", "function", "param"] #any is used for function arguments, None is used for output of thunks
+# param is used for dummy parameters of a lambda
 class ERobj:
     def __init__(self, name, pbType, ins=None, outType=None, value=None, numArgs=None, length=None):
         self.name = name # the string label
@@ -19,6 +19,11 @@ class ERobj:
                         self.numArgs==other.numArgs and self.length == other.length and \
                             self.value == other.value
         return False
+ 
+#making deepcopies
+def ERcopy(orig:ERobj)->ERobj:
+    return ERobj(orig.name, orig.pbType, orig.ins, orig.outtype, orig.value,orig.numArgs, orig.length)
+
 
 # NOTE: lambdas take the ERobj.value, as inputs, not the value itself.
 # similarly, lambda output values, not the ERobjs. So, they will need to be
@@ -62,20 +67,28 @@ plambda = ERobj("\u03BB", "function", ("list","any"),"function",None,2)
 # BAD IDEA b/c need new objects each time since diff childs: sexpr = ERobj("(", "list")
 
 #note: the output type for "if" isn't quite correct. it's really = 3rd arg, not "any"
-pif = ERobj("if", "function", ["bool","any","any"],"any",None,3)
+pif = ERobj("if", "function", ("bool","any","any"),"any",None,3)
+
+# for testing purposes
+pfact = ERobj("fact","function",("int",),"int",None, 1)
 
 #possible problem if they name a variable ERROR, so make sure that gets reserved
-perr = ERobj("ERROR", "None")
+perr = ERobj("ERROR", "None") # can use perr.value to store a string of specific error msg
 
 # TODO: list of the core racket-lite functions (will need to change if add more )
 pcore = [pcons, prest, pfirst, padd, psubtr, pmult, pexpt, peq, pgtr, pgtreq,\
     pless, plesseq, pquotient, prem, pand, por, pnot, pxor, pimp, pnullPred,\
         pzeroPred,pintPred, plistPred, pnull, ptrue,pfalse,pquote,plambda,pif,perr]
+ptests = [pfact]
 
 # making a look-up table of ERobj by string name
 pdict ={}
+testDict={}
 for x in pcore:
     pdict[x.name]=x
+for x in ptests:
+    testDict[x.name]=x
+    
 
 def isValidType(t) -> bool: #checks if a given string/list is a valid Equational Reasoning type (tricky due to functions)
     #( list of input types, output type)

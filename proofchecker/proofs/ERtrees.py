@@ -9,6 +9,8 @@ resRac = ["cons", "rest", "first", "+", "-","*","=", ">", ">=", "<",\
           "implies","null?","null","zero?","#t","#f","'", \
           "if","lambda", "int?", "list?", "ERROR","expt"]
 
+testFuncs = ["fact"]
+
 #needed for checking ints. written by chatGPT
 def is_integer(strng:str) -> bool:
     try:
@@ -38,6 +40,18 @@ class RacTree:
             ans+=str(ch)+" "
         return ans[:-1]+")"
     
+    # for testing
+    def display(self):
+        print("data: ", self.data)
+        print("path: ", self.path)
+        if self.parent == None:
+            print("parent: None")
+        else:
+            print("parent: ", self.parent.data)
+        print("children:")
+        for i in self.children:
+            print(i.data.name)
+    
     def __eq__(self, other) ->bool:
         #return str(self)==str(other) would probably also work as a shortcut?
         n=len(self.children)
@@ -46,8 +60,26 @@ class RacTree:
             # note that self.data is an ERobj so needed equality checker for that too
             return self.data==other.data and self.path==other.path and \
                 n==len(other.children) and \
-                    all([self.children[i]==other.children[i] for i in range(n)])          
+                    all([self.children[i]==other.children[i] for i in range(n)])     
         return False
+    
+    # a tree method that fills in all the path attributes for the nodes
+    def pathify(self):
+        tree = self
+        tree.path=[]
+        i=-1 #initializing index (gets incremented before assigment)
+        currPar = tree
+        queue = [x for x in tree.children] #need a deep copy to not destroy root's children record
+        while queue != []:
+            node = queue[0]
+            queue = queue[1:]+node.children
+            if id(node.parent) == id(currPar): # need id here to prevent full node checking
+                i+=1
+            else:
+                currPar = node.parent
+                i=0
+            node.path=node.parent.path+[i]
+        return
        
     # given a list of ints, returns node with that path
     def nodeFromPath(self, mylist:list):
@@ -57,6 +89,46 @@ class RacTree:
         if len(ancestor.children) <= mylist[-1]: #not a valid path
             return errNode #should be okay to use, even tho defined after the class
         return ancestor.children[mylist[-1]]
+    
+    # a tree method which subs in the given newnode for the old one at path and returns original tree modified
+    def replaceNode(self, myPath:list, newNode):
+        print("inside replace: ", self, newNode)
+        newTree = self #originally made a copy, but then this would not work for a Replace All in a For loop
+        oldNode = newTree.nodeFromPath(myPath)
+        if oldNode == errNode or oldNode==newTree:
+            return
+        priorNode = newTree.nodeFromPath(myPath[:-1]) #could have used oldNode.parent
+        newNode.parent = priorNode
+        priorNode.children[myPath[-1]]=newNode
+        newTree.pathify() #otherwise paths of substituted nodes will be wrong
+        return newTree
+    
+    #TODO: fix so test works!
+    def condReplace(self,parStr:str, newNode:'RacTree')->'RacTree':
+        print("self and new ",self, newNode)
+        parent = self.parent
+        if self.data.name == parStr: #recall python doesn't check strings for memory location, just if chars are the same. for location use "is"
+            self.replaceNode([],newNode)
+            self.parent = parent
+            print("now: ", self)
+        else:
+            for child in self.children:
+                child.condReplace(parStr,newNode)
+        self.pathify()
+        return self
+    
+
+def copyTree(orig:RacTree)->RacTree: # tree construction is:  data=None, children=None, parent=None, path=None
+    if orig is None:
+        return None
+    copied_node = RacTree(ERcopy(orig.data), [], None, None)
+    for child in orig.children:
+        copied_child = copyTree(child)
+        copied_node.children.append(copied_child)
+        copied_child.parent = copied_node
+    copied_node.pathify()
+    return copied_node
+
 
 errNode = RacTree(perr)
 
@@ -89,10 +161,14 @@ def str2ER(ch:str) -> ERobj:
         ch="\u03BB"
     if ch.lower() in pdict.keys():
         return pdict[ch.lower()]
+    if ch.lower() in testDict.keys():
+        return testDict[ch.lower()]
     if ch=="(":
         return ERobj("(","any")
     if is_integer(ch):
         return ERobj(ch,"int",value=int(ch))
+    #if not found, then default now instead of an error, is that it's a parameter
+    return ERobj(ch, "param")
     #the following error should be replaced by a lookup table for definitions
     return perr
 
@@ -131,38 +207,24 @@ def makeRtreeHelp(expList:list) -> RacTree:
 # does a BFS to assign paths to all nodes of the tree
 def makeRtree(expList:list) -> RacTree:
     tree = makeRtreeHelp(expList)
-    tree.path=[]
-    i=-1 #initializing index (gets incremented before assigment)
-    currPar = tree
-    queue = [x for x in tree.children] #need a deep copy to not destroy root's children record
-    while queue != []:
-        node = queue[0]
-        queue = queue[1:]+node.children
-        if id(node.parent) == id(currPar): # need id here to prevent full node checking
-            i+=1
-        else:
-            currPar = node.parent
-            i=0
-        node.path=node.parent.path+[i]
+    tree.pathify()
+    # all of the below has been made into the tree method "pathify"
+    # tree.path=[]
+    # i=-1 #initializing index (gets incremented before assigment)
+    # currPar = tree
+    # queue = [x for x in tree.children] #need a deep copy to not destroy root's children record
+    # while queue != []:
+    #     node = queue[0]
+    #     queue = queue[1:]+node.children
+    #     if id(node.parent) == id(currPar): # need id here to prevent full node checking
+    #         i+=1
+    #     else:
+    #         currPar = node.parent
+    #         i=0
+    #     node.path=node.parent.path+[i]
     return tree
 
-def treeTest(): #testing on ((if (zero? 1) + *) 1 2)
-    #recall ERobj(data=None, children=[],parent=None,path=[])
-    node0 = RacTree(ERobj("(","any"),path=[])
-    node1 = RacTree(ERobj("(","any"), parent=node0,path=[0]) 
-    node4=RacTree(pif,parent=node1,path=[0,0])
-    node5 = RacTree(ERobj("(","any"),parent=node1,path=[0,1])
-    node6 = RacTree(padd,parent=node1,path=[0,2])
-    node7 = RacTree(pmult,parent=node1,path=[0,3])
-    node1.children=[node4,node5, node6,node7]
-    node2 = RacTree(str2ER("1"), parent=node0,path=[1])
-    node3 = RacTree(str2ER("2"),parent=node0,path=[2])
-    node8 = RacTree(pzeroPred, parent=node5,path=[0,1,0])
-    node9 = RacTree(str2ER("1"), parent=node5,path=[0,1,1])
-    node5.children=[node8,node9]
-    node0.children = [node1, node2, node3]
-    print("testing tree raw construction:",node0)
-    myTree = makeRtree(str2List("((if (zero? 1) + *) 1 2)"))
-    print("testing making tree from list:",myTree)
-    print("testing for tree equality vs just string equality: ",node0==myTree)
-    return
+def makeErrTree(msg:str):
+    ans=ERcopy(perr)
+    ans.value=msg
+    return RacTree(ans)

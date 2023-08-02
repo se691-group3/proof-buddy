@@ -33,15 +33,14 @@ class ConditionalIntro(Rule):
                 root_m = make_tree(expressions[0], parser)
                 root_n = make_tree(expressions[1], parser)
                 root_current = make_tree(current_line.expression, parser)
-                
+
                 # make sure it has proper connective (this was missing originally!)
                 if root_current==None or root_current.value==None or root_current.value=="" or root_current.value[0]!="→":
                       response.err_msg = "Error on line {}: the given expression was not an implication"\
                     .format(str(current_line.line_no))
                       return response
 
-                # originally this True check came FIRST, which is bad. should have checked errors first!
-                if (root_current.left == root_m) and (root_current.right == root_n): 
+                if (root_current.left == root_m) and (root_current.right == root_n):
                     response.is_valid = True
                     return response
                 else:

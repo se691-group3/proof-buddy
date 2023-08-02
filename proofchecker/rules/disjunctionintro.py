@@ -36,6 +36,12 @@ class DisjunctionIntro(Rule):
                 root_left = root_current.left
                 root_right = root_current.right
 
+                # make sure it has proper connective (this was missing originally!)
+                if root_current==None or root_current.value==None or root_current.value=="" or root_current.value[0]!="∨":
+                      response.err_msg = "Error on line {}: the given expression was not a disjunction"\
+                    .format(str(current_line.line_no))
+                      return response
+
                 # Compare the trees
                 if (root_target == root_left) or (root_target == root_right):
                     response.is_valid = True

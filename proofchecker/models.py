@@ -1,4 +1,3 @@
-from pickle import TRUE
 from PIL import Image
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError

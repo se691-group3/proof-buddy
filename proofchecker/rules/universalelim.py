@@ -1,7 +1,9 @@
 from proofchecker.proofs.proofobjects import ProofObj, ProofLineObj, ProofResponse
 from proofchecker.proofs.proofutils import clean_rule, get_line, verify_line_citation, make_tree, verify_same_structure_FOL, \
-    verify_var_replaces_some_name
+    verify_var_replaces_some_name, nonVarFound, freeSubst
+from proofchecker.utils.binarytree import tree2Str #used for testing
 from .rule import Rule
+from proofchecker.proofs.exprMethods import instanceOf
 
 class UniversalElim(Rule):
 
@@ -31,7 +33,7 @@ class UniversalElim(Rule):
 
                 # Verify root operand of line m is ∀
                 if (root_m.value[0] != '∀'):
-                    response.err_msg = "Error on line {}: The root operand of line {} should be the universal quantifier (∀)"\
+                    response.err_msg = "Error on line {}: The quantifier of line {} should be the universal quantifier (∀)"\
                         .format(str(current_line.line_no), str(target_line.line_no))
                     return response
                 
@@ -49,6 +51,23 @@ class UniversalElim(Rule):
                     result.err_msg = 'Error on line {}: '.format(current_line.line_no) + result.err_msg
                     return result
 
+                # new addition goes here (this probably makes much of the checks above redundant)
+                env = {} # initializing the environment of checking instances
+                result = instanceOf(root_m.right, current, env, True) #taking right since just want expression underneath quantifier. note: true = FOL
+                # need to check that no OTHER bound variable got replaced too, other than the desired one: [SteveE added this]
+                if result[0] and nonVarFound(result[1],var):
+                    response.err_msg = "Error on line {}: only the variable {} from line {} may be substituted"\
+                    .format(str(current_line.line_no), var, str(target_line.line_no))
+                    return response
+                if result[0] and var in result[1].keys() and not freeSubst(result[1],var):
+                    response.err_msg = "Error on line {}: the bound variable {} from line {} should be replaced by a free variable"\
+                    .format(str(current_line.line_no), var, str(target_line.line_no))
+                    return response
+                if not result[0]: 
+                    response.err_msg = "Error on line {}: single substitutions on line {} do not match current line"\
+                    .format(str(current_line.line_no), str(target_line.line_no))
+                    return response
+                
                 response.is_valid = True
                 return response
 

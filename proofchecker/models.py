@@ -217,9 +217,9 @@ class Feedback(models.Model):
     # attach = models.FileField(blank=True, null=True) , widget=forms.ClearableFileInput(       attrs={'multiple': True}))
     attach = models.FileField(blank=True, null=True)
 
-
 class ResponseTracker(models.Model):
     proof = models.ForeignKey(Proof, on_delete=models.CASCADE)
     response_type = models.IntegerField(blank=True, null=True)
     response_msg = models.CharField(max_length=500, default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+

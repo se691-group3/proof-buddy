@@ -1,5 +1,4 @@
 import os
-from prooftool.settings.base import BASE_DIR, TEMPLATES
 
 import pylatex
 from django.contrib import messages
@@ -26,7 +25,7 @@ from proofchecker.proofs.disprover import makeDict, setVals, checkCntrEx
 from proofchecker.utils import folparser
 from proofchecker.utils import tflparser
 from .forms import ProofForm, ProofLineForm, FeedbackForm
-from .models import Proof, Problem, ProofLine, ResponseTracker
+from .models import Proof, Problem, ProofLine
 
 
 def home(request):
@@ -229,6 +228,7 @@ def proof_update_view(request, pk=None):
                     proof.conclusion = str(parent.conclusion)
                     proof.created_by = request.user.id
                     proof.lemmas_allowed = parent.lemmas_allowed
+                    
 
                     for line in formset.ordered_forms:
                         if len(line.cleaned_data) > 0 and not line.cleaned_data['DELETE']:
@@ -253,6 +253,7 @@ def proof_update_view(request, pk=None):
                     else:
                         obj.complete = False
                     obj.save()
+                    
                     parent.created_by = request.user
                     parent.save()
                     formset.save()
@@ -282,7 +283,7 @@ def proof_update_view(request, pk=None):
                         valDict = setVals(makeDict(proof), vals)
                     else:
                         valDict = makeDict(proof)
-
+                    
                     response = checkCntrEx(proof,valDict)
                     if response.is_valid:
                         print("That is a valid counterexample -- Good Job!")

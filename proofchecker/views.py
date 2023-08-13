@@ -247,7 +247,7 @@ def proof_update_view(request, pk=None):
                         parser = tflparser.parser
 
                     response = verify_proof(proof, parser)
-                    
+
                     if (response.err_msg == None) and (response.is_valid): #confirms that proof is both valid and complete before updating complete flag to true
                         obj.complete = response.is_valid
                     else:
@@ -259,7 +259,8 @@ def proof_update_view(request, pk=None):
                     tracker = ResponseTracker(
                         proof = obj,
                         response_type=response.type,
-                        response_msg=response.err_msg
+                        response_msg=response.err_msg,
+                        user = request.user
                     )
                     tracker.save()
 

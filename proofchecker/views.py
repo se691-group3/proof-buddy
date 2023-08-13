@@ -149,6 +149,11 @@ def proof_create_view(request):
                 else:
                     parser = tflparser.parser
 
+                if len(formset.forms) > 0:
+                    parent.created_by = request.user
+                    parent.save()
+                    formset.save()
+
                 response = verify_proof(proof, parser)
 
             elif 'submit' in request.POST:
@@ -242,13 +247,23 @@ def proof_update_view(request, pk=None):
                         parser = tflparser.parser
 
                     response = verify_proof(proof, parser)
-                    
+
                     if (response.err_msg == None) and (response.is_valid): #confirms that proof is both valid and complete before updating complete flag to true
                         obj.complete = response.is_valid
                     else:
                         obj.complete = False
                     obj.save()
                     
+                    parent.created_by = request.user
+                    parent.save()
+                    formset.save()
+                    tracker = ResponseTracker(
+                        proof = obj,
+                        response_type=response.type,
+                        response_msg=response.err_msg,
+                        user = request.user
+                    )
+                    tracker.save()
 
                 elif 'submit' in request.POST:
                     parent.created_by = request.user

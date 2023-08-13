@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
  * this function will run once DOM contents are loaded
  */
 function reload_page() {
+    bypass_enter_key()
     //this function will run on page load
     updateLineCount()
 
@@ -61,6 +62,16 @@ window.onload = function () {
             };
             html2pdf().from(form).set(opt).save();
         })
+}
+
+// Enter key on the proof form should be disabled.
+function bypass_enter_key() { 
+    document.getElementById("proof_form").onkeypress = function(e) {
+    var key = e.charCode || e.keyCode || 0;     
+    if (key == 13) {
+      e.preventDefault();
+    }
+  } 
 }
 
 // Displayed line count
@@ -348,10 +359,10 @@ function create_subproof(obj) {
     const previousRow = getPreviousValidRow(currentRow)
     // Check if previousRow is null - this happens when we try to create sub proof for the first line
     // RECOMMENDATION: instead of having a check here, we can disable "create sub proof" button for the first line
-    if (previousRow === null){
+    /*if (previousRow === null){
         alert("Can't create sub-proof for the first line")
         return
-    }
+    }*/
     var maxIndent = check_if_max_indentation(currentRow,previousRow)
     if (maxIndent) {
         return
